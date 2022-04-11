@@ -113,7 +113,7 @@ class ClippingClass extends CustomClipper<Path> {
   Path getClip(Size size) {
     var path = Path();
     path.lineTo(
-        0, size.height); //start path with this if you are making at bottom
+        0, size.height - 10); //start path with this if you are making at bottom
 
     var firstStart = Offset(size.width / 5, size.height);
     //fist point of quadratic bezier curve
