@@ -1,5 +1,7 @@
+import 'package:checkapp/providers/ui_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:checkapp/themes/app_theme.dart';
+import 'package:provider/provider.dart';
 
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({
@@ -8,41 +10,24 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ui_provider = Provider.of<UI_provider>(context);
+
+    var currentIndex = ui_provider.selectMenuOpt;
+
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
-      notchMargin: 10.0,
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: AppTheme.checkAppOrange,
-                  borderRadius: BorderRadius.circular(60)),
-              child: IconButton(
-                iconSize: 30,
-                icon: const Icon(
-                  Icons.home_outlined,
-                  color: Colors.white,
-                ),
-                onPressed: () {},
-              ),
-            ),
-          ),
-          const SizedBox(width: 48.0),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: IconButton(
-              iconSize: 30,
-              icon: const Icon(
-                Icons.history,
-                color: AppTheme.textPrimColor,
-              ),
-              onPressed: () {},
-            ),
-          ),
+      notchMargin: 8.0,
+      clipBehavior: Clip.antiAlias,
+      child: BottomNavigationBar(
+        onTap: (value) {
+          ui_provider.selectMenuOpt = value;
+        },
+        currentIndex: currentIndex,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.history), label: 'Historial'),
         ],
       ),
     );

@@ -1,4 +1,7 @@
+import 'package:checkapp/providers/scan_qr_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/providers.dart';
 import 'screens/screens.dart';
 import 'package:checkapp/themes/app_theme.dart';
 
@@ -18,15 +21,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Checkapp',
-      initialRoute: 'home',
-      theme: AppTheme.lightTheme,
-      routes: {
-        'home': (_) => const HomeScreen(),
-        'login': ((context) => const LoginScreen())
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UI_provider()),
+        ChangeNotifierProvider(create: (_) => ScanQrProvider())
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Checkapp',
+        initialRoute: 'home',
+        theme: AppTheme.lightTheme,
+        routes: {
+          'home': (_) => const HomeScreen(),
+          'login': ((context) => const LoginScreen())
+        },
+      ),
     );
   }
 }
