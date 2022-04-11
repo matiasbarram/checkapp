@@ -20,11 +20,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Movies App',
-      initialRoute: 'home',
+      title: 'Checkapp',
+      initialRoute: 'login',
       theme: AppTheme.lightTheme,
       routes: {
         'home': (_) => const HomeScreen(),
+        'login': ((context) => const LoginScreen())
       },
     );
   }
