@@ -1,0 +1,3 @@
+*.sh
+checkapp_api/checkapp_api
+.env
