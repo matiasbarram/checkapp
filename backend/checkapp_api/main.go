@@ -18,6 +18,9 @@ func main() {
 	router.GET("/users/:id", getUserById)
 	router.GET("/companies", getCompanies)
 	router.GET("/companies/:id", getCompanyById)
+	router.GET("/qrs", getQrs)
+	router.GET("/qrs/:id", getQrById)
+	router.GET("/qrs/generate/:id", generateQr)
 	// router.GET("/product/:code", getProduct)
 	// router.POST("/users", addProduct)
 	router.Run("localhost:8083")
@@ -73,8 +76,49 @@ func getCompanyById(c *gin.Context) {
 	company, err := models.GetCompanyById(id)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "user not found"})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Company not found"})
 	} else {
 		c.IndentedJSON(http.StatusOK, company)
+	}
+}
+
+func getQrs(c *gin.Context) {
+	println("get qrs")
+	qrs := models.GetQrs()
+
+	if qrs == nil || len(qrs) == 0 {
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		c.IndentedJSON(http.StatusOK, qrs)
+	}
+}
+
+func getQrById(c *gin.Context) {
+	str_id := c.Param("id")
+	id, err := strconv.ParseInt(str_id, 10, 64)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
+	qr, err := models.GetQrById(id)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "QR not found"})
+	} else {
+		c.IndentedJSON(http.StatusOK, qr)
+	}
+}
+
+func generateQr(c *gin.Context) {
+	str_id := c.Param("id")
+	id, err := strconv.ParseInt(str_id, 10, 64)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
+	qr, err := models.GenerateQr(id)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+	} else {
+		c.IndentedJSON(http.StatusOK, qr)
 	}
 }
