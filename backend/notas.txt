@@ -1,0 +1,8 @@
+### Respaldar la base de datos en su estado actual
+
+mysqldump --single-transaction -u root -p checkapp > checkapp_schema.sql
+
+
+### Cargar el respaldo
+
+mysqldump -u root -p checkapp < checkapp_schema.sql  
