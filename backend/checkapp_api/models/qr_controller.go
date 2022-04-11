@@ -32,6 +32,30 @@ func GetQrById(id int64) (Qr, error) {
 
 }
 
+func GetQrImageById(id int64) ([]byte, error) {
+
+	var png []byte
+	db, err := getDB()
+
+	// if there is an error opening the connection, handle it
+	if err != nil {
+		// simply print the error to the console
+		fmt.Println("Err", err.Error())
+		// returns nil on error
+		return png, nil
+	}
+	defer db.Close()
+	row := db.QueryRow("SELECT content FROM qr WHERE id = ?", id)
+	err = row.Scan(&png)
+
+	if err != nil {
+		fmt.Println("Err", err.Error())
+		return png, err
+	}
+	return png, err
+
+}
+
 func GetQrs() []Qr {
 
 	// db, err := sql.Open("mysql", dbqr+":"+dbpass+"@tcp(127.0.0.1:3306)/"+dbname)

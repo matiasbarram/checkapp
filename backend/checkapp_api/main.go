@@ -21,6 +21,7 @@ func main() {
 	router.GET("/qrs", getQrs)
 	router.GET("/qrs/:id", getQrById)
 	router.GET("/qrs/generate/:id", generateQr)
+	router.GET("/qrs/image/:id", getQrImageById)
 	// router.GET("/product/:code", getProduct)
 	// router.POST("/users", addProduct)
 	router.Run("localhost:8083")
@@ -83,7 +84,6 @@ func getCompanyById(c *gin.Context) {
 }
 
 func getQrs(c *gin.Context) {
-	println("get qrs")
 	qrs := models.GetQrs()
 
 	if qrs == nil || len(qrs) == 0 {
@@ -105,6 +105,21 @@ func getQrById(c *gin.Context) {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "QR not found"})
 	} else {
 		c.IndentedJSON(http.StatusOK, qr)
+	}
+}
+
+func getQrImageById(c *gin.Context) {
+	str_id := c.Param("id")
+	id, err := strconv.ParseInt(str_id, 10, 64)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
+	qr, err := models.GetQrImageById(id)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "QR not found"})
+	} else {
+		c.Data(http.StatusOK, "image/jpeg", qr)
 	}
 }
 
