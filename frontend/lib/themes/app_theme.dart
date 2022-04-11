@@ -7,6 +7,7 @@ class AppTheme {
   static const Color textPrimColor = Color.fromRGBO(66, 84, 102, 1);
   static const Color checkAppBlue = Color.fromRGBO(23, 74, 124, 1);
   static const Color checkApptextLight = Color.fromRGBO(172, 186, 200, 1);
+  static const Color checkApptextLigher = Color.fromRGBO(235, 242, 250, 1);
 
   static final ThemeData lightTheme = ThemeData.light().copyWith(
       appBarTheme: const AppBarTheme(
