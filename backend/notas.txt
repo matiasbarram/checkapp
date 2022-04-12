@@ -5,4 +5,4 @@ mysqldump --single-transaction -u root -p checkapp > checkapp_schema.sql
 
 ### Cargar el respaldo
 
-mysqldump -u root -p checkapp < checkapp_schema.sql  
+mysql -u root -p checkapp < checkapp_schema.sql  

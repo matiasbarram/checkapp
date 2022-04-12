@@ -6,10 +6,12 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/thinkerou/favicon"
 )
 
 func main() {
 	router := gin.Default()
+	router.Use(favicon.New("./assets/favicon.ico"))
 	router.StaticFile("/im1.jpg", "./assets/im1.jpg")
 	router.LoadHTMLGlob("templates/*.tmpl")
 	router.GET("/", getHome)
