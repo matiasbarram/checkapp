@@ -146,12 +146,15 @@ CREATE TABLE `user` (
   `rut` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `role` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `device_id` int(11) DEFAULT NULL,
+  `email` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
   KEY `user_ibfk_1` (`device_id`),
   KEY `company_id` (`company_id`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`),
   CONSTRAINT `user_ibfk_2` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,8 +164,9 @@ CREATE TABLE `user` (
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` VALUES
-(1,1,'joselo','18','femboy',NULL),
-(5,1,'mbarra','20','admin',NULL);
+(1,1,'joselo','18','femboy',NULL,NULL,NULL),
+(5,1,'mbarra','20','admin',NULL,NULL,NULL),
+(20,1,'majime','22','based',NULL,'asdf@xd.cl','2ab96390c7dbe3439de74d0c9b0b1767');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -175,4 +179,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-10 22:56:48
+-- Dump completed on 2022-04-12  1:13:51
