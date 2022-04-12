@@ -11,16 +11,17 @@ class AppTheme {
   static const Color checkAppOrange = Color.fromRGBO(238, 166, 7, 1);
 
   static final ThemeData lightTheme = ThemeData.light().copyWith(
-      primaryColor: checkAppOrange,
-      appBarTheme: const AppBarTheme(
-        color: checkappPrim,
-        elevation: 0,
-        toolbarHeight: 70,
-        titleTextStyle: TextStyle(fontSize: 20, color: textPrimColor),
-      ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        selectedIconTheme: IconThemeData(color: checkAppOrange),
-      ));
+    primaryColor: checkAppOrange,
+    appBarTheme: const AppBarTheme(
+      color: checkappPrim,
+      elevation: 0,
+      toolbarHeight: 70,
+      titleTextStyle: TextStyle(fontSize: 20, color: textPrimColor),
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      showSelectedLabels: false,
+      showUnselectedLabels: false,
+      selectedIconTheme: IconThemeData(color: checkAppOrange),
+    ),
+  );
 }

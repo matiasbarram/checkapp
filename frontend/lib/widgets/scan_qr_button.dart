@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:checkapp/themes/app_theme.dart';
 
+import '../helpers/scan_qr.dart';
+
 class ScanQRButton extends StatelessWidget {
   const ScanQRButton({
     Key? key,
@@ -14,9 +16,7 @@ class ScanQRButton extends StatelessWidget {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
             primary: AppTheme.checkAppBlue),
-        onPressed: () {
-          return null;
-        },
+        onPressed: () => scanQr(context),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceAround,

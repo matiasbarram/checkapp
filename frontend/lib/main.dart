@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Checkapp',
-        initialRoute: 'home',
+        initialRoute: 'login',
         theme: AppTheme.lightTheme,
         routes: {
           'home': (_) => const HomeScreen(),
