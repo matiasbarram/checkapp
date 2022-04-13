@@ -1,6 +1,7 @@
-package models
+package controllers
 
 import (
+	"checkapp_api/models"
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
@@ -9,12 +10,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const userQuery = "SELECT id, company_id, name, rut, role, IFNULL(device_id, -1), IFNULL(email, \"\"), IFNULL(password, \"\") FROM user"
+const userQuery = "SELECT id, company_id, name, rut, role, email, password, IFNULL(device_id, -1) FROM user"
 
-func GetUserById(id int64) (User, error) {
+func GetUserById(id int64) (models.User, error) {
 
-	var user User
-	db, err := getDB()
+	var user models.User
+	db, err := models.GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -26,7 +27,7 @@ func GetUserById(id int64) (User, error) {
 
 	defer db.Close()
 	row := db.QueryRow(userQuery+" WHERE id = ?", id)
-	err = row.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Device_id, &user.Email, &user.Password)
+	err = row.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Email, &user.Password, &user.Device_id)
 	if err != nil {
 		fmt.Println("Err", err.Error())
 		return user, err
@@ -40,10 +41,10 @@ func GetMD5Hash(text string) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func ValidateCredentials(email string, password string) (User, error) {
+func ValidateCredentials(u models.UserCredentials) (models.User, error) {
 
-	var user User
-	db, err := getDB()
+	var user models.User
+	db, err := models.GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -54,24 +55,24 @@ func ValidateCredentials(email string, password string) (User, error) {
 	}
 
 	defer db.Close()
-	row := db.QueryRow(userQuery+" WHERE email = ?", email)
-	err = row.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Device_id, &user.Email, &user.Password)
+	row := db.QueryRow(userQuery+" WHERE email = ?", u.Email)
+	err = row.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Email, &user.Password, &user.Device_id)
 
 	if err != nil {
 		fmt.Println("Err", err.Error())
 		return user, err
 	}
 
-	if GetMD5Hash(password) != user.Password {
-		return User{}, errors.New("LAPASS")
+	if GetMD5Hash(u.Password) != user.Password {
+		return models.User{}, errors.New("LAPASS")
 	}
 	return user, err
 
 }
 
-func GetUsers() []User {
+func GetUsers() []models.User {
 
-	db, err := getDB()
+	db, err := models.GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -89,11 +90,11 @@ func GetUsers() []User {
 		return nil
 	}
 
-	users := []User{}
+	users := []models.User{}
 	for results.Next() {
-		var user User
-		// for each row, scan into the Users struct
-		err = results.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Device_id, &user.Email, &user.Password)
+		var user models.User
+		// for each row, scan into the models.Users struct
+		err = results.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Email, &user.Password, &user.Device_id)
 		if err != nil {
 			panic(err.Error()) // proper error handling instead of panic in your app
 		}
@@ -105,9 +106,9 @@ func GetUsers() []User {
 
 }
 
-func PostUser(user User) (User, error) {
+func PostUser(user models.User) (models.User, error) {
 
-	db, err := getDB()
+	db, err := models.GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {

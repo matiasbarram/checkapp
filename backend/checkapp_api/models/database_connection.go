@@ -20,6 +20,6 @@ var (
 		os.Getenv("db_name"))
 )
 
-func getDB() (*sql.DB, error) {
+func GetDB() (*sql.DB, error) {
 	return sql.Open("mysql", ConnectionString)
 }

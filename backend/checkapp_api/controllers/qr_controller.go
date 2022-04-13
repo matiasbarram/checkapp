@@ -1,6 +1,7 @@
-package models
+package controllers
 
 import (
+	"checkapp_api/models"
 	"encoding/json"
 	"fmt"
 
@@ -8,10 +9,10 @@ import (
 	qrcode "github.com/skip2/go-qrcode"
 )
 
-func GetQrById(id int64) (Qr, error) {
+func GetQrById(id int64) (models.Qr, error) {
 
-	var qr Qr
-	db, err := getDB()
+	var qr models.Qr
+	db, err := models.GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -35,7 +36,7 @@ func GetQrById(id int64) (Qr, error) {
 func GetQrImageById(id int64) ([]byte, error) {
 
 	var png []byte
-	db, err := getDB()
+	db, err := models.GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -56,10 +57,10 @@ func GetQrImageById(id int64) ([]byte, error) {
 
 }
 
-func GetQrs() []Qr {
+func GetQrs() []models.Qr {
 
 	// db, err := sql.Open("mysql", dbqr+":"+dbpass+"@tcp(127.0.0.1:3306)/"+dbname)
-	db, err := getDB()
+	db, err := models.GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -77,9 +78,9 @@ func GetQrs() []Qr {
 		return nil
 	}
 
-	qrs := []Qr{}
+	qrs := []models.Qr{}
 	for results.Next() {
-		var qr Qr
+		var qr models.Qr
 		// for each row, scan into the Qrs struct
 		err = results.Scan(&qr.Id, &qr.Company_id, &qr.Content)
 		if err != nil {
@@ -93,11 +94,11 @@ func GetQrs() []Qr {
 
 }
 
-func GenerateQr(company_id int64) (Qr, error) {
+func GenerateQr(company_id int64) (models.Qr, error) {
 
-	var qr Qr
-	var company Company
-	db, err := getDB()
+	var qr models.Qr
+	var company models.Company
+	db, err := models.GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -126,7 +127,7 @@ func GenerateQr(company_id int64) (Qr, error) {
 	id, err := res.LastInsertId()
 	fmt.Println(res)
 	fmt.Println("id", id)
-	qr = Qr{int(id), int(company_id), png}
+	qr = models.Qr{int(id), int(company_id), png}
 	return qr, err
 
 }

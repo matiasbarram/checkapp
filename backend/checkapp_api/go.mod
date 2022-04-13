@@ -6,10 +6,14 @@ require github.com/gin-gonic/gin v1.7.7
 
 require (
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
+	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.2.1 // indirect
+	github.com/kylelemons/go-gypsy v1.0.0 // indirect
+	github.com/lib/pq v1.10.5 // indirect
+	github.com/ziutek/mymysql v1.5.4 // indirect
 )
 
 require (
@@ -22,6 +26,7 @@ require (
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/joho/godotenv v1.4.0
 	github.com/json-iterator/go v1.1.9 // indirect
+	github.com/kellydunn/golang-geo v0.7.0
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
