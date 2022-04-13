@@ -16,7 +16,7 @@ func GetCompanyById(id int64) (models.Company, error) {
 
 	var company models.Company
 	// db, err := sql.Open("mysql", dbcompany+":"+dbpass+"@tcp(127.0.0.1:3306)/"+dbname)
-	db, err := models.GetDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -41,7 +41,7 @@ func GetCompanyById(id int64) (models.Company, error) {
 func GetCompanies() []models.Company {
 
 	// db, err := sql.Open("mysql", dbcompany+":"+dbpass+"@tcp(127.0.0.1:3306)/"+dbname)
-	db, err := models.GetDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {

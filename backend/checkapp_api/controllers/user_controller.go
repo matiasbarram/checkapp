@@ -15,7 +15,7 @@ const userQuery = "SELECT id, company_id, name, rut, role, email, password, IFNU
 func GetUserById(id int64) (models.User, error) {
 
 	var user models.User
-	db, err := models.GetDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -44,7 +44,7 @@ func GetMD5Hash(text string) string {
 func ValidateCredentials(u models.UserCredentials) (models.User, error) {
 
 	var user models.User
-	db, err := models.GetDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -72,7 +72,7 @@ func ValidateCredentials(u models.UserCredentials) (models.User, error) {
 
 func GetUsers() []models.User {
 
-	db, err := models.GetDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -108,7 +108,7 @@ func GetUsers() []models.User {
 
 func PostUser(user models.User) (models.User, error) {
 
-	db, err := models.GetDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {

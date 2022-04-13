@@ -12,7 +12,7 @@ import (
 func GetQrById(id int64) (models.Qr, error) {
 
 	var qr models.Qr
-	db, err := models.GetDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -36,7 +36,7 @@ func GetQrById(id int64) (models.Qr, error) {
 func GetQrImageById(id int64) ([]byte, error) {
 
 	var png []byte
-	db, err := models.GetDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -60,7 +60,7 @@ func GetQrImageById(id int64) ([]byte, error) {
 func GetQrs() []models.Qr {
 
 	// db, err := sql.Open("mysql", dbqr+":"+dbpass+"@tcp(127.0.0.1:3306)/"+dbname)
-	db, err := models.GetDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -98,7 +98,7 @@ func GenerateQr(company_id int64) (models.Qr, error) {
 
 	var qr models.Qr
 	var company models.Company
-	db, err := models.GetDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
