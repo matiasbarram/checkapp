@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:checkapp/providers/providers.dart';
+import 'package:checkapp/services/auth_service.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/themes/input_decorations.dart';
 import 'package:flutter/material.dart';
@@ -119,16 +122,39 @@ class _TextFieldsLogin extends StatelessWidget {
               elevation: 0,
               textColor: Colors.white,
               disabledColor: Colors.grey,
-              onPressed: () {
-                final status = loginForm.isValidForm();
-                if (status) {
-                  print("Valido pana mio");
-                  Navigator.pushReplacementNamed(context, 'home');
-                } else {
-                  print('No es valido pero tamo jugando');
-                }
-              },
-              child: const Text('Ingresar'),
+              onPressed: loginForm.isLoading
+                  ? null
+                  : () async {
+                      FocusScope.of(context).unfocus();
+
+                      final authService =
+                          Provider.of<AuthService>(context, listen: false);
+
+                      loginForm.isLoading = true;
+                      final status = loginForm.isValidForm();
+                      if (status) {
+                        print("Valido pana mio");
+
+                        final answ = await authService.loginUser(
+                            loginForm.email.toString(),
+                            loginForm.password.toString());
+                        if (answ.containsKey('error')) {
+                          print('hay error -> $answ');
+                          loginForm.email = '';
+                          loginForm.password = '';
+                          loginForm.isLoading = false;
+                        } else {
+                          print('no hay error');
+                          Navigator.pushReplacementNamed(context, 'home');
+                        }
+                      } else {
+                        loginForm.isLoading = false;
+                        print('No es valido pero tamo jugando');
+                        loginForm.email = '';
+                        loginForm.password = '';
+                      }
+                    },
+              child: Text(loginForm.isLoading ? 'Cargando...' : 'Ingresar'),
             )
           ],
         ),

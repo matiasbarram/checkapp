@@ -4,6 +4,7 @@ import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 import '../helpers/helpers.dart';
+import '../services/auth_service.dart';
 import 'screens.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -18,11 +19,19 @@ class HomeScreen extends StatelessWidget {
       floatingActionButton: const ScanQRCentered(),
       appBar: AppBar(
         title: const Text('Hola John Cena'),
-        actions: const [
+        actions: [
           Padding(
             padding: EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
+            child: GestureDetector(
+              onTap: () {
+                final authService =
+                    Provider.of<AuthService>(context, listen: false);
+                authService.logout();
+                Navigator.pushReplacementNamed(context, 'login');
+              },
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+              ),
             ),
           )
         ],
