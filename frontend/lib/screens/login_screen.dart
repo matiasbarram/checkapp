@@ -1,4 +1,4 @@
-import 'dart:math';
+// ignore_for_file: avoid_print
 
 import 'package:checkapp/providers/providers.dart';
 import 'package:checkapp/services/auth_service.dart';
@@ -136,12 +136,9 @@ class _TextFieldsLogin extends StatelessWidget {
                         print("Valido pana mio");
 
                         final answ = await authService.loginUser(
-                            loginForm.email.toString(),
-                            loginForm.password.toString());
+                            loginForm.email, loginForm.password);
                         if (answ.containsKey('error')) {
                           print('hay error -> $answ');
-                          loginForm.email = '';
-                          loginForm.password = '';
                           loginForm.isLoading = false;
                         } else {
                           print('no hay error');

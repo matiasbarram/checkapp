@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:checkapp/screens/home_screen.dart';
 import 'package:checkapp/screens/login_screen.dart';
 import 'package:checkapp/services/auth_service.dart';
@@ -17,14 +19,17 @@ class LoadingScreen extends StatelessWidget {
           future: authService.readToken(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
-              return CircularProgressIndicator.adaptive();
+              return const CircularProgressIndicator.adaptive();
             }
-            if (snapshot.hasData == '') {
+            print('Valor de la snapshot: ' + snapshot.data);
+            authService.checkKeys();
+            if (snapshot.data == 'no-key') {
+              print('No tengo key');
               Future.microtask(() {
                 Navigator.pushReplacement(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => LoginScreen(),
+                      pageBuilder: (_, __, ___) => const LoginScreen(),
                     ));
               });
             } else {
@@ -32,7 +37,7 @@ class LoadingScreen extends StatelessWidget {
                 Navigator.pushReplacement(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => HomeScreen(),
+                      pageBuilder: (_, __, ___) => const HomeScreen(),
                     ));
               });
             }

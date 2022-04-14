@@ -1,9 +1,7 @@
 import 'package:checkapp/providers/ui_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/widgets/widgets.dart';
 import 'package:provider/provider.dart';
-import '../helpers/helpers.dart';
 import '../services/auth_service.dart';
 import 'screens.dart';
 
@@ -12,6 +10,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
     return Scaffold(
       extendBody: true,
       bottomNavigationBar: const BottomNavBar(),
@@ -21,22 +20,21 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Hola John Cena'),
         actions: [
           Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
               onTap: () {
-                final authService =
-                    Provider.of<AuthService>(context, listen: false);
-                authService.logout();
+                authService.checkKeys();
                 Navigator.pushReplacementNamed(context, 'login');
+                authService.logout();
               },
-              child: CircleAvatar(
+              child: const CircleAvatar(
                 backgroundColor: Colors.white,
               ),
             ),
           )
         ],
       ),
-      body: _HomePageBody(),
+      body: const _HomePageBody(),
     );
   }
 }
@@ -46,16 +44,16 @@ class _HomePageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uiProvider = Provider.of<UI_provider>(context);
+    final uiProvider = Provider.of<UIprovider>(context);
 
     final currentIndex = uiProvider.selectMenuOpt;
     switch (currentIndex) {
       case 0:
-        return ResumenScreen();
+        return const ResumenScreen();
       case 1:
-        return HistorialScreen();
+        return const HistorialScreen();
       default:
-        return ResumenScreen();
+        return const ResumenScreen();
     }
   }
 }

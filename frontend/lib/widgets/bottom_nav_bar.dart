@@ -1,6 +1,5 @@
 import 'package:checkapp/providers/ui_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:checkapp/themes/app_theme.dart';
 import 'package:provider/provider.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -10,9 +9,9 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ui_provider = Provider.of<UI_provider>(context);
+    final uiProvider = Provider.of<UIprovider>(context);
 
-    var currentIndex = ui_provider.selectMenuOpt;
+    var currentIndex = uiProvider.selectMenuOpt;
 
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
@@ -20,7 +19,7 @@ class BottomNavBar extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: BottomNavigationBar(
         onTap: (value) {
-          ui_provider.selectMenuOpt = value;
+          uiProvider.selectMenuOpt = value;
         },
         currentIndex: currentIndex,
         items: const <BottomNavigationBarItem>[
