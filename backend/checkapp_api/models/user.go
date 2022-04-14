@@ -32,3 +32,12 @@ type UserCredentials struct {
 	Password  string `json:"password" binding:"required"`
 	Device_id int    `json:"device_id,omitempty" `
 }
+
+type UserAttendanceInfo struct {
+	Id                int    `json:"id"`
+	Name              int    `json:"name"`
+	Company_id        int    `json:"company_id"`
+	Company           string `json:"company"`
+	Company_location  string `json:"company_location"`
+	Device_secret_key string `json:"device_secret_key"`
+}
