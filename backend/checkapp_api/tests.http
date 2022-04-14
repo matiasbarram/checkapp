@@ -53,7 +53,7 @@ content-type: form/data
 GET {{host}}private/me
 
 ###
-GET {{host}}private/qrs/generate/1
+GET {{host}}private/qrs/generate/2
 
 ###
 GET {{host}}qrs/image/1
