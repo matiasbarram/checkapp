@@ -1,7 +1,9 @@
-package models
+package controllers
 
 import (
 	"fmt"
+
+	"checkapp_api/models"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -10,11 +12,11 @@ const dbcompany = "root"
 const dbpass = "root"
 const dbname = "checkapp"
 
-func GetCompanyById(id int64) (Company, error) {
+func GetCompanyById(id int64) (models.Company, error) {
 
-	var company Company
+	var company models.Company
 	// db, err := sql.Open("mysql", dbcompany+":"+dbpass+"@tcp(127.0.0.1:3306)/"+dbname)
-	db, err := getDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -36,10 +38,10 @@ func GetCompanyById(id int64) (Company, error) {
 
 }
 
-func GetCompanies() []Company {
+func GetCompanies() []models.Company {
 
 	// db, err := sql.Open("mysql", dbcompany+":"+dbpass+"@tcp(127.0.0.1:3306)/"+dbname)
-	db, err := getDB()
+	db, err := GetDB()
 
 	// if there is an error opening the connection, handle it
 	if err != nil {
@@ -57,9 +59,9 @@ func GetCompanies() []Company {
 		return nil
 	}
 
-	companies := []Company{}
+	companies := []models.Company{}
 	for results.Next() {
-		var company Company
+		var company models.Company
 		// for each row, scan into the companies struct
 		err = results.Scan(&company.Id, &company.Name, &company.Location)
 		if err != nil {

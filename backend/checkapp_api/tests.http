@@ -1,0 +1,63 @@
+@local_hostname = http://localhost:8083/
+@remote_hostname = https://api.asiendosoftware.xyz/
+
+@host = {{local_hostname}}
+# @host = {{remote_hostname}}
+GET {{host}}
+
+###
+GET {{host}}users
+
+###
+GET {{host}}users/2
+###
+
+GET {{host}}companies
+
+###
+GET {{host}}qrs
+
+###
+GET {{host}}qrs/1
+
+###
+POST {{host}}users
+
+# {
+#     "name": "shimeji",
+#     "company_id": 1,
+#     "rut": "55",
+#     "role": "based",
+#     "email": "smj@sml.com",
+#     "password": "tomandoleche123"
+# }
+{
+    "name": "majime",
+    "company_id": 1,
+    "rut": "59",
+    "role": "based",
+    "email": "mjm@sml.com",
+    "password": "bruh"
+}
+###
+POST {{host}}login
+content-type: form/data
+
+{
+    "email": "smj@sml.com",
+    "password": "tomandoleche123"
+}
+
+
+###
+GET {{host}}private/me
+
+###
+GET {{host}}private/qrs/generate/2
+
+###
+GET {{host}}qrs/image/1
+
+###
+POST {{host}}private/attendance
+
