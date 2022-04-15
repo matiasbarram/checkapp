@@ -1,4 +1,5 @@
 import 'package:checkapp/services/auth_service.dart';
+import 'package:checkapp/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/providers.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => UIprovider()),
         ChangeNotifierProvider(create: (_) => AuthService()),
-        ChangeNotifierProvider(create: (_) => ScanQrProvider())
+        ChangeNotifierProvider(create: (_) => AttendanceService()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

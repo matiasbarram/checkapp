@@ -1,16 +1,19 @@
+import 'package:checkapp/services/services.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../helpers/helpers.dart';
 import '../themes/app_theme.dart';
 import '../widgets/widgets.dart';
+import 'package:flutter/services.dart';
 
 class ResumenScreen extends StatelessWidget {
   const ResumenScreen({
     Key? key,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    final attendence = Provider.of<AttendanceService>(context);
     return Column(
       children: [
         ClipPath(
@@ -50,9 +53,9 @@ class ResumenScreen extends StatelessWidget {
                               Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
-                                children: const [
-                                  Text('Llegada'),
-                                  Text('08:05 am')
+                                children: [
+                                  const Text('Llegada'),
+                                  Text(attendence.entrada)
                                 ],
                               ),
                               const VerticalDivider(
@@ -63,9 +66,9 @@ class ResumenScreen extends StatelessWidget {
                               Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
-                                children: const [
-                                  Text('Llegada'),
-                                  Text('08:05 am')
+                                children: [
+                                  const Text('Salida'),
+                                  Text(attendence.salida)
                                 ],
                               ),
                             ],
