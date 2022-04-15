@@ -1,10 +1,13 @@
 package utils
 
 import (
+	"checkapp_api/models"
 	"errors"
 	"fmt"
+	"net/mail"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -60,4 +63,24 @@ func StringInSlice(a string, list []string) bool {
 		}
 	}
 	return false
+}
+
+func ValidateUserInfo(c *gin.Context) (models.User, error) {
+	var u models.User
+	err := c.ShouldBindJSON(&u)
+	if err != nil {
+		var verr validator.ValidationErrors
+		if errors.As(err, &verr) {
+			return u, errors.New(fmt.Sprint(SimpleValidationErrors(verr)))
+		}
+	}
+	// validar de mejor forma...
+	if len(u.Password) < 4 {
+		return u, errors.New("password too short")
+	}
+	_, err = mail.ParseAddress(u.Email)
+	if err != nil {
+		return u, err
+	}
+	return u, nil
 }

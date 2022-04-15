@@ -17,3 +17,8 @@ https://github.com/cosmtrek/air#installation
 
 
 ### Crear errores standar para responder a peticiones invalidas (data/custom_errors.go)
+
+
+### testing
+
+go test -v ./test | tee >(grep -E --color=never "^\-+ PASS") | grep -E  "^\-+ FAIL"
