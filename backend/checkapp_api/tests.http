@@ -62,3 +62,42 @@ GET {{host}}qrs/image/1
 # POST {{host}}private/attendance
 
 GET {{host}}logout
+
+### 
+
+
+### 
+    // "location": "-39.833392642198596, -73.24520728771456" // el 10k
+
+    # "location": "-40.07086281924284, -72.8730258237025",
+
+POST {{host}}private/attendance
+content-type: application/json
+
+{
+    "user_id": 2,
+    "company_id": 1,
+    "location": "-39.833392642198596, -73.24520728771456",
+    "device_secret_key": "asdfb",
+    "event_type": "AUTO",
+    "comments": "voy atrasao :cry:",
+}
+###
+GET {{host}}private/attendance/last
+
+
+###
+
+###
+POST {{host}}private/attendance
+content-type: application/json
+
+{
+    "company_id": 1,
+    "user_id": 2,
+    "location": "-30.0, -70.2"
+}
+
+###
+
+GET {{host}}private/attendance

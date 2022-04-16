@@ -1,32 +1,17 @@
 package utils
 
 import (
+	"checkapp_api/data"
 	"checkapp_api/models"
 	"errors"
 	"fmt"
 	"net/mail"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
-
-// type ErrorMsg struct {
-// 	Field   string `json:"field"`
-// 	Message string `json:"message"`
-// }
-
-// func getErrorMsg(fe validator.FieldError) string {
-// 	switch fe.Tag() {
-// 	case "required":
-// 		return "This field is required"
-// 	case "lte":
-// 		return "Should be less than " + fe.Param()
-// 	case "gte":
-// 		return "Should be greater than " + fe.Param()
-// 	}
-// 	return "Unknown error"
-// }
 
 func SimpleValidationErrors(verr validator.ValidationErrors) map[string]string {
 	errs := make(map[string]string)
@@ -58,7 +43,7 @@ func ValidateId(str_num string, field_name string) (int64, error) {
 
 func StringInSlice(a string, list []string) bool {
 	for _, b := range list {
-		if b == a {
+		if strings.Compare(a, b) == 0 {
 			return true
 		}
 	}
@@ -83,4 +68,29 @@ func ValidateUserInfo(c *gin.Context) (models.User, error) {
 		return u, err
 	}
 	return u, nil
+}
+
+func ValidateAttendanceInfo(c *gin.Context) (models.AttendanceParams, error) {
+	var att models.AttendanceParams
+	// jsonData, err := ioutil.ReadAll(c.Request.Body)
+	err := c.ShouldBindJSON(&att)
+	if err != nil {
+		var verr validator.ValidationErrors
+		if errors.As(err, &verr) {
+			return att, errors.New(fmt.Sprint(SimpleValidationErrors(verr)))
+		}
+	}
+	return att, nil
+}
+
+func ValidateUserLocation(userLocation string, companyLocation string) error {
+	distance, err := CalculateDistance(userLocation, companyLocation)
+	if err != nil {
+		return err
+	}
+
+	if distance > data.AttendanceDistanceLimit {
+		return errors.New("you are too far away from your company 💢 (distance : " + fmt.Sprintf("%.2f", distance) + " km)")
+	}
+	return nil
 }

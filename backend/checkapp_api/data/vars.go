@@ -18,8 +18,13 @@ var (
 		os.Getenv("db_name"))
 )
 
-var AttendaceEventTypes = [2]string{"CHECK_IN", "CHECK_OUT"}
+var AttendaceEventTypes = [4]string{"CHECK_IN", "CHECK_OUT", "NEXT", "AUTO"}
 
 var Validate *validator.Validate
 
 var Secret = []byte("secret")
+
+var NextAttendanceEvent = map[string]string{
+	"CHECK_IN":  "CHECK_OUT",
+	"CHECK_OUT": "CHECK_IN",
+}

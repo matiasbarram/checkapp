@@ -2,7 +2,7 @@ package data
 
 const UserKey = "user"
 
-const AttendanceDistanceLimit = 0.75 // km
+const AttendanceDistanceLimit = 2000.0 // km
 
 const Port = ":8083"
 

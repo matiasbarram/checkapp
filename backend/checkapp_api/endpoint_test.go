@@ -178,3 +178,47 @@ func TestLogout(t *testing.T) {
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 }
+
+func TestAttendance(t *testing.T) {
+	param := make(map[string]interface{})
+	param["user_id"] = 2
+	param["company_id"] = 1
+	param["location"] = "-30, -70"
+	param["event_type"] = "AUTO"
+	jsonValue, _ := json.Marshal(param)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/private/attendance", bytes.NewBuffer(jsonValue))
+	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
+	r.ServeHTTP(w, req)
+	assert.Equal(t, 200, w.Code)
+
+	var resp map[string]interface{}
+	err := json.Unmarshal([]byte(w.Body.String()), &resp)
+	var response models.Attendance
+	jsonValue, err = json.Marshal(resp["attendance"])
+	assert.Nil(t, err)
+	json.Unmarshal(jsonValue, &response)
+
+	assert.Nil(t, err)
+	// assert.True(t, attendance.Id == param["user_id"])
+	assert.True(t, response.User_id == param["user_id"])
+	assert.True(t, response.Location == param["location"])
+	assert.True(t, (response.Event_type == "CHECK_IN" || response.Event_type == "CHECK_OUT"))
+}
+
+func TestGetMyLastAttendance(t *testing.T) {
+
+	w := httptest.NewRecorder()
+	// http.SetCookie(w, )
+	req, _ := http.NewRequest("GET", "/private/attendance/last", nil)
+	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
+	// fmt.Println(w.coo)
+	r.ServeHTTP(w, req)
+	assert.Equal(t, 200, w.Code)
+	var response models.Attendance
+	err := json.Unmarshal([]byte(w.Body.String()), &response)
+	assert.Nil(t, err)
+	assert.Equal(t, 2, response.User_id)
+
+	// assert.True(t, response.Id == 1)
+}
