@@ -32,12 +32,12 @@ POST {{host}}users
 #     "password": "tomandoleche123"
 # }
 {
-    "name": "majime",
-    "company_id": 1,
-    "rut": "59",
-    "role": "based",
-    "email": "mjm@sml.com",
-    "password": "bruh"
+    "name": "cr7",
+    "company_id": 2,
+    "rut": "7",
+    "role": "siu",
+    "email": "elbichooo",
+    "password": "messilover"
 }
 ###
 POST {{host}}login
@@ -45,7 +45,7 @@ content-type: form/data
 
 {
     "email": "smj@sml.com",
-    "password": "tomandoleche123"
+    "password": "tomandoleche12"
 }
 
 

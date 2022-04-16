@@ -125,13 +125,17 @@ func TestGetQrImage(t *testing.T) {
 }
 func TestBadLogin(t *testing.T) {
 	param := make(map[string]interface{})
-	param["email"] = "fake@mail.com"
+	param["email"] = "smj@sml.com"
 	param["password"] = "fakepass"
 	jsonValue, _ := json.Marshal(param)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer(jsonValue))
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 401, w.Code)
+	var response map[string]interface{}
+	err := json.Unmarshal([]byte(w.Body.String()), &response)
+	assert.Nil(t, err)
+	assert.Equal(t, "Authentication failed LAPASS", response["error"])
 }
 func TestLoginHandler(t *testing.T) {
 	param := make(map[string]interface{})
