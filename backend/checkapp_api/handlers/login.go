@@ -14,6 +14,21 @@ import (
 )
 
 // login is a handler that parses a form and checks for specific data
+// @BasePath /api/v1
+
+// HealthCheck godoc
+// @Summary      basic login
+// @Schemes      https
+// @Description  lol
+// @Tags         /login
+// @securityDefinitions.basic BasicAuth
+// @Produce      json
+// @Param  data body models.UserCredentials true "user credentials (email and password)"
+// @Accept json
+// @Success 200 {object} models.UserLoginResponse
+// @Failure      400  {object}  models.SimpleError
+// @Failure      401  {object}  models.SimpleError
+// @Router       /login [post]
 func Login(c *gin.Context) {
 	session := sessions.Default(c)
 	var u models.UserCredentials

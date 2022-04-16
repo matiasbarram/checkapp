@@ -25,7 +25,7 @@ func init() {
 func TestHomeEndpoint(t *testing.T) {
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/", nil)
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
@@ -35,7 +35,7 @@ func TestHomeEndpoint(t *testing.T) {
 func TestGetUsers(t *testing.T) {
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/users", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/users", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 
@@ -49,7 +49,7 @@ func TestGetUsers(t *testing.T) {
 func TestGetUserById(t *testing.T) {
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/users/2", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/users/2", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 
@@ -62,7 +62,7 @@ func TestGetUserById(t *testing.T) {
 func TestGetCompanies(t *testing.T) {
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/companies", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/companies", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 
@@ -77,7 +77,7 @@ func TestGetCompanies(t *testing.T) {
 func TestGetCompanyById(t *testing.T) {
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/companies/1", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/companies/1", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 
@@ -90,7 +90,7 @@ func TestGetCompanyById(t *testing.T) {
 func TestGetQrs(t *testing.T) {
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/qrs", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/qrs", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 
@@ -105,7 +105,7 @@ func TestGetQrs(t *testing.T) {
 func TestGetQrById(t *testing.T) {
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/qrs/1", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/qrs/1", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 
@@ -118,7 +118,7 @@ func TestGetQrById(t *testing.T) {
 func TestGetQrImage(t *testing.T) {
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/qrs/image/1", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/qrs/image/1", nil)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, w.Result().Header.Get("Content-Type"), "image/jpeg")
@@ -129,7 +129,7 @@ func TestBadLogin(t *testing.T) {
 	param["password"] = "fakepass"
 	jsonValue, _ := json.Marshal(param)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer(jsonValue))
+	req, _ := http.NewRequest("POST", "/api/v1/login", bytes.NewBuffer(jsonValue))
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 401, w.Code)
 	var response map[string]interface{}
@@ -143,7 +143,7 @@ func TestLoginHandler(t *testing.T) {
 	param["password"] = "tomandoleche123"
 	jsonValue, _ := json.Marshal(param)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer(jsonValue))
+	req, _ := http.NewRequest("POST", "/api/v1/login", bytes.NewBuffer(jsonValue))
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 
@@ -162,7 +162,7 @@ func TestGetMe(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	// http.SetCookie(w, )
-	req, _ := http.NewRequest("GET", "/private/me", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/private/me", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	// fmt.Println(w.coo)
 	r.ServeHTTP(w, req)
@@ -177,7 +177,7 @@ func TestGetMe(t *testing.T) {
 func TestLogout(t *testing.T) {
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/logout", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/logout", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
@@ -191,7 +191,7 @@ func TestAttendance(t *testing.T) {
 	param["event_type"] = "AUTO"
 	jsonValue, _ := json.Marshal(param)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/private/attendance", bytes.NewBuffer(jsonValue))
+	req, _ := http.NewRequest("POST", "/api/v1/private/attendance", bytes.NewBuffer(jsonValue))
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
@@ -214,7 +214,7 @@ func TestGetMyLastAttendance(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	// http.SetCookie(w, )
-	req, _ := http.NewRequest("GET", "/private/attendance/last", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/private/attendance/last", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	// fmt.Println(w.coo)
 	r.ServeHTTP(w, req)

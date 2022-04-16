@@ -28,9 +28,9 @@ type User struct {
 }
 
 type UserCredentials struct {
-	Email     string `json:"email" binding:"required"`
-	Password  string `json:"password" binding:"required"`
-	Device_id int    `json:"device_id,omitempty" `
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	// Device_id int    `json:"device_id,omitempty" `
 }
 
 type UserAttendanceInfo struct {
@@ -40,4 +40,9 @@ type UserAttendanceInfo struct {
 	Company           string `json:"company"`
 	Company_location  string `json:"company_location"`
 	Device_secret_key string `json:"device_secret_key"`
+}
+
+type UserLoginResponse struct {
+	Message string `json:"message"`
+	User    User   `json:"id"`
 }
