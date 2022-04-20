@@ -26,13 +26,16 @@ import (
 // @Failure      500  {object}  models.SimpleError
 // @Router       /private/attendance [post]
 func PostAttendance(c *gin.Context) {
-
-	att, err := utils.ValidateAttendanceInfo(c)
+	userId, ok := utils.GetUserIdFromSession(c)
+	if !ok {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "algo malio sal"})
+	}
+	att, err := utils.ValidateAttendanceParams(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	}
 
-	attendance, err := controllers.RegisterAttendance(att)
+	attendance, err := controllers.RegisterAttendance(att, int64(userId))
 	if err != nil {
 		fmt.Println("error ", err.Error())
 		// ver los posibles errores y responder acorde

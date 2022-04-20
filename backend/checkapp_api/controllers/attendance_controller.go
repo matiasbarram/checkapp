@@ -35,7 +35,7 @@ const insertAttendanceQuery = `
 INSERT INTO attendance (user_id, location, event_type, confirmed, comments) VALUES (?, ?, ?, ?, ?)
 `
 
-func RegisterAttendance(user_info models.AttendanceParams) (models.Attendance, error) {
+func RegisterAttendance(user_info models.AttendanceParams, userId int64) (models.Attendance, error) {
 
 	var attendance models.Attendance
 	db, err := GetDB()
@@ -50,7 +50,7 @@ func RegisterAttendance(user_info models.AttendanceParams) (models.Attendance, e
 
 	defer db.Close()
 	// consultar por la info del usuario a registrar
-	row := db.QueryRow(attendance_query, user_info.User_id)
+	row := db.QueryRow(attendance_query, userId)
 	var real_user_info models.UserAttendanceInfo
 	err = row.Scan(
 		&real_user_info.Id,
@@ -74,7 +74,7 @@ func RegisterAttendance(user_info models.AttendanceParams) (models.Attendance, e
 	if err != nil {
 		return attendance, err
 	}
-	return postAttendance(user_info)
+	return postAttendance(user_info, userId)
 }
 
 // func getLastEvent(userId int) (models.Attendance, error) {
@@ -105,8 +105,8 @@ func RegisterAttendance(user_info models.AttendanceParams) (models.Attendance, e
 // 	return attendance, err
 // }
 
-func checkEventType(userId int, eventType string) (string, bool) {
-	lastAttendance, err := GetLastEventFromUser(int64(userId))
+func checkEventType(userId int64, eventType string) (string, bool) {
+	lastAttendance, err := GetLastEventFromUser(userId)
 	// no presenta registros?
 	if err != nil {
 		fmt.Println("Error! " + err.Error())
@@ -122,7 +122,7 @@ func checkEventType(userId int, eventType string) (string, bool) {
 	return eventType, false
 }
 
-func postAttendance(attendance_params models.AttendanceParams) (models.Attendance, error) {
+func postAttendance(attendance_params models.AttendanceParams, userId int64) (models.Attendance, error) {
 	var attendance models.Attendance
 	db, err := GetDB()
 
@@ -134,9 +134,9 @@ func postAttendance(attendance_params models.AttendanceParams) (models.Attendanc
 		return attendance, nil
 	}
 	defer db.Close()
-	eventType, needsConfirmation := checkEventType(attendance_params.User_id, attendance_params.Event_type)
+	eventType, needsConfirmation := checkEventType(userId, attendance_params.Event_type)
 	res, err := db.Exec(insertAttendanceQuery,
-		attendance_params.User_id,
+		userId,
 		attendance_params.Location,
 		eventType,
 		!needsConfirmation,
