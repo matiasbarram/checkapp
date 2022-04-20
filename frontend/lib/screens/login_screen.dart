@@ -134,7 +134,6 @@ class _TextFieldsLogin extends StatelessWidget {
                       final status = loginForm.isValidForm();
                       if (status) {
                         print("Valido pana mio");
-
                         final answ = await authService.loginUser(
                             loginForm.email, loginForm.password);
                         if (answ.containsKey('error')) {

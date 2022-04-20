@@ -6,13 +6,14 @@ import 'package:checkapp/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../services/services.dart';
+
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
-
     return Scaffold(
       body: Center(
         child: FutureBuilder(
@@ -33,12 +34,15 @@ class LoadingScreen extends StatelessWidget {
                     ));
               });
             } else {
-              Future.microtask(() {
-                Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => const HomeScreen(),
-                    ));
+              Future.microtask(() async {
+                final attanceProvider =
+                    Provider.of<AttendanceService>(context, listen: false);
+                await attanceProvider.updateCurrentStatus();
+                Navigator.pushReplacement(context, PageRouteBuilder(
+                  pageBuilder: (_, __, ___) {
+                    return const HomeScreen();
+                  },
+                ));
               });
             }
             return Container();
