@@ -70,7 +70,7 @@ func ValidateUserInfo(c *gin.Context) (models.User, error) {
 	return u, nil
 }
 
-func ValidateAttendanceInfo(c *gin.Context) (models.AttendanceParams, error) {
+func ValidateAttendanceParams(c *gin.Context) (models.AttendanceParams, error) {
 	var att models.AttendanceParams
 	att.Event_type = "NEXT"
 	// jsonData, err := ioutil.ReadAll(c.Request.Body)
