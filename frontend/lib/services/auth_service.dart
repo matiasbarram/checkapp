@@ -8,23 +8,20 @@ import 'package:http/http.dart' as http;
 class AuthService extends ChangeNotifier {
   final storage = const FlutterSecureStorage();
   final String _baseUrl = 'api.asiendosoftware.xyz';
+  final String _baseAPI = '/api/v1/';
   final String _cookieName = 'mysession';
-
-  Future<void> checkKeys() async {
-    Map<String, String> allValues = await storage.readAll();
-    print('Todas las claves  guardadas son: ' + allValues.toString());
-  }
 
   Future<Map<String, dynamic>> loginUser(String email, String password) async {
     final Map<String, dynamic> authData = {
       'email': email,
       'password': password,
     };
-    final url = Uri.https(_baseUrl, 'login');
+    final url = Uri.https(_baseUrl, '${_baseAPI}login');
+    print(url);
     final respuesta = await http.post(url, body: authData);
-    final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
-
+    print('Respuesta:  $respuesta');
     print('haciendo el post...');
+    final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
 
     if (!decodeResp.containsKey('error')) {
       await _updateCookie(respuesta);
@@ -69,5 +66,10 @@ class AuthService extends ChangeNotifier {
     print('Borrando keys...');
     await storage.delete(key: 'mysession');
     checkKeys();
+  }
+
+  Future<void> checkKeys() async {
+    Map<String, String> allValues = await storage.readAll();
+    print('Todas las claves  guardadas son: ' + allValues.toString());
   }
 }
