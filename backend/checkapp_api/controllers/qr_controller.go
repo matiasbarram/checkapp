@@ -125,8 +125,7 @@ func GenerateQr(company_id int64) (models.Qr, error) {
 	}
 	// res, err := db.Query("SELECT LAST_INSERT_ID")_
 	id, err := res.LastInsertId()
-	fmt.Println(res)
-	fmt.Println("id", id)
+
 	// qr = models.Qr{int(id), int(company_id), png}
 	qr.Id = int(id)
 	qr.Company_id = int(company_id)

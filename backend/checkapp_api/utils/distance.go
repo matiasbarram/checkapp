@@ -11,10 +11,10 @@ import (
 func getCoordinates(location string) (float64, float64, error) {
 	var x float64
 	var y float64
-	if len(location) != 2 {
+	coord := strings.Split(strings.ReplaceAll(location, " ", ""), ",")
+	if len(coord) != 2 {
 		return x, y, errors.New("Invalid location: " + location)
 	}
-	coord := strings.Split(strings.ReplaceAll(location, " ", ""), ",")
 	x, err := strconv.ParseFloat(coord[0], 64)
 	if err != nil {
 		return x, y, err

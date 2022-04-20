@@ -26,10 +26,14 @@ CREATE TABLE `attendance` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `event_type` enum('CHECK_IN','CHECK_OUT') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `event_time` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `location` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `confirmed` tinyint(1) NOT NULL DEFAULT 0,
+  `comments` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,6 +42,11 @@ CREATE TABLE `attendance` (
 
 LOCK TABLES `attendance` WRITE;
 /*!40000 ALTER TABLE `attendance` DISABLE KEYS */;
+INSERT INTO `attendance` VALUES
+(40,2,'CHECK_IN','2022-04-15 20:48:14','-30, -70',1,''),
+(41,2,'CHECK_OUT','2022-04-15 20:48:38','-30, -70',1,''),
+(42,2,'CHECK_IN','2022-04-15 20:52:48','-30, -70',1,''),
+(43,2,'CHECK_OUT','2022-04-15 20:53:06','-30, -70',1,'');
 /*!40000 ALTER TABLE `attendance` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -82,7 +91,7 @@ CREATE TABLE `device` (
   `registered_at` datetime NOT NULL,
   `secret_key` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -91,6 +100,8 @@ CREATE TABLE `device` (
 
 LOCK TABLES `device` WRITE;
 /*!40000 ALTER TABLE `device` DISABLE KEYS */;
+INSERT INTO `device` VALUES
+(1,'sansun','android 12','2022-04-15 15:51:21','asdfb');
 /*!40000 ALTER TABLE `device` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -104,11 +115,11 @@ DROP TABLE IF EXISTS `qr`;
 CREATE TABLE `qr` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `company_id` int(11) NOT NULL,
-  `content` blob DEFAULT NULL,
+  `content` blob NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `company_id` (`company_id`),
   CONSTRAINT `qr_ibfk_1` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -146,7 +157,7 @@ CREATE TABLE `user` (
   KEY `company_id` (`company_id`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`),
   CONSTRAINT `user_ibfk_2` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -156,7 +167,7 @@ CREATE TABLE `user` (
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` VALUES
-(2,1,'shimeji','','based','smj@sml.com','e27a68f34edc5e93625d1806feb56bdf',NULL),
+(2,1,'shimeji','','based','smj@sml.com','e27a68f34edc5e93625d1806feb56bdf',1),
 (5,1,'ffdssfda','ads1','fdsaf','asdfasf','fasdf',NULL),
 (6,1,'majime','59','based','mjm@sml.com','2e315dcaa77983999bf11106c65229dc',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
@@ -171,4 +182,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-13  1:50:23
+-- Dump completed on 2022-04-15 20:54:07
