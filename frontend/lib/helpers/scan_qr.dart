@@ -9,6 +9,13 @@ scanQr(BuildContext context) async {
   if (qrScanRes != (-1).toString()) {
     final attanceProvider =
         Provider.of<AttendanceService>(context, listen: false);
+    final lastEvent = await attanceProvider.getLastAttendance();
+    print(lastEvent);
+    if (lastEvent['event_type'] == 'CHECK_IN' &&
+        attanceProvider.salida == 'PENDIENTE') {
+      //await confirmDialog(context, qrScanRes, 'salida');
+
+    }
 
     //Se hicieron ambos scans
     if (attanceProvider.entrada != 'PENDIENTE' &&
@@ -24,9 +31,6 @@ scanQr(BuildContext context) async {
         attanceProvider.salida == 'PENDIENTE') {
       await confirmDialog(context, qrScanRes, 'entrada');
       //Falta hacer la salida
-    } else if (attanceProvider.salida == 'PENDIENTE' &&
-        attanceProvider.entrada != 'PENDIENTE') {
-      await confirmDialog(context, qrScanRes, 'salida');
     }
   }
 }

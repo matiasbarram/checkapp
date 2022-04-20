@@ -12,6 +12,7 @@ class UserModel {
     required this.rut,
     required this.role,
     required this.deviceId,
+    required this.email,
   });
 
   int id;
@@ -19,6 +20,8 @@ class UserModel {
   String name;
   String rut;
   String role;
+  String email;
+  String location = '';
   int deviceId;
 
   factory UserModel.fromJson(String str) => UserModel.fromMap(json.decode(str));
@@ -30,6 +33,7 @@ class UserModel {
         companyId: json["company_id"],
         name: json["name"],
         rut: json["rut"],
+        email: json["email"],
         role: json["role"],
         deviceId: json["device_id"],
       );

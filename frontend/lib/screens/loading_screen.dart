@@ -6,6 +6,8 @@ import 'package:checkapp/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../services/services.dart';
+
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({Key? key}) : super(key: key);
 
@@ -34,11 +36,14 @@ class LoadingScreen extends StatelessWidget {
               });
             } else {
               Future.microtask(() {
-                Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => const HomeScreen(),
-                    ));
+                Navigator.pushReplacement(context, PageRouteBuilder(
+                  pageBuilder: (_, __, ___) {
+                    final attanceProvider =
+                        Provider.of<AttendanceService>(context, listen: false);
+                    attanceProvider.updateCurrentStatus();
+                    return const HomeScreen();
+                  },
+                ));
               });
             }
             return Container();
