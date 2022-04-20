@@ -7,3 +7,10 @@ String apiFomrmatToTime(String datetime) {
   final outputDate = outputFormat.format(inputDate);
   return outputDate;
 }
+
+String getCurrentTime() {
+  final now = DateTime.now();
+  final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+  String formattedDate = formatter.format(now);
+  return formattedDate;
+}

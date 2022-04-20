@@ -20,7 +20,6 @@ class AuthService extends ChangeNotifier {
     print(url);
     final respuesta = await http.post(url, body: authData);
     print('Respuesta:  $respuesta');
-    print('haciendo el post...');
     final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
 
     if (!decodeResp.containsKey('error')) {
