@@ -2,15 +2,11 @@ package handlers
 
 import (
 	"checkapp_api/controllers"
-	"checkapp_api/models"
 	"checkapp_api/utils"
-	"errors"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 // @BasePath /api/v1
@@ -31,23 +27,12 @@ import (
 // @Router       /private/attendance [post]
 func PostAttendance(c *gin.Context) {
 
-	// var att models.AttendanceParams
-	var attParams models.AttendanceParams
-	attParams.Event_type = "NEXT"
-	err := c.BindJSON(&attParams)
+	att, err := utils.ValidateAttendanceInfo(c)
 	if err != nil {
-		log.Fatal(err)
-	}
-	// err = c.BindJSON(&att)
-	if err != nil {
-		var verr validator.ValidationErrors
-		if errors.As(err, &verr) {
-			c.JSON(http.StatusBadRequest, gin.H{"errors": utils.SimpleValidationErrors(verr)})
-			return
-		}
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	}
 
-	attendance, err := controllers.RegisterAttendance(attParams)
+	attendance, err := controllers.RegisterAttendance(att)
 	if err != nil {
 		fmt.Println("error ", err.Error())
 		// ver los posibles errores y responder acorde

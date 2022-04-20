@@ -1,7 +1,7 @@
-@local_hostname = http://localhost:8083/
-@remote_hostname = https://api.asiendosoftware.xyz/
+@local_hostname = http://localhost:8083/api/v1/
+@remote_hostname = https://api.asiendosoftware.xyz/api/v1/
 
-@host = {{local_hostname}}
+@host = {{remote_hostname}}
 # @host = {{remote_hostname}}
 GET {{host}}
 
@@ -45,7 +45,7 @@ content-type: form/data
 
 {
     "email": "smj@sml.com",
-    "password": "tomandoleche12"
+    "password": "tomandoleche123"
 }
 
 

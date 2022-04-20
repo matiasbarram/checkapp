@@ -5,6 +5,7 @@ import (
 	"checkapp_api/models"
 	"checkapp_api/router"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -130,10 +131,12 @@ func TestBadLogin(t *testing.T) {
 	jsonValue, _ := json.Marshal(param)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/login", bytes.NewBuffer(jsonValue))
+	req.Header.Add("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
-	assert.Equal(t, 401, w.Code)
 	var response map[string]interface{}
 	err := json.Unmarshal([]byte(w.Body.String()), &response)
+	fmt.Println(response)
+	assert.Equal(t, 401, w.Code)
 	assert.Nil(t, err)
 	assert.Equal(t, "Authentication failed LAPASS", response["error"])
 }
@@ -144,6 +147,7 @@ func TestLoginHandler(t *testing.T) {
 	jsonValue, _ := json.Marshal(param)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/login", bytes.NewBuffer(jsonValue))
+	req.Header.Add("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 
@@ -193,6 +197,7 @@ func TestAttendance(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/private/attendance", bytes.NewBuffer(jsonValue))
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
+	req.Header.Add("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 

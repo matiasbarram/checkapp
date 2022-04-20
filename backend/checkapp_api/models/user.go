@@ -17,19 +17,19 @@ func (s MyNullString) MarshalJSON() ([]byte, error) {
 }
 
 type User struct {
-	Id         int    `json:"id"`
-	Company_id int    `json:"company_id" binding:"required"`
-	Name       string `json:"name" binding:"required"`
-	Rut        string `json:"rut" binding:"required"`
-	Role       string `json:"role" binding:"required"`
-	Email      string `json:"email" binding:"required"`
-	Password   string `json:"password,omitempty" binding:"required"`
-	Device_id  int    `json:"device_id,omitempty" `
+	Id         int    `form:"id"`
+	Company_id int    `form:"company_id" binding:"required"`
+	Name       string `form:"name" binding:"required"`
+	Rut        string `form:"rut" binding:"required"`
+	Role       string `form:"role" binding:"required"`
+	Email      string `form:"email" binding:"required"`
+	Password   string `form:"password,omitempty" binding:"required,len>4"`
+	Device_id  int    `form:"device_id,omitempty"`
 }
 
 type UserCredentials struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Email    string `form:"email" binding:"required"`
+	Password string `form:"password" binding:"required"`
 	// Device_id int    `json:"device_id,omitempty" `
 }
 

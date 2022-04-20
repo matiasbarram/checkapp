@@ -3,14 +3,11 @@ package handlers
 import (
 	"checkapp_api/controllers"
 	"checkapp_api/data"
-	"checkapp_api/models"
 	"checkapp_api/utils"
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 // login is a handler that parses a form and checks for specific data
@@ -30,23 +27,18 @@ import (
 // @Failure      401  {object}  models.SimpleError
 // @Router       /login [post]
 func Login(c *gin.Context) {
-	session := sessions.Default(c)
-	var u models.UserCredentials
-	err := c.ShouldBindJSON(&u)
+	u, err := utils.ValidateLoginArgs(c)
 	if err != nil {
-		var verr validator.ValidationErrors
-		if errors.As(err, &verr) {
-			c.JSON(http.StatusBadRequest, gin.H{"errors": utils.SimpleValidationErrors(verr)})
-			return
-		}
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
 	}
-
 	// Check for username and password match, usually from a database
 	user, err := controllers.ValidateCredentials(u)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication failed " + err.Error()})
 		return
 	}
+	session := sessions.Default(c)
 	// Save the username in the session
 	session.Set(data.UserKey, user.Id) // In real world usage you'd set this to the users ID
 	if err := session.Save(); err != nil {

@@ -52,7 +52,7 @@ func StringInSlice(a string, list []string) bool {
 
 func ValidateUserInfo(c *gin.Context) (models.User, error) {
 	var u models.User
-	err := c.ShouldBindJSON(&u)
+	err := c.ShouldBind(&u)
 	if err != nil {
 		var verr validator.ValidationErrors
 		if errors.As(err, &verr) {
@@ -60,9 +60,9 @@ func ValidateUserInfo(c *gin.Context) (models.User, error) {
 		}
 	}
 	// validar de mejor forma...
-	if len(u.Password) < 4 {
-		return u, errors.New("password too short")
-	}
+	// if len(u.Password) < 4 {
+	// 	return u, errors.New("password too short")
+	// }
 	_, err = mail.ParseAddress(u.Email)
 	if err != nil {
 		return u, err
@@ -72,8 +72,9 @@ func ValidateUserInfo(c *gin.Context) (models.User, error) {
 
 func ValidateAttendanceInfo(c *gin.Context) (models.AttendanceParams, error) {
 	var att models.AttendanceParams
+	att.Event_type = "NEXT"
 	// jsonData, err := ioutil.ReadAll(c.Request.Body)
-	err := c.ShouldBindJSON(&att)
+	err := c.ShouldBind(&att)
 	if err != nil {
 		var verr validator.ValidationErrors
 		if errors.As(err, &verr) {
@@ -93,4 +94,25 @@ func ValidateUserLocation(userLocation string, companyLocation string) error {
 		return errors.New("you are too far away from your company 💢 (distance : " + fmt.Sprintf("%.2f", distance) + " km)")
 	}
 	return nil
+}
+
+func ValidateLoginArgs(c *gin.Context) (models.UserCredentials, error) {
+	var u models.UserCredentials
+	err := c.ShouldBind(&u)
+	if err != nil {
+		fmt.Println("binding error!")
+		var verr validator.ValidationErrors
+		if errors.As(err, &verr) {
+			return u, errors.New(fmt.Sprint(SimpleValidationErrors(verr)))
+		}
+	}
+	// validar de mejor forma...
+	// if len(u.Password) < 4 {
+	// 	return u, errors.New("password too short")
+	// }
+	_, err = mail.ParseAddress(u.Email)
+	if err != nil {
+		return u, err
+	}
+	return u, nil
 }
