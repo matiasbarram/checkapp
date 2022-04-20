@@ -14,7 +14,6 @@ class LoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
-
     return Scaffold(
       body: Center(
         child: FutureBuilder(
@@ -35,12 +34,12 @@ class LoadingScreen extends StatelessWidget {
                     ));
               });
             } else {
-              Future.microtask(() {
+              Future.microtask(() async {
+                final attanceProvider =
+                    Provider.of<AttendanceService>(context, listen: false);
+                await attanceProvider.updateCurrentStatus();
                 Navigator.pushReplacement(context, PageRouteBuilder(
                   pageBuilder: (_, __, ___) {
-                    final attanceProvider =
-                        Provider.of<AttendanceService>(context, listen: false);
-                    attanceProvider.updateCurrentStatus();
                     return const HomeScreen();
                   },
                 ));
