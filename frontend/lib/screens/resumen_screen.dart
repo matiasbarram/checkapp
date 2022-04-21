@@ -12,7 +12,7 @@ class ResumenScreen extends StatelessWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final attendence = Provider.of<AttendanceService>(context);
+    //final attendence = Provider.of<AttendanceService>(context);
     return Column(
       children: [
         ClipPath(
@@ -54,7 +54,9 @@ class ResumenScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceAround,
                                 children: [
                                   const Text('Llegada'),
-                                  Text(attendence.entrada)
+                                  Consumer<AttendanceService>(
+                                      builder: (_, attendance, ___) =>
+                                          Text(attendance.entrada))
                                 ],
                               ),
                               const VerticalDivider(
@@ -67,7 +69,7 @@ class ResumenScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceAround,
                                 children: [
                                   const Text('Salida'),
-                                  Text(attendence.salida)
+                                  //Text(attendence.salida)
                                 ],
                               ),
                             ],
