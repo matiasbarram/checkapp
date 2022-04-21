@@ -31,14 +31,32 @@ class AttendanceService extends ChangeNotifier {
     return decodeResp;
   }
 
+  Future<List<dynamic>> getTodayAttendance() async {
+    final _cookie = await storage.read(key: 'mysession');
+    Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
+    print(headers);
+    final url = Uri.https(_baseUrl, '${_baseAPI}private/attendance/today');
+    print(url);
+    final respuesta = await http.get(url, headers: headers);
+    print('Respuesta today attendance:  ${respuesta.body}');
+    final List<dynamic> decodeResp = json.decode(respuesta.body);
+    return decodeResp;
+  }
+
   Future<void> updateCurrentStatus() async {
-    final lastAttendance = await getLastAttendance();
-    if (lastAttendance['event_type'] == _eventTypeCheckIn) {
-      final outputDate = apiFomrmatToTime(lastAttendance['event_time']);
-      entrada = outputDate;
-    } else if (lastAttendance['event_type'] == _eventTypeCheckOut) {
-      final outputDate = apiFomrmatToTime(lastAttendance['event_time']);
-      salida = outputDate;
+    final lastAttendance = await getTodayAttendance();
+    print(lastAttendance);
+    for (var attendance in lastAttendance) {
+      if (attendance['event_type'] == _eventTypeCheckIn) {
+        if (attendance['pending'] == false) {
+          entrada = apiFomrmatToTime(attendance['event_time']);
+        }
+      }
+      if (attendance['event_type'] == _eventTypeCheckOut) {
+        if (attendance['pending'] == false) {
+          salida = apiFomrmatToTime(attendance['event_time']);
+        }
+      }
     }
     notifyListeners();
   }

@@ -2,7 +2,6 @@
 
 import 'package:checkapp/screens/home_screen.dart';
 import 'package:checkapp/screens/login_screen.dart';
-import 'package:checkapp/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

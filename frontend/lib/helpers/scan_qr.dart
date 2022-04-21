@@ -1,56 +1,50 @@
-import 'dart:convert';
-
-import 'package:checkapp/models/models.dart';
-import 'package:checkapp/services/services.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:provider/provider.dart';
+import 'package:checkapp/services/services.dart';
+import 'package:checkapp/models/models.dart';
 import 'package:checkapp/helpers/user_location.dart';
+import 'dart:convert';
 
 scanQr(BuildContext context) async {
-  String PENDING = 'PENDIENTE';
-  String qrScanRes = await FlutterBarcodeScanner.scanBarcode(
+  String scannedAns = await FlutterBarcodeScanner.scanBarcode(
       '#174A7C', 'Cancelar', false, ScanMode.QR);
-  print('Respuesta del qr:  $qrScanRes');
+  print('Respuesta del qr:  $scannedAns');
 
-  //Scan a valid QR
-  if (qrScanRes != (-1).toString()) {
-    ScanModel qrInfo = createScanModel(qrScanRes);
+  //Scaned QR is valid
+  if (scannedAns != (-1).toString()) {
+    final userLocation = await getUserLocation();
+    ScanModel qrModel = createScanModel(scannedAns);
 
     final attendanceProvider =
         Provider.of<AttendanceService>(context, listen: false);
     final lastEvent = await attendanceProvider.getLastAttendance();
 
-    //TODO: ERRORS
-
-    //Post a Check-out
-    if (lastEvent['event_type'] == 'CHECK_IN') {
+    //CHECK_IN -> First post of the day
+    if (lastEvent['message'] == "sql: no rows in result set") {
       //bool confirm = await confirmDialog(context, qrScanRes, 'salida');
-      //print('Seleccionó $confirm');
-      if (true) {
-        final userLocation = await getUserLocation();
-        attendanceProvider.postNewAttendance(
-            qrInfo.id, 'CHECK_OUT', userLocation);
-      }
+      attendanceProvider.postNewAttendance(
+          qrModel.id, 'CHECK_IN', userLocation);
+      //Actualizar cambios
+      await attendanceProvider.updateCurrentStatus();
     }
-
+    //Post a Check-out
+    else if (lastEvent['event_type'] == 'CHECK_IN') {
+      //bool confirm = await confirmDialog(context, qrScanRes, 'salida');
+      attendanceProvider.postNewAttendance(
+          qrModel.id, 'CHECK_OUT', userLocation);
+      //Actualizar cambios
+      await attendanceProvider.updateCurrentStatus();
+    }
     //Post a Check-in
     else if (lastEvent['event_type'] == 'CHECK_OUT') {
-      //bool confirm = await confirmDialog(context, qrScanRes, 'entrada');
-      //print('Seleccionó $confirm');
-      if (true) {
-        final userLocation = await getUserLocation();
-        attendanceProvider.postNewAttendance(
-            qrInfo.id, 'CHECK_IN', userLocation);
-      }
+      //ERROR PORQUE SE HICIERON LOS 2 CHECKS.
+      errorDialog(context, 'Se hizo el checkout del día');
     }
-
-    //Actualizar cambios
-    attendanceProvider.updateCurrentStatus();
   }
 }
 
-confirmDialog(BuildContext context, String barcodeScanRes, String llegaStrr) {
+confirmDialog(BuildContext context, String barcodeScanRes, String check) {
   showDialog(
       barrierDismissible: false,
       context: context,
@@ -59,7 +53,7 @@ confirmDialog(BuildContext context, String barcodeScanRes, String llegaStrr) {
           title: const Text(
             'Confirmación',
           ),
-          content: Text('¿Estás seguro que deseas registrar tu $llegaStrr ?'),
+          content: Text('¿Estás seguro que deseas registrar tu $check ?'),
           actions: [
             ElevatedButton(
               child: const Text("Si"),
@@ -83,7 +77,7 @@ errorDialog(BuildContext context, String errorMsg) {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
-            '¡Error!',
+            'Ha ocurrido un error',
           ),
           content: Text(errorMsg),
           actions: [
