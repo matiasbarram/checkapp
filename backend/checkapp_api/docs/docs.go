@@ -181,6 +181,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/private/attendance/today": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/private/attendance/today"
+                ],
+                "summary": "returns current user's today's attendance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleAttendance"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    }
+                }
+            }
+        },
         "/qrs": {
             "get": {
                 "description": "lol",
@@ -378,6 +415,9 @@ const docTemplate = `{
                 "event_type": {
                     "type": "string"
                 },
+                "expected_time": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -392,14 +432,14 @@ const docTemplate = `{
         "models.AttendanceParams": {
             "type": "object",
             "required": [
-                "company_id",
-                "user_id"
+                "company_id"
             ],
             "properties": {
                 "comments": {
                     "type": "string"
                 },
                 "company_id": {
+                    "description": "User_id           int    ` + "`" + `form:\"user_id\" binding:\"required\"` + "`" + `",
                     "type": "integer"
                 },
                 "device_secret_key": {
@@ -410,9 +450,6 @@ const docTemplate = `{
                 },
                 "location": {
                     "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
                 }
             }
         },
@@ -430,6 +467,29 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.SimpleAttendance": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "boolean"
+                },
+                "confirmed": {
+                    "type": "boolean"
+                },
+                "event_time": {
+                    "type": "string"
+                },
+                "event_type": {
+                    "type": "string"
+                },
+                "expected_time": {
+                    "type": "string"
+                },
+                "pending": {
+                    "type": "boolean"
                 }
             }
         },

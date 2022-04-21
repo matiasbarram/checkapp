@@ -10,6 +10,8 @@ definitions:
         type: string
       event_type:
         type: string
+      expected_time:
+        type: string
       id:
         type: integer
       location:
@@ -22,6 +24,7 @@ definitions:
       comments:
         type: string
       company_id:
+        description: User_id           int    `form:"user_id" binding:"required"`
         type: integer
       device_secret_key:
         type: string
@@ -29,11 +32,8 @@ definitions:
         type: string
       location:
         type: string
-      user_id:
-        type: integer
     required:
     - company_id
-    - user_id
     type: object
   models.Qr:
     properties:
@@ -45,6 +45,21 @@ definitions:
         type: array
       id:
         type: integer
+    type: object
+  models.SimpleAttendance:
+    properties:
+      comments:
+        type: boolean
+      confirmed:
+        type: boolean
+      event_time:
+        type: string
+      event_type:
+        type: string
+      expected_time:
+        type: string
+      pending:
+        type: boolean
     type: object
   models.SimpleError:
     properties:
@@ -209,6 +224,30 @@ paths:
       summary: returns current user's last attendance event
       tags:
       - /private/attendance/last
+  /private/attendance/today:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SimpleAttendance'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+      summary: returns current user's today's attendance
+      tags:
+      - /private/attendance/today
   /qrs:
     get:
       consumes:

@@ -30,10 +30,11 @@ CREATE TABLE `attendance` (
   `location` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `confirmed` tinyint(1) NOT NULL DEFAULT 0,
   `comments` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expected_time` time DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,11 +43,6 @@ CREATE TABLE `attendance` (
 
 LOCK TABLES `attendance` WRITE;
 /*!40000 ALTER TABLE `attendance` DISABLE KEYS */;
-INSERT INTO `attendance` VALUES
-(40,2,'CHECK_IN','2022-04-15 20:48:14','-30, -70',1,''),
-(41,2,'CHECK_OUT','2022-04-15 20:48:38','-30, -70',1,''),
-(42,2,'CHECK_IN','2022-04-15 20:52:48','-30, -70',1,''),
-(43,2,'CHECK_OUT','2022-04-15 20:53:06','-30, -70',1,'');
 /*!40000 ALTER TABLE `attendance` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -135,6 +131,34 @@ INSERT INTO `qr` VALUES
 UNLOCK TABLES;
 
 --
+-- Table structure for table `shift`
+--
+
+DROP TABLE IF EXISTS `shift`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shift` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `check_in_time` time NOT NULL,
+  `check_out_time` time NOT NULL,
+  `lunch_break_length` int(11) NOT NULL DEFAULT 0 COMMENT 'length in minutes',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shift`
+--
+
+LOCK TABLES `shift` WRITE;
+/*!40000 ALTER TABLE `shift` DISABLE KEYS */;
+INSERT INTO `shift` VALUES
+(1,'09:00:00','17:30:00',0),
+(2,'06:00:00','19:00:00',90);
+/*!40000 ALTER TABLE `shift` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `user`
 --
 
@@ -150,13 +174,16 @@ CREATE TABLE `user` (
   `email` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `device_id` int(11) DEFAULT NULL,
+  `shift_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `rut` (`rut`),
   KEY `user_ibfk_1` (`device_id`),
   KEY `company_id` (`company_id`),
+  KEY `shift_id` (`shift_id`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`),
-  CONSTRAINT `user_ibfk_2` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+  CONSTRAINT `user_ibfk_2` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+  CONSTRAINT `user_ibfk_3` FOREIGN KEY (`shift_id`) REFERENCES `shift` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -167,9 +194,8 @@ CREATE TABLE `user` (
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` VALUES
-(2,1,'shimeji','','based','smj@sml.com','e27a68f34edc5e93625d1806feb56bdf',1),
-(5,1,'ffdssfda','ads1','fdsaf','asdfasf','fasdf',NULL),
-(6,1,'majime','59','based','mjm@sml.com','2e315dcaa77983999bf11106c65229dc',NULL);
+(2,1,'shimeji','','based','smj@sml.com','e27a68f34edc5e93625d1806feb56bdf',1,1),
+(6,1,'majime','59','based','mjm@sml.com','2e315dcaa77983999bf11106c65229dc',NULL,2);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -182,4 +208,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-15 20:54:07
+-- Dump completed on 2022-04-20 21:14:21
