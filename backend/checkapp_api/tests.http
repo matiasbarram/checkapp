@@ -1,7 +1,7 @@
 @local_hostname = http://localhost:8083/api/v1/
 @remote_hostname = https://api.asiendosoftware.xyz/api/v1/
 
-@host = {{remote_hostname}}
+@host = {{local_hostname}}
 # @host = {{remote_hostname}}
 GET {{host}}
 
@@ -41,14 +41,28 @@ POST {{host}}users
 }
 ###
 POST {{host}}login
-content-type: form/data
+content-type: application/json
 
 {
     "email": "smj@sml.com",
     "password": "tomandoleche123"
 }
+###
 
+POST {{host}}login
+content-type: application/json
 
+{
+    "email": "mjm@sml.com",
+    "password": "bruh"
+}
+###
+GET {{host}}logout
+
+###
+GET {{host}}private/attendance/today
+
+###
 ###
 GET {{host}}private/me
 
@@ -75,12 +89,10 @@ POST {{host}}private/attendance
 content-type: application/json
 
 {
-    "user_id": 2,
     "company_id": 1,
     "location": "-39.833392642198596, -73.24520728771456",
     "device_secret_key": "asdfb",
-    "event_type": "AUTO",
-    "comments": "voy atrasao :cry:",
+    "event_type": "AUTO"
 }
 ###
 GET {{host}}private/attendance/last

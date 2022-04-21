@@ -18,7 +18,7 @@ var (
 		os.Getenv("db_name"))
 )
 
-var AttendaceEventTypes = [4]string{"CHECK_IN", "CHECK_OUT", "NEXT", "AUTO"}
+var AttendanceEventTypes = [4]string{"CHECK_IN", "CHECK_OUT", "NEXT", "AUTO"}
 
 var Validate *validator.Validate
 

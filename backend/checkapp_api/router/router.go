@@ -68,6 +68,7 @@ func Setup() *gin.Engine {
 			private.GET("/attendance", handlers.GetMyAttendance)
 			private.POST("/attendance", handlers.PostAttendance)
 			private.GET("/attendance/last", handlers.GetMyLastAttendance)
+			private.GET("/attendance/today", handlers.GetTodaysAttendance)
 			// private.GET("/attendance/stats")
 		}
 	}
