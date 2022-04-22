@@ -69,6 +69,9 @@ class ResumenScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceAround,
                                 children: [
                                   const Text('Salida'),
+                                  Consumer<AttendanceService>(
+                                      builder: (_, attendance, ___) =>
+                                          Text(attendance.salida))
                                   //Text(attendence.salida)
                                 ],
                               ),

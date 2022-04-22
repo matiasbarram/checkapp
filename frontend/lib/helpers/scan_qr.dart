@@ -44,9 +44,9 @@ Future<void> postAttendance(BuildContext context, ScanModel qrModel,
     String userLocation, String check) async {
   final attendanceService =
       Provider.of<AttendanceService>(context, listen: false);
-  attendanceService.postNewAttendance(qrModel.id, check, userLocation);
+  await attendanceService.postNewAttendance(qrModel.id, check, userLocation);
   //Actualizar cambios
-  await attendanceService.updateCurrentStatus();
+  //await attendanceService.updateCurrentStatus(); MORIRR
 }
 
 confirmDialog(

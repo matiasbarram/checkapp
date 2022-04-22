@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:checkapp/providers/providers.dart';
 import 'package:checkapp/screens/home_screen.dart';
 import 'package:checkapp/screens/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,6 @@ class LoadingScreen extends StatelessWidget {
             if (!snapshot.hasData) {
               return const CircularProgressIndicator.adaptive();
             }
-            print('Valor de la snapshot: ' + snapshot.data);
-            authService.checkKeys();
             if (snapshot.data == 'no-key') {
               print('No tengo key');
               Future.microtask(() {
@@ -36,6 +35,9 @@ class LoadingScreen extends StatelessWidget {
               Future.microtask(() async {
                 final attanceProvider =
                     Provider.of<AttendanceService>(context, listen: false);
+                final uiProvider =
+                    Provider.of<UIprovider>(context, listen: false);
+                uiProvider.loadUserInfo();
                 await attanceProvider.updateCurrentStatus();
                 Navigator.pushReplacement(context, PageRouteBuilder(
                   pageBuilder: (_, __, ___) {

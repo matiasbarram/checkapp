@@ -11,13 +11,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
+    final uiProvider = Provider.of<UIprovider>(context);
+
     return Scaffold(
       extendBody: true,
       bottomNavigationBar: const BottomNavBar(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: const ScanQRCentered(),
       appBar: AppBar(
-        title: const Text('Hola John Cena'),
+        title: Text('Hola ${uiProvider.name}!'),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),

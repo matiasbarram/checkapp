@@ -23,9 +23,16 @@ class AuthService extends ChangeNotifier {
     final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
 
     if (!decodeResp.containsKey('error')) {
+      await _userInfoCookie(decodeResp);
       await _updateCookie(respuesta);
     }
     return decodeResp;
+  }
+
+  Future<void> _userInfoCookie(Map<String, dynamic> respuesta) async {
+    final String userName = respuesta['user']['Name'];
+    print(userName);
+    await storage.write(key: 'userName', value: userName);
   }
 
   Future<void> _updateCookie(http.Response respuesta) async {
@@ -63,7 +70,8 @@ class AuthService extends ChangeNotifier {
 
   Future<void> logout() async {
     print('Borrando keys...');
-    await storage.delete(key: 'mysession');
+    //await storage.delete(key: 'mysession');
+    await storage.deleteAll();
     checkKeys();
   }
 
