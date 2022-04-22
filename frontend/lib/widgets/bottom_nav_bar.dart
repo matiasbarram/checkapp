@@ -17,17 +17,35 @@ class BottomNavBar extends StatelessWidget {
       shape: const CircularNotchedRectangle(),
       notchMargin: 8.0,
       clipBehavior: Clip.antiAlias,
-      child: BottomNavigationBar(
-        onTap: (value) {
-          uiProvider.selectMenuOpt = value;
-        },
-        currentIndex: currentIndex,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.history), label: 'Historial'),
-        ],
+      child: Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topRight: Radius.circular(40), topLeft: Radius.circular(40)),
+          boxShadow: [
+            BoxShadow(
+                color: Color.fromARGB(46, 57, 56, 56),
+                spreadRadius: 0,
+                blurRadius: 8),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(40.0),
+            topRight: Radius.circular(40.0),
+          ),
+          child: BottomNavigationBar(
+            onTap: (value) {
+              uiProvider.selectMenuOpt = value;
+            },
+            currentIndex: currentIndex,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined), label: 'Home'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.history), label: 'Historial'),
+            ],
+          ),
+        ),
       ),
     );
   }

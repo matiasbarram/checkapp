@@ -16,70 +16,37 @@ scanQr(BuildContext context) async {
   //Scaned QR is valid
   if (scannedAns != (-1).toString()) {
     final userLocation = await getUserLocation();
-    ScanModel qrModel = createScanModel(scannedAns);
 
     final attendanceService =
         Provider.of<AttendanceService>(context, listen: false);
     final lastEvent = await attendanceService.getLastAttendance();
 
-    //CHECK_IN -> First post of the day
-    if (lastEvent['message'] == "sql: no rows in result set") {
-      await confirmDialog(context, 'entrada', attendanceService, qrModel,
-          userLocation, 'CHECK_IN');
-    }
-    //Post a Check-out
-    else if (lastEvent['event_type'] == 'CHECK_IN') {
-      await confirmDialog(context, 'salida', attendanceService, qrModel,
-          userLocation, 'CHECK_OUT');
-    }
-    //Se hicieron los 2.
-    else if (lastEvent['event_type'] == 'CHECK_OUT') {
+    if (lastEvent['event_type'] == 'CHECK_OUT') {
       //ERROR PORQUE SE HICIERON LOS 2 CHECKS.
-      errorDialog(context, 'Se hizo el checkout del día');
+      errorDialog(context,
+          'Ya has marcado tu entrada y tu salida, si ocurrió un problema por favor contacta a tu encargado');
+    } else {
+      ScanModel qrModel = createScanModel(scannedAns);
+      //CHECK_IN -> First post of the day
+      if (lastEvent['message'] == "sql: no rows in result set") {
+        Navigator.of(context).pushNamed("confirm", arguments: {
+          'answer': qrModel,
+          'textInfo': 'entrada',
+          'todo': 'CHECK_IN',
+          'userLocation': userLocation,
+        });
+      }
+      //CHECK_OUT -> lastEvent was a CHECK_IN
+      else if (lastEvent['event_type'] == 'CHECK_IN') {
+        Navigator.of(context).pushNamed("confirm", arguments: {
+          'answer': qrModel,
+          'textInfo': 'salida',
+          'todo': 'CHECK_OUT',
+          'userLocation': userLocation,
+        });
+      }
     }
   }
-}
-
-Future<void> postAttendance(BuildContext context, ScanModel qrModel,
-    String userLocation, String check) async {
-  final attendanceService =
-      Provider.of<AttendanceService>(context, listen: false);
-  await attendanceService.postNewAttendance(qrModel.id, check, userLocation);
-  //Actualizar cambios
-  //await attendanceService.updateCurrentStatus(); MORIRR
-}
-
-confirmDialog(
-    BuildContext context,
-    String checkText,
-    AttendanceService attendanceService,
-    ScanModel qrModel,
-    String userLocation,
-    String check) async {
-  showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            'Confirmación',
-          ),
-          content: Text('¿Estás seguro que deseas registrar tu $checkText ?'),
-          actions: [
-            ElevatedButton(
-              child: const Text("Si"),
-              onPressed: () async {
-                await postAttendance(context, qrModel, userLocation, check);
-                Navigator.of(context).pop(true);
-              },
-            ),
-            ElevatedButton(
-              child: const Text("Cancelar"),
-              onPressed: () => Navigator.of(context).pop(false),
-            ),
-          ],
-        );
-      });
 }
 
 errorDialog(BuildContext context, String errorMsg) {

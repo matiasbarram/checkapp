@@ -72,7 +72,6 @@ class ResumenScreen extends StatelessWidget {
                                   Consumer<AttendanceService>(
                                       builder: (_, attendance, ___) =>
                                           Text(attendance.salida))
-                                  //Text(attendence.salida)
                                 ],
                               ),
                             ],

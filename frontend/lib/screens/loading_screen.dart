@@ -1,11 +1,9 @@
 // ignore_for_file: avoid_print
-
 import 'package:checkapp/providers/providers.dart';
 import 'package:checkapp/screens/home_screen.dart';
 import 'package:checkapp/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../services/services.dart';
 
 class LoadingScreen extends StatelessWidget {

@@ -1,3 +1,4 @@
+import 'package:checkapp/screens/confirm_attendance_screen.dart';
 import 'package:checkapp/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
           'home': (_) => const HomeScreen(),
           'login': ((context) => const LoginScreen()),
           'loading': ((context) => const LoadingScreen()),
+          'confirm': ((context) => const ConfirmAttendanceScreen()),
         },
       ),
     );
