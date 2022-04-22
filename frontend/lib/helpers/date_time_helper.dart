@@ -10,7 +10,8 @@ String formatTime(String datetime) {
 
 String getCurrentTime() {
   final now = DateTime.now();
-  final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+  //final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+  final formatter = DateFormat('HH:mm:ss');
   String formattedDate = formatter.format(now);
   return formattedDate;
 }

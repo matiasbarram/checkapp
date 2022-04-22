@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../helpers/date_time_helper.dart';
 
@@ -11,6 +12,8 @@ class AttendanceService extends ChangeNotifier {
 
   String entrada = 'PENDIENTE';
   String salida = 'PENDIENTE';
+  String horaEsperada = 'PENDIENTE';
+  String status = 'Calculando...';
   final storage = const FlutterSecureStorage();
 
   final String _baseUrl = 'api.asiendosoftware.xyz';
@@ -95,5 +98,39 @@ class AttendanceService extends ChangeNotifier {
       print('NO SABO QUE PASÓ');
     }
     notifyListeners();
+  }
+
+  Future<String> setFuturePostInfo(String todo) async {
+    List<dynamic> info = await getTodayAttendance();
+    final String now = getCurrentTime();
+    for (var attendance in info) {
+      if (attendance['event_type'] == todo && attendance['pending'] == true) {
+        print('Encontré la info buscada -> $attendance');
+        horaEsperada = attendance['expected_time'];
+        status = _setStatus(now, horaEsperada);
+        notifyListeners();
+        return 'DONE';
+      }
+    }
+    return 'ERROR!';
+  }
+
+  String _setStatus(String now, String esperado) {
+    int margin = 20;
+    DateTime nowDate = DateFormat("hh:mm:ss").parse(now);
+    DateTime esperadoDate = DateFormat("hh:mm:ss").parse(esperado);
+
+    Duration dif = nowDate.difference(esperadoDate);
+
+    int difMinutes = dif.inMinutes.toInt();
+    if ((difMinutes > 0 && (difMinutes).abs() > margin)) {
+      status = 'TARDE';
+    } else if (difMinutes < 0 && (difMinutes).abs() > margin) {
+      status = 'ANTES';
+    } else if ((difMinutes > 0 && (difMinutes).abs() < margin) ||
+        (difMinutes < 0 && (difMinutes).abs() < margin)) {
+      status = 'A tiempo';
+    }
+    return status;
   }
 }

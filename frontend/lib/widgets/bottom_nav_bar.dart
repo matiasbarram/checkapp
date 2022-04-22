@@ -22,10 +22,7 @@ class BottomNavBar extends StatelessWidget {
           borderRadius: BorderRadius.only(
               topRight: Radius.circular(40), topLeft: Radius.circular(40)),
           boxShadow: [
-            BoxShadow(
-                color: Color.fromARGB(46, 57, 56, 56),
-                spreadRadius: 0,
-                blurRadius: 8),
+            BoxShadow(color: Color.fromARGB(46, 57, 56, 56), blurRadius: 8),
           ],
         ),
         child: ClipRRect(
