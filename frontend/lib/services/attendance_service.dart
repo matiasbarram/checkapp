@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:ui';
+import 'package:checkapp/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +16,9 @@ class AttendanceService extends ChangeNotifier {
   String salida = 'PENDIENTE';
   String horaEsperada = 'PENDIENTE';
   String status = 'Calculando...';
+  Color statusColor = AppTheme.textPending;
+  Color checkInColor = AppTheme.textPending;
+  Color checkOutColor = AppTheme.textPending;
   final storage = const FlutterSecureStorage();
 
   final String _baseUrl = 'api.asiendosoftware.xyz';
@@ -50,11 +55,13 @@ class AttendanceService extends ChangeNotifier {
       if (attendance['event_type'] == _eventTypeCheckIn) {
         if (attendance['pending'] == false) {
           entrada = formatTime(attendance['event_time']);
+          _setColorByStatus('TARDE', attendance['event_type']);
         }
       }
       if (attendance['event_type'] == _eventTypeCheckOut) {
         if (attendance['pending'] == false) {
           salida = formatTime(attendance['event_time']);
+          checkInColor = _setColorByStatus('ANTES', attendance['event_type']);
         }
       }
     }
@@ -107,7 +114,7 @@ class AttendanceService extends ChangeNotifier {
       if (attendance['event_type'] == todo && attendance['pending'] == true) {
         print('Encontré la info buscada -> $attendance');
         horaEsperada = attendance['expected_time'];
-        status = _setStatus(now, horaEsperada);
+        status = _setStatus(now, horaEsperada, attendance['event_type']);
         notifyListeners();
         return 'DONE';
       }
@@ -115,22 +122,54 @@ class AttendanceService extends ChangeNotifier {
     return 'ERROR!';
   }
 
-  String _setStatus(String now, String esperado) {
+  String _setStatus(String now, String esperado, String eventType) {
     int margin = 20;
     DateTime nowDate = DateFormat("hh:mm:ss").parse(now);
     DateTime esperadoDate = DateFormat("hh:mm:ss").parse(esperado);
 
     Duration dif = nowDate.difference(esperadoDate);
-
+    Color newColor;
     int difMinutes = dif.inMinutes.toInt();
     if ((difMinutes > 0 && (difMinutes).abs() > margin)) {
       status = 'TARDE';
+      newColor = Colors.red;
+      statusColor = Colors.red;
     } else if (difMinutes < 0 && (difMinutes).abs() > margin) {
       status = 'ANTES';
+      newColor = Colors.yellow;
+      statusColor = Colors.yellow;
     } else if ((difMinutes > 0 && (difMinutes).abs() < margin) ||
         (difMinutes < 0 && (difMinutes).abs() < margin)) {
       status = 'A tiempo';
+      newColor = Colors.green;
+      statusColor = Colors.green;
+    } else {
+      newColor = AppTheme.textPrimColor;
     }
+    if (eventType == _eventTypeCheckIn) {
+      checkInColor = newColor;
+    }
+
     return status;
+  }
+
+  _setColorByStatus(String status, String eventType) {
+    if (eventType == _eventTypeCheckIn) {
+      if (status == 'TARDE') {
+        checkInColor = Colors.red;
+      } else if (status == 'A tiempo') {
+        checkInColor = Colors.green;
+      } else if (status == 'ANTES') {
+        checkInColor = Colors.yellow;
+      }
+    } else if (eventType == _eventTypeCheckOut) {
+      if (status == 'TARDE') {
+        checkOutColor = Colors.red;
+      } else if (status == 'A tiempo') {
+        checkOutColor = Colors.green;
+      } else if (status == 'ANTES') {
+        checkOutColor = Colors.yellow;
+      }
+    }
   }
 }

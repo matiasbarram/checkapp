@@ -55,8 +55,12 @@ class ResumenScreen extends StatelessWidget {
                                 children: [
                                   const Text('Llegada'),
                                   Consumer<AttendanceService>(
-                                      builder: (_, attendance, ___) =>
-                                          Text(attendance.entrada))
+                                      builder: (_, attendance, ___) => Text(
+                                            attendance.entrada,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: attendance.checkInColor),
+                                          ))
                                 ],
                               ),
                               const VerticalDivider(
@@ -70,8 +74,13 @@ class ResumenScreen extends StatelessWidget {
                                 children: [
                                   const Text('Salida'),
                                   Consumer<AttendanceService>(
-                                      builder: (_, attendance, ___) =>
-                                          Text(attendance.salida))
+                                      builder: (_, attendance, ___) => Text(
+                                            attendance.salida,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.normal,
+                                                color:
+                                                    attendance.checkOutColor),
+                                          ))
                                 ],
                               ),
                             ],
@@ -97,7 +106,15 @@ class ResumenScreen extends StatelessWidget {
           width: double.infinity,
           alignment: Alignment.topLeft,
           child: Column(
-            children: const [Text('Así va tu asistencia de este mes')],
+            children: const [
+              Text(
+                'Así va tu asistencia de este mes',
+                style: TextStyle(
+                    fontSize: 18,
+                    color: AppTheme.textPrimColor,
+                    fontWeight: FontWeight.bold),
+              )
+            ],
           ),
         )
       ],

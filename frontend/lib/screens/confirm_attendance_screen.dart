@@ -1,4 +1,5 @@
 import 'package:checkapp/themes/app_theme.dart';
+import 'package:checkapp/themes/custom_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,7 @@ class ConfirmAttendanceScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: AppTheme.textPrimColor),
         title: const Text('Confirmar asistencia'),
       ),
       backgroundColor: AppTheme.checkApptextLigher,
@@ -30,9 +32,7 @@ class ConfirmAttendanceScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-              ),
+              style: ButtonsDecoration.confirmButtonStyle(),
               onPressed: () async {
                 await postAttendance(context, answer, userLocation, todo);
                 Navigator.pop(context);
@@ -43,10 +43,12 @@ class ConfirmAttendanceScreen extends StatelessWidget {
               height: 10,
             ),
             ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50)),
+                style: ButtonsDecoration.rejectButtonStyle(),
                 onPressed: () => Navigator.pop(context),
-                child: const Text('No'))
+                child: const Text(
+                  'No',
+                  style: TextStyle(color: AppTheme.checkAppBlue),
+                ))
           ],
         ),
       ),
@@ -57,11 +59,19 @@ class ConfirmAttendanceScreen extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Text('¿Estás seguro de que deseas marcar tu $textInfo ?'),
+              child: Text(
+                '¿Estás seguro de que deseas marcar tu $textInfo ?',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
-            const Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text('Este es el resumen de tu registro'),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                'Este es el resumen de tu registro',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.displayMedium,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(10.0),
@@ -74,7 +84,8 @@ class ConfirmAttendanceScreen extends StatelessWidget {
                     final attendanceService =
                         Provider.of<AttendanceService>(context);
                     return Table(
-                      border: TableBorder.all(),
+                      border: TableBorder.all(
+                          color: AppTheme.checkAppBlue, width: 1),
                       columnWidths: const <int, TableColumnWidth>{
                         0: FlexColumnWidth(),
                         1: FlexColumnWidth(),
@@ -83,24 +94,50 @@ class ConfirmAttendanceScreen extends StatelessWidget {
                           TableCellVerticalAlignment.middle,
                       children: <TableRow>[
                         TableRow(children: [
-                          Text('Hora de $textInfo esperada: '),
-                          Text(
-                            attendanceService.horaEsperada,
-                            textAlign: TextAlign.center,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 30.0, horizontal: 10),
+                            child: Text('Hora de $textInfo esperada: '),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 30.0, horizontal: 10),
+                            child: Text(
+                              attendanceService.horaEsperada,
+                              textAlign: TextAlign.center,
+                            ),
                           )
                         ]),
                         TableRow(children: [
-                          const Text('Hora: '),
-                          Text(
-                            getCurrentTime(),
-                            textAlign: TextAlign.center,
+                          const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 30.0, horizontal: 10),
+                            child: Text('Hora de escaneo: '),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Text(
+                              getCurrentTime(),
+                              textAlign: TextAlign.center,
+                            ),
                           )
                         ]),
                         TableRow(children: [
-                          const Text('Estado: '),
-                          Text(
-                            attendanceService.status,
-                            textAlign: TextAlign.center,
+                          const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 30.0, horizontal: 10),
+                            child: Text('Estado: '),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 30.0, horizontal: 10),
+                            child: Text(
+                              attendanceService.status,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: attendanceService.statusColor),
+                              textAlign: TextAlign.center,
+                            ),
                           )
                         ]),
                       ],

@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_print
 
+import 'dart:ui';
+
 import 'package:checkapp/providers/providers.dart';
 import 'package:checkapp/services/auth_service.dart';
 import 'package:checkapp/themes/app_theme.dart';
-import 'package:checkapp/themes/input_decorations.dart';
+import 'package:checkapp/themes/custom_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,18 +16,20 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.checkApptextLigher,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const WelcomeInfo(),
-            const SizedBox(
-              height: 40,
-            ),
-            ChangeNotifierProvider(
-                create: (_) => LoginFormProvider(),
-                child: const _TextFieldsLogin()),
-          ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const WelcomeInfo(),
+              const SizedBox(
+                height: 40,
+              ),
+              ChangeNotifierProvider(
+                  create: (_) => LoginFormProvider(),
+                  child: const _TextFieldsLogin()),
+            ],
+          ),
         ),
       ),
     );
@@ -45,11 +49,20 @@ class WelcomeInfo extends StatelessWidget {
         const SizedBox(
           height: 40,
         ),
-        const Text('¡Bienvenido!'),
-        const SizedBox(
-          height: 10,
+        const Text(
+          '¡Bienvenido!',
+          style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w500,
+              color: AppTheme.textPrimColor),
         ),
-        const Text('Por favor ingresa tus datos para ingresar'),
+        const SizedBox(
+          height: 16,
+        ),
+        const Text(
+          'Por favor ingresa tus datos para ingresar',
+          style: TextStyle(fontSize: 18, color: AppTheme.textPending),
+        ),
       ],
     );
   }
@@ -72,7 +85,13 @@ class _TextFieldsLogin extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Tu correo'),
+            const Text(
+              'Tu correo',
+              style: TextStyle(
+                  color: AppTheme.textPrimColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 18),
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -93,7 +112,13 @@ class _TextFieldsLogin extends StatelessWidget {
             const SizedBox(
               height: 30,
             ),
-            const Text('Tu contraseña'),
+            const Text(
+              'Tu contraseña',
+              style: TextStyle(
+                  color: AppTheme.textPrimColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 18),
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -113,9 +138,11 @@ class _TextFieldsLogin extends StatelessWidget {
               },
             ),
             const SizedBox(
-              height: 10,
+              height: 40,
             ),
             MaterialButton(
+              minWidth: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
               color: AppTheme.checkAppBlue,
@@ -150,7 +177,10 @@ class _TextFieldsLogin extends StatelessWidget {
                         loginForm.password = '';
                       }
                     },
-              child: Text(loginForm.isLoading ? 'Cargando...' : 'Ingresar'),
+              child: Text(
+                loginForm.isLoading ? 'Cargando...' : 'Ingresar',
+                style: TextStyle(fontSize: 20),
+              ),
             )
           ],
         ),

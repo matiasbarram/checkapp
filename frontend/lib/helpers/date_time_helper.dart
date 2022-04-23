@@ -15,3 +15,12 @@ String getCurrentTime() {
   String formattedDate = formatter.format(now);
   return formattedDate;
 }
+
+DateTime formatStringDateTimeToTime(String datetime) {
+  final parsedDate = DateTime.parse(datetime);
+  final formatter = DateFormat('HH:mm:ss');
+  String formattedTime = formatter.format(parsedDate);
+  final parsedTime = DateTime.parse(formattedTime);
+
+  return parsedTime;
+}
