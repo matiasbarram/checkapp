@@ -68,7 +68,7 @@ class AttendanceService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> postNewAttendance(
+  Future<String> postNewAttendance(
       int companyid, String eventType, String userlocation) async {
     final _cookie = await storage.read(key: 'mysession');
     Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
@@ -88,21 +88,28 @@ class AttendanceService extends ChangeNotifier {
         await http.post(url, body: attendanceData, headers: headers);
     print('Respuesta del postAttendance:  ${respuesta.body}');
     final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
-    updateStatusAttendance(decodeResp);
+    final status = updateStatusAttendance(decodeResp);
+    return status;
   }
 
   updateStatusAttendance(Map<String, dynamic> answer) {
+    if (answer.containsKey('message')) {
+      return answer['message'];
+    }
     //Checkin
     if (answer['attendance']['event_type'] == _eventTypeCheckIn) {
       entrada = formatTime(answer['attendance']['event_time']);
+      return 'OK';
     }
     //Checkout
     else if (answer['attendance']['event_type'] == _eventTypeCheckOut) {
       salida = formatTime(answer['attendance']['event_time']);
+      return 'OK';
     }
     //Error
     else {
       print('NO SABO QUE PASÓ');
+      return 'ERROR';
     }
     notifyListeners();
   }
@@ -147,7 +154,7 @@ class AttendanceService extends ChangeNotifier {
       newColor = AppTheme.textPrimColor;
     }
     if (eventType == _eventTypeCheckIn) {
-      checkInColor = newColor;
+      //checkInColor = newColor;
     }
 
     return status;

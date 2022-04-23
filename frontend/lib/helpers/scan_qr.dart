@@ -6,12 +6,11 @@ import 'package:checkapp/models/models.dart';
 import 'package:checkapp/helpers/user_location.dart';
 import 'dart:convert';
 
-import '../providers/providers.dart';
-
 scanQr(BuildContext context) async {
   String scannedAns = await FlutterBarcodeScanner.scanBarcode(
       '#174A7C', 'Cancelar', false, ScanMode.QR);
   print('Respuesta del qr:  $scannedAns');
+  var attendanceCompleted = true;
 
   //Scaned QR is valid
   if (scannedAns != (-1).toString()) {
@@ -19,16 +18,17 @@ scanQr(BuildContext context) async {
 
     final attendanceService =
         Provider.of<AttendanceService>(context, listen: false);
-    final lastEvent = await attendanceService.getLastAttendance();
-
-    if (lastEvent['event_type'] == 'CHECK_OUT') {
-      //ERROR PORQUE SE HICIERON LOS 2 CHECKS.
-      errorDialog(context,
-          'Ya has marcado tu entrada y tu salida, si ocurrió un problema por favor contacta a tu encargado');
-    } else {
+    //final lastEvent = await attendanceService.getLastAttendance();
+    final todayEventsList = await attendanceService.getTodayAttendance();
+    final eventLen = todayEventsList.length;
+    var index = 0;
+    while ((index < eventLen) && attendanceCompleted) {
+      final event = todayEventsList[index];
+      //for (var event in todayEventsList) {
       ScanModel qrModel = createScanModel(scannedAns);
-      //CHECK_IN -> First post of the day
-      if (lastEvent['message'] == "sql: no rows in result set") {
+      if (event['pending'] == true && event['event_type'] == 'CHECK_IN') {
+        attendanceCompleted = false;
+        //CHECK_IN -> First post of the day
         Navigator.of(context).pushNamed("confirm", arguments: {
           'answer': qrModel,
           'textInfo': 'entrada',
@@ -37,7 +37,8 @@ scanQr(BuildContext context) async {
         });
       }
       //CHECK_OUT -> lastEvent was a CHECK_IN
-      else if (lastEvent['event_type'] == 'CHECK_IN') {
+      else if (event['pending'] == true && event['event_type'] == 'CHECK_OUT') {
+        attendanceCompleted = false;
         Navigator.of(context).pushNamed("confirm", arguments: {
           'answer': qrModel,
           'textInfo': 'salida',
@@ -46,12 +47,16 @@ scanQr(BuildContext context) async {
         });
       }
     }
+    index += 1;
+  }
+  //ERROR PORQUE SE HICIERON LOS 2 CHECKS.
+  if (attendanceCompleted == true) {
+    errorDialog(context,
+        'Ya has marcado tu entrada y tu salida, si ocurrió un problema por favor contacta a tu encargado');
   }
 }
 
 errorDialog(BuildContext context, String errorMsg) {
-  final alertProvider = Provider.of<AlertProvider>(context, listen: false);
-
   showDialog(
       barrierDismissible: false,
       context: context,
@@ -65,7 +70,6 @@ errorDialog(BuildContext context, String errorMsg) {
             ElevatedButton(
               child: const Text("Salir"),
               onPressed: () {
-                alertProvider.doAttendance = true;
                 Navigator.of(context).pop(true);
               },
             ),

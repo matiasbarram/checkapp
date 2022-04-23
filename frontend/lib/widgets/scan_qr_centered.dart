@@ -15,7 +15,7 @@ class ScanQRCentered extends StatelessWidget {
       child: const Icon(
         Icons.qr_code,
       ),
-      onPressed: () => scanQr(context),
+      onPressed: () async => await scanQr(context),
     );
   }
 }

@@ -77,7 +77,7 @@ class ResumenScreen extends StatelessWidget {
                                       builder: (_, attendance, ___) => Text(
                                             attendance.salida,
                                             style: TextStyle(
-                                                fontWeight: FontWeight.normal,
+                                                fontWeight: FontWeight.w600,
                                                 color:
                                                     attendance.checkOutColor),
                                           ))

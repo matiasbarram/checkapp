@@ -1,8 +1,8 @@
+import 'package:checkapp/helpers/scan_qr.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/themes/custom_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../helpers/date_time_helper.dart';
 import '../models/models.dart';
 import '../services/services.dart';
@@ -22,7 +22,7 @@ class ConfirmAttendanceScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: AppTheme.textPrimColor),
+        iconTheme: const IconThemeData(color: AppTheme.textPrimColor),
         title: const Text('Confirmar asistencia'),
       ),
       backgroundColor: AppTheme.checkApptextLigher,
@@ -34,8 +34,13 @@ class ConfirmAttendanceScreen extends StatelessWidget {
             ElevatedButton(
               style: ButtonsDecoration.confirmButtonStyle(),
               onPressed: () async {
-                await postAttendance(context, answer, userLocation, todo);
-                Navigator.pop(context);
+                String answerMsg =
+                    await postAttendance(context, answer, userLocation, todo);
+                if (answerMsg != 'OK') {
+                  errorDialog(context, answerMsg);
+                } else {
+                  Navigator.pop(context);
+                }
               },
               child: const Text('Si'),
             ),
@@ -159,11 +164,13 @@ class ConfirmAttendanceScreen extends StatelessWidget {
   }
 }
 
-Future<void> postAttendance(BuildContext context, ScanModel qrModel,
+Future<String> postAttendance(BuildContext context, ScanModel qrModel,
     String userLocation, String check) async {
   final attendanceService =
       Provider.of<AttendanceService>(context, listen: false);
-  await attendanceService.postNewAttendance(qrModel.id, check, userLocation);
+  String answerMsg = await attendanceService.postNewAttendance(
+      qrModel.id, check, userLocation);
+  return answerMsg;
 }
 
 Future<String> getAttendanceInfo(BuildContext context, String todo) async {

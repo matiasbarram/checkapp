@@ -16,7 +16,7 @@ class ScanQRButton extends StatelessWidget {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
             primary: AppTheme.checkAppBlue),
-        onPressed: () => scanQr(context),
+        onPressed: () async => await scanQr(context),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
