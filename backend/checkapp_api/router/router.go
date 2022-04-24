@@ -38,6 +38,9 @@ func Setup() *gin.Engine {
 		v1.POST("/login", handlers.Login)
 		v1.GET("/logout", handlers.Logout)
 
+		v1.GET("/reset/attendance/today", handlers.ResetTodaysAttendance)
+		v1.GET("/reset/attendance/all", handlers.ResetAllAttendance)
+
 		// user related endpoints
 		users := v1.Group("/users")
 		{

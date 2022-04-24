@@ -20,11 +20,13 @@ type AttendanceParams struct {
 	Comments          string `form:"comments,omitempty"`
 }
 
-type SimpleAttendance struct {
+type AttendanceResponse struct {
 	EventType    string `json:"event_type"`
 	ExpectedTime string `json:"expected_time"`
 	Pending      bool   `json:"pending"`
 	EventTime    string `json:"event_time,omitempty"`
 	Confirmed    bool   `json:"confirmed"`
 	Comments     bool   `json:"comments,omitempty"`
+	TimeDiff     bool   `json:"time_diff,omitempty"`
+	Punctual     bool   `json:"Punctual,omitempty"`
 }

@@ -99,7 +99,11 @@ GET {{host}}private/attendance/last
 
 
 ###
+GET {{host}}reset/attendance/today
+###
 
+###
+GET {{host}}reset/attendance/all
 ###
 POST {{host}}private/attendance
 content-type: application/json

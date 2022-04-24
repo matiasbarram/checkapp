@@ -63,6 +63,13 @@ DESC
 LIMIT 2;
 `
 
+const deleteTodaysAttendance = `
+DELETE FROM attendance WHERE DATE(event_time) = CURRENT_DATE;
+`
+const deleteAllAttendance = `
+DELETE FROM attendance;
+`
+
 func RegisterAttendance(user_info models.AttendanceParams, userId int64) (models.Attendance, error) {
 
 	var attendance models.Attendance
@@ -183,6 +190,36 @@ func postAttendance(attendance_params models.AttendanceParams, userId int64, shi
 	return GetAttendanceById(id)
 }
 
+func ResetTodayAttendance() error {
+	db, err := GetDB()
+
+	// if there is an error opening the connection, handle it
+	if err != nil {
+		// simply print the error to the console
+		fmt.Println("Err", err.Error())
+		// returns nil on error
+		return nil
+	}
+	res, err := db.Exec(deleteTodaysAttendance)
+	fmt.Println(res)
+	return err
+}
+
+func ResetAllAttendance() error {
+	db, err := GetDB()
+
+	// if there is an error opening the connection, handle it
+	if err != nil {
+		// simply print the error to the console
+		fmt.Println("Err", err.Error())
+		// returns nil on error
+		return nil
+	}
+	res, err := db.Exec(deleteAllAttendance)
+	fmt.Println(res)
+	return err
+}
+
 func getEventExpectedTime(eventType string, shift models.Shift) (string, bool, string) {
 	var expectedTime string
 	var comments string
@@ -270,27 +307,20 @@ func GetLastEventFromUser(id int64) (models.Attendance, error) {
 	return attendance, err
 }
 
-func GetTodaysAttendance(id int64) ([]models.SimpleAttendance, error) {
-
+func queryDailyAttendance(id int64) ([]models.AttendanceResponse, error) {
+	attendances := []models.AttendanceResponse{}
 	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
 	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return nil, nil
+		return attendances, err
 	}
-
 	defer db.Close()
 
-	attendances := []models.SimpleAttendance{}
 	results, err := db.Query(getTodaysEventsQuery, id)
 	if err != nil {
 		return attendances, err
 	}
 	for results.Next() {
-		var attendance models.SimpleAttendance
+		var attendance models.AttendanceResponse
 		attendance.Pending = false
 		// for each row, scan into the models.attendances struct
 		err = results.Scan(
@@ -301,8 +331,25 @@ func GetTodaysAttendance(id int64) ([]models.SimpleAttendance, error) {
 		if err != nil {
 			panic(err.Error()) // proper error handling instead of panic in your app
 		}
+		attendance = calcTimeDiff(attendance)
 		// append the usersg into user array
 		attendances = append(attendances, attendance)
+	}
+	return attendances, nil
+}
+
+func calcTimeDiff(attendance models.AttendanceResponse) models.AttendanceResponse {
+	if attendance.EventType == data.AttendanceEventTypes[0] {
+		get
+
+	}
+}
+
+func GetTodaysAttendance(id int64) ([]models.AttendanceResponse, error) {
+
+	attendances, err := queryDailyAttendance(id)
+	if err != nil {
+		return nil, err
 	}
 	if len(attendances) == 2 {
 		return attendances, nil
@@ -310,21 +357,41 @@ func GetTodaysAttendance(id int64) ([]models.SimpleAttendance, error) {
 	return generateMissingAttendances(id, attendances)
 }
 
-func generateMissingAttendances(id int64, attendances []models.SimpleAttendance) ([]models.SimpleAttendance, error) {
+func generateMissingAttendances(id int64, attendances []models.AttendanceResponse) ([]models.AttendanceResponse, error) {
 
+	shift, err := queryUsersCurrentShift(id)
+	if err != nil {
+		return attendances, err
+	}
+
+	if len(attendances) == 0 {
+		var attendance models.AttendanceResponse
+		attendance.EventType = data.AttendanceEventTypes[0]
+		attendance.ExpectedTime = shift.CheckInTime
+		attendance.Pending = true
+		attendances = append(attendances, attendance)
+	}
+	if len(attendances) == 1 {
+		var attendance models.AttendanceResponse
+		attendance.EventType = data.AttendanceEventTypes[1]
+		attendance.ExpectedTime = shift.CheckOutTime
+		attendance.Pending = true
+		attendances = append(attendances, attendance)
+	}
+	return attendances, nil
+}
+
+func queryUsersCurrentShift(id int64) (models.Shift, error) {
+	var shift models.Shift
 	db, err := GetDB()
-
 	// if there is an error opening the connection, handle it
 	if err != nil {
 		// simply print the error to the console
 		fmt.Println("Err", err.Error())
 		// returns nil on error
-		return nil, nil
+		return shift, nil
 	}
-
 	defer db.Close()
-
-	var shift models.Shift
 	row := db.QueryRow(getUserShiftQuery, id)
 	err = row.Scan(
 		&shift.Id,
@@ -332,23 +399,9 @@ func generateMissingAttendances(id int64, attendances []models.SimpleAttendance)
 		&shift.CheckOutTime,
 		&shift.LunchBreakLength)
 	if err != nil {
-		fmt.Println("Err", err.Error())
+		panic(err.Error()) // proper error handling instead of panic in your app
 	}
-	if len(attendances) == 0 {
-		var attendance models.SimpleAttendance
-		attendance.EventType = data.AttendanceEventTypes[0]
-		attendance.ExpectedTime = shift.CheckInTime
-		attendance.Pending = true
-		attendances = append(attendances, attendance)
-	}
-	if len(attendances) == 1 {
-		var attendance models.SimpleAttendance
-		attendance.EventType = data.AttendanceEventTypes[1]
-		attendance.ExpectedTime = shift.CheckOutTime
-		attendance.Pending = true
-		attendances = append(attendances, attendance)
-	}
-	return attendances, nil
+	return shift, nil
 }
 
 func GetAttendanceById(id int64) (models.Attendance, error) {
