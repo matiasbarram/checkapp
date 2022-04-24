@@ -5,6 +5,8 @@ import (
 	"checkapp_api/router"
 	"fmt"
 	"log"
+
+	ic "github.com/WAY29/icecream-go/icecream"
 )
 
 // @title           CheckApp Server API
@@ -23,6 +25,7 @@ import (
 // @BasePath  /api/v1
 // @schemes   http https
 func main() {
+	ic.ConfigureIncludeContext(true)
 	run("")
 }
 

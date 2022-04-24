@@ -8,9 +8,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const dbcompany = "root"
-const dbpass = "root"
-const dbname = "checkapp"
+// const dbcompany = "root"
+// const dbpass = "root"
+// const dbname = "checkapp"
 
 func GetCompanyById(id int64) (models.Company, error) {
 

@@ -3,6 +3,7 @@ package router
 import (
 	"checkapp_api/data"
 	"checkapp_api/handlers"
+	"net/http"
 
 	docs "checkapp_api/docs"
 
@@ -23,6 +24,9 @@ func Setup() *gin.Engine {
 	// home
 	r.Use(favicon.New("./assets/favicon.ico"))
 	r.LoadHTMLGlob("templates/*.tmpl")
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/api/v1/")
+	})
 
 	// swagger
 	docs.SwaggerInfo.BasePath = "/api/v1"

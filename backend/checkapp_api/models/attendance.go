@@ -26,7 +26,7 @@ type AttendanceResponse struct {
 	Pending      bool   `json:"pending"`
 	EventTime    string `json:"event_time,omitempty"`
 	Confirmed    bool   `json:"confirmed"`
-	Comments     bool   `json:"comments,omitempty"`
-	TimeDiff     bool   `json:"time_diff,omitempty"`
+	Comments     string `json:"comments,omitempty"`
+	TimeDiff     string `json:"time_diff,omitempty"`
 	Punctual     bool   `json:"Punctual,omitempty"`
 }

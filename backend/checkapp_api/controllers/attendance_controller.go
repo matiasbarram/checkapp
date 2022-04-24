@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	. "github.com/WAY29/icecream-go/icecream"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -331,18 +332,37 @@ func queryDailyAttendance(id int64) ([]models.AttendanceResponse, error) {
 		if err != nil {
 			panic(err.Error()) // proper error handling instead of panic in your app
 		}
-		attendance = calcTimeDiff(attendance)
-		// append the usersg into user array
+		attendance, err = calcTimeDiff(attendance)
+		if err != nil {
+			return nil, err
+		}
 		attendances = append(attendances, attendance)
 	}
 	return attendances, nil
 }
 
-func calcTimeDiff(attendance models.AttendanceResponse) models.AttendanceResponse {
+func calcTimeDiff(attendance models.AttendanceResponse) (models.AttendanceResponse, error) {
+	var err error
+	var isArrival bool
 	if attendance.EventType == data.AttendanceEventTypes[0] {
-		get
+		isArrival = true
+		// seconds, err = utils.GetTimeDiffSeconds(attendance.EventTime, attendance.ExpectedTime, true)
 
+	} else {
+		isArrival = false
+		// seconds, err = utils.GetTimeDiffSeconds(attendance.EventTime, attendance.ExpectedTime, true)
 	}
+	// timeDiff, onTime := utils.GetFormattedTimeDiff(attendance, isArrival)
+	timeDiff, comments, err := utils.GetFormattedTimeDiff(attendance, isArrival)
+	if err != nil {
+		Ic(err.Error())
+		return attendance, err
+	}
+	// attendance.TimeDiff = utils.FormatSecondsToHHMMSS(seconds)
+	attendance.TimeDiff = timeDiff
+	attendance.Comments = comments
+	Ic(attendance)
+	return attendance, nil
 }
 
 func GetTodaysAttendance(id int64) ([]models.AttendanceResponse, error) {
