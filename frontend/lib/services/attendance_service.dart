@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -27,11 +26,9 @@ class AttendanceService extends ChangeNotifier {
   Future<Map<String, dynamic>> getLastAttendance() async {
     final _cookie = await storage.read(key: 'mysession');
     Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
-    print(headers);
     final url = Uri.https(_baseUrl, '${_baseAPI}private/attendance/last');
     print(url);
     final respuesta = await http.get(url, headers: headers);
-    print('Respuesta:  ${respuesta.body}');
     final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
     return decodeResp;
   }
@@ -39,7 +36,6 @@ class AttendanceService extends ChangeNotifier {
   Future<List<dynamic>> getTodayAttendance() async {
     final _cookie = await storage.read(key: 'mysession');
     Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
-    print(headers);
     final url = Uri.https(_baseUrl, '${_baseAPI}private/attendance/today');
     print(url);
     final respuesta = await http.get(url, headers: headers);
@@ -50,37 +46,33 @@ class AttendanceService extends ChangeNotifier {
 
   Future<void> updateCurrentStatus() async {
     final lastAttendance = await getTodayAttendance();
-    print(lastAttendance);
     for (var attendance in lastAttendance) {
       if (attendance['event_type'] == _eventTypeCheckIn) {
         if (attendance['pending'] == false) {
           entrada = formatTime(attendance['event_time']);
-          _setColorByStatus('TARDE', attendance['event_type']);
+          notifyListeners();
         }
       }
       if (attendance['event_type'] == _eventTypeCheckOut) {
         if (attendance['pending'] == false) {
           salida = formatTime(attendance['event_time']);
-          checkInColor = _setColorByStatus('ANTES', attendance['event_type']);
+          notifyListeners();
         }
       }
     }
-    notifyListeners();
   }
 
-  Future<String> postNewAttendance(
+  Future<void> postNewAttendance(
       int companyid, String eventType, String userlocation) async {
     final _cookie = await storage.read(key: 'mysession');
     Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
 
     final Map<String, dynamic> attendanceData = {
-      //'comments': 'PENDING',
-      'user_id': 2.toString(),
+      'user_id': 2.toString(), //SACAR
       'company_id': companyid.toString(),
       'device_secret_key': "PENDING",
       'event_type': eventType,
       'location': userlocation,
-      //'user_id': user.id,
     };
     final url = Uri.https(_baseUrl, '${_baseAPI}private/attendance');
     print(url);
@@ -88,28 +80,27 @@ class AttendanceService extends ChangeNotifier {
         await http.post(url, body: attendanceData, headers: headers);
     print('Respuesta del postAttendance:  ${respuesta.body}');
     final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
-    final status = updateStatusAttendance(decodeResp);
-    return status;
+    _updateStatusAttendance(decodeResp);
   }
 
-  updateStatusAttendance(Map<String, dynamic> answer) {
+  void _updateStatusAttendance(Map<String, dynamic> answer) {
     if (answer.containsKey('message')) {
-      return answer['message'];
+      //DEBERIA SER answer['error']
+      print(answer['message']);
     }
     //Checkin
     if (answer['attendance']['event_type'] == _eventTypeCheckIn) {
       entrada = formatTime(answer['attendance']['event_time']);
-      return 'OK';
+      notifyListeners();
     }
     //Checkout
     else if (answer['attendance']['event_type'] == _eventTypeCheckOut) {
       salida = formatTime(answer['attendance']['event_time']);
-      return 'OK';
+      notifyListeners();
     }
     //Error
     else {
       print('NO SABO QUE PASÓ');
-      return 'ERROR';
     }
     notifyListeners();
   }
@@ -119,9 +110,12 @@ class AttendanceService extends ChangeNotifier {
     final String now = getCurrentTime();
     for (var attendance in info) {
       if (attendance['event_type'] == todo && attendance['pending'] == true) {
-        print('Encontré la info buscada -> $attendance');
         horaEsperada = attendance['expected_time'];
-        status = _setStatus(now, horaEsperada, attendance['event_type']);
+        status = _setStatus(
+            now,
+            horaEsperada,
+            attendance[
+                'event_type']); //DEBERÍA VOLAR por attendance['comments'] y
         notifyListeners();
         return 'DONE';
       }
@@ -158,25 +152,5 @@ class AttendanceService extends ChangeNotifier {
     }
 
     return status;
-  }
-
-  _setColorByStatus(String status, String eventType) {
-    if (eventType == _eventTypeCheckIn) {
-      if (status == 'TARDE') {
-        checkInColor = Colors.red;
-      } else if (status == 'A tiempo') {
-        checkInColor = Colors.green;
-      } else if (status == 'ANTES') {
-        checkInColor = Colors.yellow;
-      }
-    } else if (eventType == _eventTypeCheckOut) {
-      if (status == 'TARDE') {
-        checkOutColor = Colors.red;
-      } else if (status == 'A tiempo') {
-        checkOutColor = Colors.green;
-      } else if (status == 'ANTES') {
-        checkOutColor = Colors.yellow;
-      }
-    }
   }
 }

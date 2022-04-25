@@ -1,11 +1,10 @@
-import 'package:checkapp/helpers/scan_qr.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/themes/custom_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../helpers/date_time_helper.dart';
-import '../models/models.dart';
-import '../services/services.dart';
+import '../../helpers/date_time_helper.dart';
+import '../../models/models.dart';
+import '../../services/services.dart';
 
 class ConfirmAttendanceScreen extends StatelessWidget {
   const ConfirmAttendanceScreen({Key? key}) : super(key: key);
@@ -34,13 +33,8 @@ class ConfirmAttendanceScreen extends StatelessWidget {
             ElevatedButton(
               style: ButtonsDecoration.confirmButtonStyle(),
               onPressed: () async {
-                String answerMsg =
-                    await postAttendance(context, answer, userLocation, todo);
-                if (answerMsg != 'OK') {
-                  errorDialog(context, answerMsg);
-                } else {
-                  Navigator.pop(context);
-                }
+                postAttendance(context, answer, userLocation, todo);
+                Navigator.pop(context);
               },
               child: const Text('Si'),
             ),
@@ -164,13 +158,11 @@ class ConfirmAttendanceScreen extends StatelessWidget {
   }
 }
 
-Future<String> postAttendance(BuildContext context, ScanModel qrModel,
+Future<void> postAttendance(BuildContext context, ScanModel qrModel,
     String userLocation, String check) async {
   final attendanceService =
       Provider.of<AttendanceService>(context, listen: false);
-  String answerMsg = await attendanceService.postNewAttendance(
-      qrModel.id, check, userLocation);
-  return answerMsg;
+  await attendanceService.postNewAttendance(qrModel.id, check, userLocation);
 }
 
 Future<String> getAttendanceInfo(BuildContext context, String todo) async {

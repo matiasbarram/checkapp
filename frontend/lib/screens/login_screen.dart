@@ -1,9 +1,5 @@
 // ignore_for_file: avoid_print
-
-import 'dart:ui';
-
 import 'package:checkapp/providers/providers.dart';
-import 'package:checkapp/services/attendance_service.dart';
 import 'package:checkapp/services/auth_service.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/themes/custom_decorations.dart';
