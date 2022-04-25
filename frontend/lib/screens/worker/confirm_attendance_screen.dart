@@ -34,13 +34,8 @@ class ConfirmAttendanceScreen extends StatelessWidget {
             ElevatedButton(
               style: ButtonsDecoration.confirmButtonStyle(),
               onPressed: () async {
-                String answerMsg =
-                    await postAttendance(context, answer, userLocation, todo);
-                if (answerMsg != 'OK') {
-                  errorDialog(context, answerMsg);
-                } else {
-                  Navigator.pop(context);
-                }
+                postAttendance(context, answer, userLocation, todo);
+                Navigator.pop(context);
               },
               child: const Text('Si'),
             ),
@@ -164,13 +159,11 @@ class ConfirmAttendanceScreen extends StatelessWidget {
   }
 }
 
-Future<String> postAttendance(BuildContext context, ScanModel qrModel,
+Future<void> postAttendance(BuildContext context, ScanModel qrModel,
     String userLocation, String check) async {
   final attendanceService =
       Provider.of<AttendanceService>(context, listen: false);
-  String answerMsg = await attendanceService.postNewAttendance(
-      qrModel.id, check, userLocation);
-  return answerMsg;
+  await attendanceService.postNewAttendance(qrModel.id, check, userLocation);
 }
 
 Future<String> getAttendanceInfo(BuildContext context, String todo) async {

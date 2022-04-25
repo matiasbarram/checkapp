@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -55,20 +54,19 @@ class AttendanceService extends ChangeNotifier {
       if (attendance['event_type'] == _eventTypeCheckIn) {
         if (attendance['pending'] == false) {
           entrada = formatTime(attendance['event_time']);
-          _setColorByStatus('TARDE', attendance['event_type']);
+          notifyListeners();
         }
       }
       if (attendance['event_type'] == _eventTypeCheckOut) {
         if (attendance['pending'] == false) {
           salida = formatTime(attendance['event_time']);
-          checkInColor = _setColorByStatus('ANTES', attendance['event_type']);
+          notifyListeners();
         }
       }
     }
-    notifyListeners();
   }
 
-  Future<String> postNewAttendance(
+  Future<void> postNewAttendance(
       int companyid, String eventType, String userlocation) async {
     final _cookie = await storage.read(key: 'mysession');
     Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
@@ -88,23 +86,22 @@ class AttendanceService extends ChangeNotifier {
         await http.post(url, body: attendanceData, headers: headers);
     print('Respuesta del postAttendance:  ${respuesta.body}');
     final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
-    final status = updateStatusAttendance(decodeResp);
-    return status;
+    updateStatusAttendance(decodeResp);
   }
 
   updateStatusAttendance(Map<String, dynamic> answer) {
     if (answer.containsKey('message')) {
-      return answer['message'];
+      print(answer['message']);
     }
     //Checkin
     if (answer['attendance']['event_type'] == _eventTypeCheckIn) {
       entrada = formatTime(answer['attendance']['event_time']);
-      return 'OK';
+      notifyListeners();
     }
     //Checkout
     else if (answer['attendance']['event_type'] == _eventTypeCheckOut) {
       salida = formatTime(answer['attendance']['event_time']);
-      return 'OK';
+      notifyListeners();
     }
     //Error
     else {
