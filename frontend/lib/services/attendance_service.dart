@@ -48,6 +48,7 @@ class AttendanceService extends ChangeNotifier {
     for (var attendance in lastAttendance) {
       if (attendance['event_type'] == _eventTypeCheckIn) {
         if (attendance['pending'] == false) {
+          checkInColor = _calculateColor(attendance['comments']);
           entrada = formatTime(attendance['event_time']);
           notifyListeners();
         }
@@ -55,6 +56,7 @@ class AttendanceService extends ChangeNotifier {
       if (attendance['event_type'] == _eventTypeCheckOut) {
         if (attendance['pending'] == false) {
           salida = formatTime(attendance['event_time']);
+          checkOutColor = _calculateColor(attendance['comments']);
           notifyListeners();
         }
       }
@@ -114,8 +116,7 @@ class AttendanceService extends ChangeNotifier {
     for (var attendance in info) {
       if (attendance['event_type'] == todo && attendance['pending'] == true) {
         horaEsperada = attendance['expected_time'];
-        _setStatus(attendance['comments'], attendance['time_diff'],
-            attendance['event_type']);
+        _setStatus(attendance['comments'], attendance['event_type']);
         ;
         notifyListeners();
         return 'DONE';
@@ -124,7 +125,7 @@ class AttendanceService extends ChangeNotifier {
     return 'ERROR!';
   }
 
-  void _setStatus(String comment, String timeDiff, String todo) {
+  void _setStatus(String comment, String todo) {
     Color newColor;
     if (comment == 'LATE') {
       newColor = Colors.red;
@@ -143,5 +144,21 @@ class AttendanceService extends ChangeNotifier {
     }
     statusColor = newColor;
     notifyListeners();
+  }
+
+  Color _calculateColor(String comment) {
+    Color newColor;
+    if (comment == 'LATE') {
+      newColor = Colors.red;
+    } else if (comment == 'EARLY LEAVE') {
+      newColor = Colors.yellow;
+    } else if (comment == 'ON TIME') {
+      newColor = Colors.green;
+    } else if (comment == 'LATE ARRIVAL') {
+      newColor = Colors.red;
+    } else {
+      newColor = AppTheme.textPrimColor;
+    }
+    return newColor;
   }
 }
