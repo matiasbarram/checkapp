@@ -13,17 +13,16 @@ Future<void> scanQr(BuildContext context) async {
 
   //Scaned QR is valid
   if (scannedAns != (-1).toString()) {
-    final userLocation = await getUserLocation();
     final attendanceService =
         Provider.of<AttendanceService>(context, listen: false);
     final todayEventsList = await attendanceService.getTodayAttendance();
 
     if (todayEventsList[0]['pending'] == false &&
         todayEventsList[1]['pending'] == false) {
-      //ERROR PORQUE SE HICIERON LOS 2 CHECKS.
       errorDialog(context,
           'Ya has marcado tu entrada y tu salida, si ocurrió un problema por favor contacta a tu encargado');
     } else {
+      final userLocation = await getUserLocation();
       for (var event in todayEventsList) {
         ScanModel qrModel = createScanModel(scannedAns);
         if (event['pending'] == true && event['event_type'] == 'CHECK_IN') {

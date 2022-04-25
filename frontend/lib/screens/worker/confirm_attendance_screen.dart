@@ -1,4 +1,3 @@
-import 'package:checkapp/helpers/scan_qr.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/themes/custom_decorations.dart';
 import 'package:flutter/material.dart';
