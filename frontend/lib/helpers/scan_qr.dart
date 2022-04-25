@@ -4,6 +4,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:checkapp/services/services.dart';
 import 'package:checkapp/models/models.dart';
 import 'package:checkapp/helpers/user_location.dart';
+import 'package:checkapp/helpers/helpers.dart';
 import 'dart:convert';
 import 'helpers.dart';
 
@@ -27,7 +28,6 @@ Future<void> scanQr(BuildContext context) async {
       for (var event in todayEventsList) {
         ScanModel qrModel = createScanModel(scannedAns);
         if (event['pending'] == true && event['event_type'] == 'CHECK_IN') {
-          //CHECK_IN -> First post of the day
           Navigator.of(context).pushNamed("confirm", arguments: {
             'answer': qrModel,
             'textInfo': 'entrada',
@@ -35,9 +35,7 @@ Future<void> scanQr(BuildContext context) async {
             'userLocation': userLocation,
           });
           break;
-        }
-        //CHECK_OUT -> lastEvent was a CHECK_IN
-        else if (event['pending'] == true &&
+        } else if (event['pending'] == true &&
             event['event_type'] == 'CHECK_OUT') {
           Navigator.of(context).pushNamed("confirm", arguments: {
             'answer': qrModel,

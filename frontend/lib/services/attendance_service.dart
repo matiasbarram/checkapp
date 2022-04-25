@@ -135,6 +135,9 @@ class AttendanceService extends ChangeNotifier {
     } else if (comment == 'ON TIME') {
       newColor = Colors.green;
       status = 'A TIEMPO';
+    } else if (comment == 'LATE ARRIVAL') {
+      newColor = Colors.red;
+      status = 'TARDE';
     } else {
       newColor = AppTheme.textPrimColor;
     }

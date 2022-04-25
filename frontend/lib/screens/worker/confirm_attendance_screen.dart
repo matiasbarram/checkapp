@@ -1,5 +1,4 @@
 import 'package:checkapp/helpers/helpers.dart';
-import 'package:checkapp/helpers/scan_qr.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/themes/custom_decorations.dart';
 import 'package:flutter/material.dart';
@@ -35,11 +34,13 @@ class ConfirmAttendanceScreen extends StatelessWidget {
             ElevatedButton(
               style: ButtonsDecoration.confirmButtonStyle(),
               onPressed: () async {
-                //TODO: BLOQUEAR BOTTÓN DESPÚES DEL PRIMER POST
                 String msgAnswer =
                     await postAttendance(context, answer, userLocation, todo);
                 if (msgAnswer != 'OK') {
+                  //TODO: BLOQUEAR BOTTÓN DESPÚES DEL PRIMER POST
                   PopupNotification.errorDialog(context, msgAnswer);
+                } else {
+                  Navigator.pop(context);
                 }
                 //Navigator.pop(context);
               },
