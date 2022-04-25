@@ -62,3 +62,8 @@ func GetFormattedTimeDiff(eventTime string, expectedTime string, isArrival bool)
 	timeDiff := FormatSecondsToHHMMSS(diff)
 	return timeDiff, comments, nil
 }
+
+func GetTimeStringNow() string {
+	t := time.Now()
+	return t.Format("2006-01-02 15:04:05")
+}

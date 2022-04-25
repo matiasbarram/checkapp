@@ -403,10 +403,18 @@ func generateMissingAttendances(id int64, attendances []models.AttendanceRespons
 	}
 
 	if len(attendances) == 0 {
+
 		var attendance models.AttendanceResponse
 		attendance.EventType = data.AttendanceEventTypes[0]
 		attendance.ExpectedTime = shift.CheckInTime
 		attendance.Pending = true
+
+		eventTimeNow := utils.GetTimeStringNow()
+		timeDiff, comments, _ := utils.GetFormattedTimeDiff(eventTimeNow,
+			attendance.ExpectedTime,
+			data.EventIsArrival[attendance.EventType])
+		attendance.TimeDiff = timeDiff
+		attendance.Comments = comments
 		attendances = append(attendances, attendance)
 	}
 	if len(attendances) == 1 {
@@ -414,6 +422,13 @@ func generateMissingAttendances(id int64, attendances []models.AttendanceRespons
 		attendance.EventType = data.AttendanceEventTypes[1]
 		attendance.ExpectedTime = shift.CheckOutTime
 		attendance.Pending = true
+
+		eventTimeNow := utils.GetTimeStringNow()
+		timeDiff, comments, _ := utils.GetFormattedTimeDiff(eventTimeNow,
+			attendance.ExpectedTime,
+			data.EventIsArrival[attendance.EventType])
+		attendance.TimeDiff = timeDiff
+		attendance.Comments = comments
 		attendances = append(attendances, attendance)
 	}
 	return attendances, nil
