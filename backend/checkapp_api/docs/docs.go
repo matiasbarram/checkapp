@@ -119,7 +119,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Attendance"
+                            "$ref": "#/definitions/models.AttendanceResponse"
                         }
                     },
                     "400": {
@@ -194,7 +194,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SimpleAttendance"
+                            "$ref": "#/definitions/models.AttendanceResponse"
                         }
                     },
                     "400": {
@@ -453,6 +453,30 @@ const docTemplate = `{
                 }
             }
         },
+        "models.AttendanceResponse": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "description": "Confirmed    bool   ` + "`" + `json:\"confirmed\"` + "`" + `",
+                    "type": "string"
+                },
+                "event_time": {
+                    "type": "string"
+                },
+                "event_type": {
+                    "type": "string"
+                },
+                "expected_time": {
+                    "type": "string"
+                },
+                "pending": {
+                    "type": "boolean"
+                },
+                "time_diff": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Qr": {
             "type": "object",
             "properties": {
@@ -470,33 +494,13 @@ const docTemplate = `{
                 }
             }
         },
-        "models.SimpleAttendance": {
-            "type": "object",
-            "properties": {
-                "comments": {
-                    "type": "boolean"
-                },
-                "confirmed": {
-                    "type": "boolean"
-                },
-                "event_time": {
-                    "type": "string"
-                },
-                "event_type": {
-                    "type": "string"
-                },
-                "expected_time": {
-                    "type": "string"
-                },
-                "pending": {
-                    "type": "boolean"
-                }
-            }
-        },
         "models.SimpleError": {
             "type": "object",
             "properties": {
-                "error": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
                     "type": "string"
                 }
             }

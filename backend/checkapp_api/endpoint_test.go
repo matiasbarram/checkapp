@@ -210,9 +210,7 @@ func TestAttendance(t *testing.T) {
 
 	assert.Nil(t, err)
 	// assert.True(t, attendance.Id == param["user_id"])
-	assert.True(t, response.User_id == param["user_id"])
-	assert.True(t, response.Location == param["location"])
-	assert.True(t, (response.Event_type == "CHECK_IN" || response.Event_type == "CHECK_OUT"))
+	assert.True(t, (response.EventType == "CHECK_IN" || response.EventType == "CHECK_OUT"))
 }
 
 func TestGetMyLastAttendance(t *testing.T) {
@@ -227,7 +225,7 @@ func TestGetMyLastAttendance(t *testing.T) {
 	var response models.Attendance
 	err := json.Unmarshal([]byte(w.Body.String()), &response)
 	assert.Nil(t, err)
-	assert.Equal(t, 2, response.User_id)
+	assert.Equal(t, 2, response.UserId)
 
 	// assert.True(t, response.Id == 1)
 }

@@ -17,7 +17,7 @@ import (
 // @Tags         /private/attendance/today
 // @securityDefinitions.basic BasicAuth
 // @Produce      json
-// @Success 200 {object} models.SimpleAttendance
+// @Success 200 {object} models.AttendanceResponse
 // @Failure      400  {object}  models.SimpleError
 // @Failure      404  {object}  models.SimpleError
 // @Failure      500  {object}  models.SimpleError
