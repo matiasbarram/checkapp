@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-String formatTime(String datetime) {
+String formatDateTimetoTime(String datetime) {
   final inputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
   final inputDate = inputFormat.parse(datetime);
   final outputFormat = DateFormat('hh:mm a');
@@ -16,11 +16,10 @@ String getCurrentTime() {
   return formattedDate;
 }
 
-DateTime formatStringDateTimeToTime(String datetime) {
-  final parsedDate = DateTime.parse(datetime);
-  final formatter = DateFormat('HH:mm:ss');
-  String formattedTime = formatter.format(parsedDate);
-  final parsedTime = DateTime.parse(formattedTime);
-
-  return parsedTime;
+String formatTimetoTime(String datetime) {
+  final inputFormat = DateFormat('HH:mm:ss');
+  final inputDate = inputFormat.parse(datetime);
+  final outputFormat = DateFormat('hh:mm a');
+  final outputDate = outputFormat.format(inputDate);
+  return outputDate;
 }

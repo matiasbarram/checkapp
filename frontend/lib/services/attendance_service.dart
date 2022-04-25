@@ -13,6 +13,8 @@ class AttendanceService extends ChangeNotifier {
   String entrada = 'PENDIENTE';
   String salida = 'PENDIENTE';
   String horaEsperada = 'PENDIENTE';
+  String entradaEsperada = 'PENDIENTE';
+  String salidaEsperada = 'PENDIENTE';
   String status = 'Calculando...';
   Color statusColor = AppTheme.textPending;
   Color checkInColor = AppTheme.textPending;
@@ -49,13 +51,15 @@ class AttendanceService extends ChangeNotifier {
       if (attendance['event_type'] == _eventTypeCheckIn) {
         if (attendance['pending'] == false) {
           checkInColor = _calculateColor(attendance['comments']);
-          entrada = formatTime(attendance['event_time']);
+          entrada = formatDateTimetoTime(attendance['event_time']);
+          entradaEsperada = formatTimetoTime(attendance['expected_time']);
           notifyListeners();
         }
       }
       if (attendance['event_type'] == _eventTypeCheckOut) {
         if (attendance['pending'] == false) {
-          salida = formatTime(attendance['event_time']);
+          salida = formatDateTimetoTime(attendance['event_time']);
+          salidaEsperada = formatTimetoTime(attendance['expected_time']);
           checkOutColor = _calculateColor(attendance['comments']);
           notifyListeners();
         }
@@ -93,13 +97,13 @@ class AttendanceService extends ChangeNotifier {
     } else {
       //Checkin
       if (answer['attendance']['event_type'] == _eventTypeCheckIn) {
-        entrada = formatTime(answer['attendance']['event_time']);
+        entrada = formatDateTimetoTime(answer['attendance']['event_time']);
         notifyListeners();
         return 'OK';
       }
       //Checkout
       else if (answer['attendance']['event_type'] == _eventTypeCheckOut) {
-        salida = formatTime(answer['attendance']['event_time']);
+        salida = formatDateTimetoTime(answer['attendance']['event_time']);
         notifyListeners();
         return 'OK';
       }
