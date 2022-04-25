@@ -1,3 +1,5 @@
+import 'package:checkapp/helpers/helpers.dart';
+import 'package:checkapp/helpers/scan_qr.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/themes/custom_decorations.dart';
 import 'package:flutter/material.dart';
@@ -33,8 +35,13 @@ class ConfirmAttendanceScreen extends StatelessWidget {
             ElevatedButton(
               style: ButtonsDecoration.confirmButtonStyle(),
               onPressed: () async {
-                postAttendance(context, answer, userLocation, todo);
-                Navigator.pop(context);
+                //TODO: BLOQUEAR BOTTÓN DESPÚES DEL PRIMER POST
+                String msgAnswer =
+                    await postAttendance(context, answer, userLocation, todo);
+                if (msgAnswer != 'OK') {
+                  PopupNotification.errorDialog(context, msgAnswer);
+                }
+                //Navigator.pop(context);
               },
               child: const Text('Si'),
             ),
@@ -96,13 +103,20 @@ class ConfirmAttendanceScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 30.0, horizontal: 10),
-                            child: Text('Hora de $textInfo esperada: '),
+                            child: Text(
+                              'Hora de $textInfo esperada: ',
+                              style: const TextStyle(
+                                  color: AppTheme.textPrimColor),
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 30.0, horizontal: 10),
                             child: Text(
                               attendanceService.horaEsperada,
+                              style: const TextStyle(
+                                  color: AppTheme.textPrimColor,
+                                  fontWeight: FontWeight.w600),
                               textAlign: TextAlign.center,
                             ),
                           )
@@ -111,12 +125,19 @@ class ConfirmAttendanceScreen extends StatelessWidget {
                           const Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: 30.0, horizontal: 10),
-                            child: Text('Hora de escaneo: '),
+                            child: Text(
+                              'Hora de escaneo: ',
+                              style: TextStyle(color: AppTheme.textPrimColor),
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(20.0),
                             child: Text(
                               getCurrentTime(),
+                              style: const TextStyle(
+                                color: AppTheme.textPrimColor,
+                                fontWeight: FontWeight.w600,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           )
@@ -124,8 +145,11 @@ class ConfirmAttendanceScreen extends StatelessWidget {
                         TableRow(children: [
                           const Padding(
                             padding: EdgeInsets.symmetric(
-                                vertical: 30.0, horizontal: 10),
-                            child: Text('Estado: '),
+                                vertical: 30.0, horizontal: 20),
+                            child: Text(
+                              'Estado: ',
+                              style: TextStyle(color: AppTheme.textPrimColor),
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
@@ -133,8 +157,9 @@ class ConfirmAttendanceScreen extends StatelessWidget {
                             child: Text(
                               attendanceService.status,
                               style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: attendanceService.statusColor),
+                                fontWeight: FontWeight.w600,
+                                color: attendanceService.statusColor,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           )
@@ -158,11 +183,13 @@ class ConfirmAttendanceScreen extends StatelessWidget {
   }
 }
 
-Future<void> postAttendance(BuildContext context, ScanModel qrModel,
+Future<String> postAttendance(BuildContext context, ScanModel qrModel,
     String userLocation, String check) async {
   final attendanceService =
       Provider.of<AttendanceService>(context, listen: false);
-  await attendanceService.postNewAttendance(qrModel.id, check, userLocation);
+  String msgAnswer = await attendanceService.postNewAttendance(
+      qrModel.id, check, userLocation);
+  return msgAnswer;
 }
 
 Future<String> getAttendanceInfo(BuildContext context, String todo) async {
@@ -170,6 +197,5 @@ Future<String> getAttendanceInfo(BuildContext context, String todo) async {
       Provider.of<AttendanceService>(context, listen: false);
   final String response = await attendanceService.setFuturePostInfo(todo);
   print('Terminó de cambiar la info, retorando DONE...');
-  //await Future.delayed(const Duration(seconds: 2000));
   return response;
 }

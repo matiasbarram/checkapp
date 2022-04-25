@@ -3,7 +3,6 @@ import 'package:checkapp/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 
 import '../helpers/date_time_helper.dart';
 
@@ -62,7 +61,7 @@ class AttendanceService extends ChangeNotifier {
     }
   }
 
-  Future<void> postNewAttendance(
+  Future<String> postNewAttendance(
       int companyid, String eventType, String userlocation) async {
     final _cookie = await storage.read(key: 'mysession');
     Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
@@ -80,42 +79,44 @@ class AttendanceService extends ChangeNotifier {
         await http.post(url, body: attendanceData, headers: headers);
     print('Respuesta del postAttendance:  ${respuesta.body}');
     final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
-    _updateStatusAttendance(decodeResp);
+    String answerMsg = _updateStatusAttendance(decodeResp);
+    return answerMsg;
   }
 
-  void _updateStatusAttendance(Map<String, dynamic> answer) {
-    if (answer.containsKey('message')) {
-      //DEBERIA SER answer['error']
-      print(answer['message']);
+  String _updateStatusAttendance(Map<String, dynamic> answer) {
+    if (answer.containsKey('error')) {
+      print(answer['error']);
+      String msgAnswer = answer['error']['message'];
+      return msgAnswer;
+    } else {
+      //Checkin
+      if (answer['attendance']['event_type'] == _eventTypeCheckIn) {
+        entrada = formatTime(answer['attendance']['event_time']);
+        notifyListeners();
+        return 'OK';
+      }
+      //Checkout
+      else if (answer['attendance']['event_type'] == _eventTypeCheckOut) {
+        salida = formatTime(answer['attendance']['event_time']);
+        notifyListeners();
+        return 'OK';
+      }
+      //Error
+      else {
+        print('NO SABO QUE PASÓ');
+        return 'ERROR DE NOSABO';
+      }
     }
-    //Checkin
-    if (answer['attendance']['event_type'] == _eventTypeCheckIn) {
-      entrada = formatTime(answer['attendance']['event_time']);
-      notifyListeners();
-    }
-    //Checkout
-    else if (answer['attendance']['event_type'] == _eventTypeCheckOut) {
-      salida = formatTime(answer['attendance']['event_time']);
-      notifyListeners();
-    }
-    //Error
-    else {
-      print('NO SABO QUE PASÓ');
-    }
-    notifyListeners();
   }
 
   Future<String> setFuturePostInfo(String todo) async {
     List<dynamic> info = await getTodayAttendance();
-    final String now = getCurrentTime();
     for (var attendance in info) {
       if (attendance['event_type'] == todo && attendance['pending'] == true) {
         horaEsperada = attendance['expected_time'];
-        status = _setStatus(
-            now,
-            horaEsperada,
-            attendance[
-                'event_type']); //DEBERÍA VOLAR por attendance['comments'] y
+        _setStatus(attendance['comments'], attendance['time_diff'],
+            attendance['event_type']);
+        ;
         notifyListeners();
         return 'DONE';
       }
@@ -123,34 +124,21 @@ class AttendanceService extends ChangeNotifier {
     return 'ERROR!';
   }
 
-  String _setStatus(String now, String esperado, String eventType) {
-    int margin = 20;
-    DateTime nowDate = DateFormat("hh:mm:ss").parse(now);
-    DateTime esperadoDate = DateFormat("hh:mm:ss").parse(esperado);
-
-    Duration dif = nowDate.difference(esperadoDate);
+  void _setStatus(String comment, String timeDiff, String todo) {
     Color newColor;
-    int difMinutes = dif.inMinutes.toInt();
-    if ((difMinutes > 0 && (difMinutes).abs() > margin)) {
-      status = 'TARDE';
+    if (comment == 'LATE') {
       newColor = Colors.red;
-      statusColor = Colors.red;
-    } else if (difMinutes < 0 && (difMinutes).abs() > margin) {
-      status = 'ANTES';
+      status = 'TARDE';
+    } else if (comment == 'EARLY LEAVE') {
       newColor = Colors.yellow;
-      statusColor = Colors.yellow;
-    } else if ((difMinutes > 0 && (difMinutes).abs() < margin) ||
-        (difMinutes < 0 && (difMinutes).abs() < margin)) {
-      status = 'A tiempo';
+      status = 'SALIDA TEMPRANA';
+    } else if (comment == 'ON TIME') {
       newColor = Colors.green;
-      statusColor = Colors.green;
+      status = 'A TIEMPO';
     } else {
       newColor = AppTheme.textPrimColor;
     }
-    if (eventType == _eventTypeCheckIn) {
-      //checkInColor = newColor;
-    }
-
-    return status;
+    statusColor = newColor;
+    notifyListeners();
   }
 }

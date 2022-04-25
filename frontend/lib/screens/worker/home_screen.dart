@@ -1,4 +1,5 @@
-import 'package:checkapp/providers/ui_provider.dart';
+import 'package:checkapp/providers/providers.dart';
+import 'package:checkapp/widgets/main_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:checkapp/widgets/widgets.dart';
 import 'package:provider/provider.dart';
@@ -11,31 +12,14 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
-    final uiProvider = Provider.of<UIprovider>(context);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return Scaffold(
       extendBody: true,
       bottomNavigationBar: const BottomNavBar(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: const ScanQRCentered(),
-      appBar: AppBar(
-        title: Text('Hola ${uiProvider.name}!'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-              onTap: () {
-                authService.checkKeys();
-                Navigator.pushReplacementNamed(context, 'login');
-                authService.logout();
-              },
-              child: const CircleAvatar(
-                backgroundColor: Colors.white,
-              ),
-            ),
-          )
-        ],
-      ),
+      appBar: mainAppBar(context, userProvider, authService),
       body: const _HomePageBody(),
     );
   }
@@ -48,7 +32,7 @@ class _HomePageBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final uiProvider = Provider.of<UIprovider>(context);
 
-    final currentIndex = uiProvider.selectMenuOpt;
+    final currentIndex = uiProvider.selectedMenuOpt;
     switch (currentIndex) {
       case 0:
         return const ResumenScreen();

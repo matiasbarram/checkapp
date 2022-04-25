@@ -5,6 +5,7 @@ import 'package:checkapp/services/services.dart';
 import 'package:checkapp/models/models.dart';
 import 'package:checkapp/helpers/user_location.dart';
 import 'dart:convert';
+import 'helpers.dart';
 
 Future<void> scanQr(BuildContext context) async {
   String scannedAns = await FlutterBarcodeScanner.scanBarcode(
@@ -19,7 +20,7 @@ Future<void> scanQr(BuildContext context) async {
 
     if (todayEventsList[0]['pending'] == false &&
         todayEventsList[1]['pending'] == false) {
-      errorDialog(context,
+      PopupNotification.errorDialog(context,
           'Ya has marcado tu entrada y tu salida, si ocurrió un problema por favor contacta a tu encargado');
     } else {
       final userLocation = await getUserLocation();
@@ -49,28 +50,6 @@ Future<void> scanQr(BuildContext context) async {
       }
     }
   }
-}
-
-errorDialog(BuildContext context, String errorMsg) {
-  showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            'Ha ocurrido un error',
-          ),
-          content: Text(errorMsg),
-          actions: [
-            ElevatedButton(
-              child: const Text("Salir"),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      });
 }
 
 ScanModel createScanModel(String qrScanRes) {

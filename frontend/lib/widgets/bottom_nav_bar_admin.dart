@@ -2,8 +2,8 @@ import 'package:checkapp/providers/ui_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BottomNavBar extends StatelessWidget {
-  const BottomNavBar({
+class BottomNavBarAdmin extends StatelessWidget {
+  const BottomNavBarAdmin({
     Key? key,
   }) : super(key: key);
 
@@ -37,7 +37,10 @@ class BottomNavBar extends StatelessWidget {
             currentIndex: currentIndex,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined), label: 'Home'),
+                  icon: Icon(Icons.home_outlined), label: 'Resumen'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.airline_seat_individual_suite_outlined),
+                  label: 'Info'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.history), label: 'Historial'),
             ],
