@@ -3,9 +3,9 @@ import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/themes/custom_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../helpers/date_time_helper.dart';
-import '../models/models.dart';
-import '../services/services.dart';
+import '../../helpers/date_time_helper.dart';
+import '../../models/models.dart';
+import '../../services/services.dart';
 
 class ConfirmAttendanceScreen extends StatelessWidget {
   const ConfirmAttendanceScreen({Key? key}) : super(key: key);

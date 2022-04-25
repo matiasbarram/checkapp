@@ -1,10 +1,11 @@
-import 'package:checkapp/screens/confirm_attendance_screen.dart';
+import 'package:checkapp/screens/admin/home_screen_admin.dart';
 import 'package:checkapp/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/providers.dart';
 import 'screens/screens.dart';
 import 'package:checkapp/themes/app_theme.dart';
+import 'package:checkapp/screens/worker/screens.dart';
 
 void main() => runApp(const AppState());
 
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         routes: {
           'home': (_) => const HomeScreen(),
+          'homeadmin': (_) => const HomeScreenAdmin(),
           'login': ((context) => const LoginScreen()),
           'loading': ((context) => const LoadingScreen()),
           'confirm': ((context) => const ConfirmAttendanceScreen()),
