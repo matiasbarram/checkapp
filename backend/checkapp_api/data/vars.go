@@ -28,3 +28,8 @@ var NextAttendanceEvent = map[string]string{
 	"CHECK_IN":  "CHECK_OUT",
 	"CHECK_OUT": "CHECK_IN",
 }
+
+var EventIsArrival = map[string]bool{
+	"CHECK_IN":  true,
+	"CHECK_OUT": false,
+}

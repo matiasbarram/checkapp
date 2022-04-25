@@ -91,7 +91,7 @@ func ValidateUserLocation(userLocation string, companyLocation string) error {
 	}
 
 	if distance > data.AttendanceDistanceLimit {
-		return errors.New("you are too far away from your company 💢 (distance : " + fmt.Sprintf("%.2f", distance) + " km)")
+		return errors.New(fmt.Sprint(9))
 	}
 	return nil
 }

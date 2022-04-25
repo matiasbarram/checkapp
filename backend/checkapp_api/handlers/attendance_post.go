@@ -2,10 +2,13 @@ package handlers
 
 import (
 	"checkapp_api/controllers"
+	"checkapp_api/data"
+	"checkapp_api/models"
 	"checkapp_api/utils"
-	"fmt"
 	"net/http"
+	"strconv"
 
+	"github.com/WAY29/icecream-go/icecream"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,7 +23,7 @@ import (
 // @Produce      json
 // @Param  data body models.AttendanceParams true "The input Attendance struct"
 // @Accept json
-// @Success 200 {object} models.Attendance
+// @Success 200 {object} models.AttendanceResponse
 // @Failure      400  {object}  models.SimpleError
 // @Failure      404  {object}  models.SimpleError
 // @Failure      500  {object}  models.SimpleError
@@ -32,16 +35,23 @@ func PostAttendance(c *gin.Context) {
 	}
 	att, err := utils.ValidateAttendanceParams(c)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
 	attendance, err := controllers.RegisterAttendance(att, int64(userId))
 	if err != nil {
-		fmt.Println("error ", err.Error())
-		// ver los posibles errores y responder acorde
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		var responseError models.SimpleError
+		i, err2 := strconv.ParseInt(err.Error(), 10, 64)
+		if err2 != nil {
+			responseError.Code = 0
+			responseError.Message = err.Error()
+		} else {
+			responseError.Code = int(i)
+			responseError.Message = data.ErrorCodeMap[int(i)]
+		}
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": responseError})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"message": "markste tu entrada/salida",
-			"attendance": attendance})
+		icecream.Ic(attendance)
+		c.JSON(http.StatusOK, gin.H{"attendance": attendance})
 	}
 }

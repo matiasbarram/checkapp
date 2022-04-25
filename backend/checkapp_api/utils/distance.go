@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -30,11 +31,11 @@ func CalculateDistance(user_location string, company_location string) (float64, 
 	var dist float64
 	ux, uy, err := getCoordinates(user_location)
 	if err != nil {
-		return dist, errors.New("Invalid value for user_location " + user_location)
+		return dist, errors.New(fmt.Sprint(7))
 	}
 	cx, cy, err := getCoordinates(company_location)
 	if err != nil {
-		return dist, errors.New("Invalid value for user_location " + company_location)
+		return dist, errors.New(fmt.Sprint(8))
 	}
 	up := geo.NewPoint(ux, uy)
 	cp := geo.NewPoint(cx, cy)

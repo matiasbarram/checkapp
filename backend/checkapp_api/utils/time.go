@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"checkapp_api/models"
 	"fmt"
 	"math"
 	"strings"
@@ -47,8 +46,8 @@ func FormatSecondsToHHMMSS(seconds float64) string {
 	return formatedSeconds
 }
 
-func GetFormattedTimeDiff(attendance models.AttendanceResponse, isArrival bool) (string, string, error) {
-	diff, err := GetTimeDiffSeconds(attendance.EventTime, attendance.ExpectedTime, isArrival)
+func GetFormattedTimeDiff(eventTime string, expectedTime string, isArrival bool) (string, string, error) {
+	diff, err := GetTimeDiffSeconds(eventTime, expectedTime, isArrival)
 	if err != nil {
 		return "", "", err
 	}

@@ -1,14 +1,14 @@
 package models
 
 type Attendance struct {
-	Id            int    `json:"id"`
-	User_id       int    `json:"user_id"`
-	Event_type    string `json:"event_type"`
-	Event_time    string `json:"event_time"`
-	Location      string `json:"location"`
-	Confirmed     bool   `json:"confirmed"`
-	Comments      string `json:"comments,omitempty"`
-	Expected_time string `json:"expected_time"`
+	Id           int    `json:"id"`
+	UserId       int    `json:"user_id"`
+	EventType    string `json:"event_type"`
+	EventTime    string `json:"event_time"`
+	Location     string `json:"location"`
+	Confirmed    bool   `json:"confirmed"`
+	Comments     string `json:"comments,omitempty"`
+	ExpectedTime string `json:"expected_time"`
 }
 
 type AttendanceParams struct {
@@ -25,8 +25,8 @@ type AttendanceResponse struct {
 	ExpectedTime string `json:"expected_time"`
 	Pending      bool   `json:"pending"`
 	EventTime    string `json:"event_time,omitempty"`
-	Confirmed    bool   `json:"confirmed"`
-	Comments     string `json:"comments,omitempty"`
-	TimeDiff     string `json:"time_diff,omitempty"`
-	Punctual     bool   `json:"Punctual,omitempty"`
+	// Confirmed    bool   `json:"confirmed"`
+	Comments string `json:"comments,omitempty"`
+	TimeDiff string `json:"time_diff,omitempty"`
+	// Punctual     bool   `json:"Punctual,omitempty"`
 }
