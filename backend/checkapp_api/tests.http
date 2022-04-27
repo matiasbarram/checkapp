@@ -70,7 +70,7 @@ GET {{host}}private/me
 GET {{host}}private/companies/generate/2
 
 ###
-GET {{host}}qrs/image/1
+GET {{host}}private/qrs/image/1
 
 ###
 # POST {{host}}private/attendance
@@ -85,7 +85,7 @@ GET {{host}}logout
 
     # "location": "-40.07086281924284, -72.8730258237025",
 
-POST {{host}}private/attendance
+POST {{host}}private/attendance/
 content-type: application/json
 
 {

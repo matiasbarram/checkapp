@@ -8,9 +8,20 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// const dbcompany = "root"
-// const dbpass = "root"
-// const dbname = "checkapp"
+const companyByUserIdQuery = `
+SELECT
+    *
+FROM
+    company
+WHERE
+    id =(
+    SELECT
+        u.company_id
+    FROM
+        user u
+    WHERE
+        u.id = ?
+);`
 
 func GetCompanyById(id int64) (models.Company, error) {
 
@@ -72,5 +83,29 @@ func GetCompanies() []models.Company {
 	}
 
 	return companies
+
+}
+
+func GetCompanyByUserId(userId int64) (models.Company, error) {
+
+	var company models.Company
+	db, err := GetDB()
+	// if there is an error opening the connection, handle it
+	if err != nil {
+		// simply print the error to the console
+		fmt.Println("Err", err.Error())
+		// returns nil on error
+		return company, err
+	}
+
+	defer db.Close()
+	row := db.QueryRow(companyByUserIdQuery, userId)
+	err = row.Scan(&company.Id, &company.Name, &company.Location)
+
+	if err != nil {
+		fmt.Println("Err", err.Error())
+		return company, err
+	}
+	return company, err
 
 }

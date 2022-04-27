@@ -1,4 +1,4 @@
-package handlers
+package qr
 
 import (
 	"checkapp_api/controllers"
@@ -20,10 +20,10 @@ import (
 // @Success 200 {array} models.Qr
 // @Failure      400  {object}  models.SimpleError
 // @Router       /qrs [get]
-func GetQrs(c *gin.Context) {
+func GetAll(c *gin.Context) {
 	qrs := controllers.GetQrs()
 
-	if qrs == nil || len(qrs) == 0 {
+	if len(qrs) == 0 {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
 		c.IndentedJSON(http.StatusOK, qrs)
@@ -42,7 +42,7 @@ func GetQrs(c *gin.Context) {
 // @Success 200 {array} models.Qr
 // @Failure      404  {object}  models.SimpleError
 // @Router       /qrs/{id} [get]
-func GetQrById(c *gin.Context) {
+func GetById(c *gin.Context) {
 	str_id := c.Param("id")
 	id, err := strconv.ParseInt(str_id, 10, 64)
 	if err != nil {
@@ -54,5 +54,32 @@ func GetQrById(c *gin.Context) {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "QR not found"})
 	} else {
 		c.IndentedJSON(http.StatusOK, qr)
+	}
+}
+
+// @BasePath /api/v1
+
+// HealthCheck godoc
+// @Summary      retrieves qr image by id
+// @Schemes      https
+// @Description  lol
+// @Tags         /qrs/image/{id}
+// @Produce      json
+// @Param  int path int true "int valid" minimum(1)
+// @Success 200 {array} models.Qr
+// @Failure      404  {object}  models.SimpleError
+// @Router       /qrs/image/{id} [get]
+func GetImageById(c *gin.Context) {
+	str_id := c.Param("id")
+	id, err := strconv.ParseInt(str_id, 10, 64)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
+	qr, err := controllers.GetQrImageById(id)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "QR not found"})
+	} else {
+		c.Data(http.StatusOK, "image/jpeg", qr)
 	}
 }

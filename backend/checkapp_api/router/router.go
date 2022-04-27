@@ -3,6 +3,10 @@ package router
 import (
 	"checkapp_api/data"
 	"checkapp_api/handlers"
+	"checkapp_api/handlers/attendance"
+	"checkapp_api/handlers/company"
+	"checkapp_api/handlers/qr"
+	"checkapp_api/handlers/user"
 	"net/http"
 
 	docs "checkapp_api/docs"
@@ -13,6 +17,67 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/thinkerou/favicon"
 )
+
+func addUserGroupEndpoints(baseGroup *gin.RouterGroup) {
+	// user related endpoints
+	userGroup := baseGroup.Group("/users")
+	{
+		userGroup.GET("", user.GetAll)
+		userGroup.POST("", user.Post)
+		userGroup.GET("/:id", user.GetById)
+		userGroup.GET("/me", user.GetFromSession)
+	}
+
+}
+
+func addAttendanceGroupEndpoints(baseGroup *gin.RouterGroup) {
+	// user related endpoints
+	attendanceGroup := baseGroup.Group("/attendance")
+	{
+		attendanceGroup.GET("", attendance.GetFromSession)
+		attendanceGroup.GET("/:id", attendance.GetById)
+		attendanceGroup.POST("", attendance.Post)
+		attendanceGroup.GET("/last", attendance.GetLastFromSession) // borrable
+		attendanceGroup.GET("/today", attendance.GetDailyFromSession)
+	}
+
+}
+
+func addCompanyGroupEndpoints(baseGroup *gin.RouterGroup) {
+	// user related endpoints
+	companyGroup := baseGroup.Group("/companies")
+	{
+
+		companyGroup.GET("", company.GetAll)
+		companyGroup.GET("/me", company.GetFromSession)
+		companyGroup.GET("/:id", company.GetById)
+	}
+
+}
+
+func addQrGroupEndpoints(baseGroup *gin.RouterGroup) {
+
+	// user related endpoints
+	qrGroup := baseGroup.Group("/qrs")
+	{
+		qrGroup.GET("", qr.GetAll)
+		qrGroup.GET("/:id", qr.GetById)
+		qrGroup.GET("/image/:id", qr.GetImageById)
+	}
+
+}
+
+func addPrivateGroupEndpoints(baseGroup *gin.RouterGroup) {
+	// Private group, require authentication to access
+	private := baseGroup.Group("/private")
+	private.Use(handlers.AuthRequired)
+	{
+		addAttendanceGroupEndpoints(private)
+		addCompanyGroupEndpoints(private)
+		addQrGroupEndpoints(private)
+		addUserGroupEndpoints(private)
+	}
+}
 
 func Setup() *gin.Engine {
 	r := gin.New()
@@ -39,45 +104,14 @@ func Setup() *gin.Engine {
 		v1.GET("/index", handlers.GetHome)
 		v1.GET("/home", handlers.GetHome)
 		// Login and logout routes
-		v1.POST("/login", handlers.Login)
-		v1.GET("/logout", handlers.Logout)
+		v1.POST("/login", user.Login)
+		v1.GET("/logout", user.Logout)
 
-		v1.GET("/reset/attendance/today", handlers.ResetTodaysAttendance)
-		v1.GET("/reset/attendance/all", handlers.ResetAllAttendance)
+		v1.GET("/reset/attendance/today", attendance.DeleteDaily)
+		v1.GET("/reset/attendance/all", attendance.DeleteAll)
 
-		// user related endpoints
-		users := v1.Group("/users")
-		{
-			users.GET("", handlers.GetUsers)
-			users.POST("", handlers.PostUser)
-			users.GET("/:id", handlers.GetUserById)
-		}
+		addPrivateGroupEndpoints(v1)
 
-		companies := v1.Group("/companies")
-		{
-			companies.GET("", handlers.GetCompanies)
-			companies.GET("/:id", handlers.GetCompanyById)
-		}
-
-		qrs := v1.Group("/qrs")
-		{
-			qrs.GET("", handlers.GetQrs)
-			qrs.GET("/:id", handlers.GetQrById)
-			qrs.GET("/image/:id", handlers.GetQrImageById)
-		}
-
-		// Private group, require authentication to access
-		private := v1.Group("/private")
-		private.Use(handlers.AuthRequired)
-		{
-			private.GET("/companies/generate/:id", handlers.GenerateQr)
-			private.GET("/me", handlers.Me)
-			private.GET("/attendance", handlers.GetMyAttendance)
-			private.POST("/attendance", handlers.PostAttendance)
-			private.GET("/attendance/last", handlers.GetMyLastAttendance)
-			private.GET("/attendance/today", handlers.GetTodaysAttendance)
-			// private.GET("/attendance/stats")
-		}
 	}
 	return r
 }

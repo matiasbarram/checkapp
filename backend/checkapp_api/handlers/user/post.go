@@ -1,4 +1,4 @@
-package handlers
+package user
 
 import (
 	"checkapp_api/controllers"
@@ -23,7 +23,7 @@ import (
 // @Success 200 {object} models.User
 // @Failure      400  {object}  models.SimpleError
 // @Router       /users [post]
-func PostUser(c *gin.Context) {
+func Post(c *gin.Context) {
 	u, err := utils.ValidateUserInfo(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})

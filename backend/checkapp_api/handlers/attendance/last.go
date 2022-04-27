@@ -1,7 +1,8 @@
-package handlers
+package attendance
 
 import (
 	"checkapp_api/controllers"
+	"checkapp_api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,7 @@ import (
 // @BasePath /api/v1
 
 // HealthCheck godoc
-// @Summary      clear u
+// @Summary      returns current user's last attendance event
 // @Schemes      https
 // @Description  show api homepage
 // @Tags         /private/attendance/last
@@ -20,12 +21,17 @@ import (
 // @Failure      400  {object}  models.SimpleError
 // @Failure      404  {object}  models.SimpleError
 // @Failure      500  {object}  models.SimpleError
-// @Router       /reset/attendance/today [get]
-func ResetTodaysAttendance(c *gin.Context) {
-	err := controllers.ResetTodayAttendance()
+// @Router       /private/attendance/last [get]
+func GetLastFromSession(c *gin.Context) {
+	id, ok := utils.GetUserIdFromSession(c)
+	if !ok {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "algo malio sal"})
+	}
+	user, err := controllers.GetLastEventFromUser(int64(id))
+
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 	} else {
-		c.IndentedJSON(http.StatusOK, gin.H{"message": "okie"})
+		c.IndentedJSON(http.StatusOK, user)
 	}
 }

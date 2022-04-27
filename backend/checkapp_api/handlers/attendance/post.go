@@ -1,4 +1,6 @@
-package handlers
+package attendance
+
+// package handlers
 
 import (
 	"checkapp_api/controllers"
@@ -8,7 +10,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/WAY29/icecream-go/icecream"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,7 +29,7 @@ import (
 // @Failure      404  {object}  models.SimpleError
 // @Failure      500  {object}  models.SimpleError
 // @Router       /private/attendance [post]
-func PostAttendance(c *gin.Context) {
+func Post(c *gin.Context) {
 	userId, ok := utils.GetUserIdFromSession(c)
 	if !ok {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "algo malio sal"})
@@ -51,7 +52,6 @@ func PostAttendance(c *gin.Context) {
 		}
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": responseError})
 	} else {
-		icecream.Ic(attendance)
 		c.JSON(http.StatusOK, gin.H{"attendance": attendance})
 	}
 }
