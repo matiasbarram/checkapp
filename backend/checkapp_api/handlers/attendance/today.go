@@ -13,17 +13,17 @@ import (
 // @BasePath /api/v1
 
 // HealthCheck godoc
-// @Summary      returns current user's today's attendance
-// @Schemes      https
+// @Summary  returns current user's today's attendance
+// @Schemes  https
 // @Description
-// @Tags         /private/attendance/today
-// @securityDefinitions.basic BasicAuth
-// @Produce      json
-// @Success 200 {object} models.AttendanceResponse
-// @Failure      400  {object}  models.SimpleError
-// @Failure      404  {object}  models.SimpleError
-// @Failure      500  {object}  models.SimpleError
-// @Router       /private/attendance/today [get]
+// @Tags                       /attendance/today
+// @securityDefinitions.basic  BasicAuth
+// @Produce                    json
+// @Success                    200  {object}  models.AttendanceResponse
+// @Failure                    400  {object}  models.SimpleError
+// @Failure                    404  {object}  models.SimpleError
+// @Failure                    500  {object}  models.SimpleError
+// @Router                     /private/attendance/today [get]
 func GetDailyFromSession(c *gin.Context) {
 	id, ok := utils.GetUserIdFromSession(c)
 	if !ok {

@@ -1,7 +1,5 @@
 package attendance
 
-// package handlers
-
 import (
 	"checkapp_api/controllers"
 	"checkapp_api/utils"
@@ -11,6 +9,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// HealthCheck godoc
+// @Summary      retrieves all attendances (pagination pending)
+// @Schemes      https
+// @Description  lol
+// @Tags         /attendances
+// @Produce      json
+// @Accept       json
+// @Success      200  {array}   models.Attendance
+// @Failure      400  {object}  models.SimpleError
+// @Router       /private/attendances [get]
+func GetAll(c *gin.Context) {
+	attendances, err := controllers.GetAttendances()
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	c.IndentedJSON(http.StatusOK, attendances)
+}
+
 // @BasePath /api/v1
 
 // HealthCheck godoc
@@ -19,8 +35,8 @@ import (
 // @Description  lol
 // @Tags         /attendances/{id}
 // @Produce      json
-// @Accept json
-// @Success 200  models.Attendance
+// @Accept       json
+// @Success      200  {object}  models.Attendance
 // @Failure      400  {object}  models.SimpleError
 // @Router       /private/attendances/{id} [get]
 func GetById(c *gin.Context) {
@@ -40,10 +56,10 @@ func GetById(c *gin.Context) {
 // @Description  lol
 // @Tags         /attendances
 // @Produce      json
-// @Accept json
-// @Success 200 {array} models.Attendance
+// @Accept       json
+// @Success      200  {array}   models.Attendance
 // @Failure      400  {object}  models.SimpleError
-// @Router       /private/attendances [get]
+// @Router       /private/attendances/me [get]
 func GetFromSession(c *gin.Context) {
 	id, ok := utils.GetUserIdFromSession(c)
 	if !ok {

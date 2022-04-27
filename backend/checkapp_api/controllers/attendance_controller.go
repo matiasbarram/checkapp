@@ -1,5 +1,8 @@
 package controllers
 
+// TODO
+// cambiar los scans malditos por una funcion
+
 import (
 	"checkapp_api/data"
 	"checkapp_api/models"
@@ -478,4 +481,48 @@ func GetAttendanceFromUser(id int64) ([]models.Attendance, error) {
 	}
 
 	return attendances, nil
+}
+
+func GetAttendances() ([]models.Attendance, error) {
+
+	db, err := GetDB()
+
+	// if there is an error opening the connection, handle it
+	if err != nil {
+		// simply print the error to the console
+		fmt.Println("Err", err.Error())
+		// returns nil on error
+		return nil, err
+	}
+
+	defer db.Close()
+	results, err := db.Query("SELECT * FROM attendance;")
+
+	if err != nil {
+		fmt.Println("Err", err.Error())
+		return nil, err
+	}
+
+	attendances := []models.Attendance{}
+	for results.Next() {
+		var attendance models.Attendance
+		// for each row, scan into the models.Users struct
+		err = results.Scan(
+			&attendance.Id,
+			&attendance.UserId,
+			&attendance.EventType,
+			&attendance.EventTime,
+			&attendance.Location,
+			&attendance.Confirmed,
+			&attendance.Comments,
+			&attendance.ExpectedTime)
+		if err != nil {
+			panic(err.Error()) // proper error handling instead of panic in your app
+		}
+		// append the usersg into user array
+		attendances = append(attendances, attendance)
+	}
+
+	return attendances, nil
+
 }

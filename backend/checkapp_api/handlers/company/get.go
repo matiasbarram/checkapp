@@ -14,15 +14,15 @@ import (
 // @BasePath /api/v1
 
 // HealthCheck godoc
-// @Summary      retrieves single company by id
+// @Summary      retrieves all companies (vagination pending)
 // @Schemes      https
 // @Description  lol
-// @Tags         /companies/{id}
+// @Tags         /companies
 // @Produce      json
-// @Accept json
-// @Success 200  {array} models.Company
+// @Accept       json
+// @Success      200  {array}   models.Company
 // @Failure      400  {object}  models.SimpleError
-// @Router       /private/companies/{id} [get]
+// @Router       /private/companies [get]
 func GetAll(c *gin.Context) {
 
 	companies := controllers.GetCompanies()
@@ -37,8 +37,8 @@ func GetAll(c *gin.Context) {
 // @Description  lol
 // @Tags         /companies/{id}
 // @Produce      json
-// @Accept json
-// @Success 200  models.Company
+// @Accept       json
+// @Success      200  {array}   models.Company
 // @Failure      400  {object}  models.SimpleError
 // @Router       /private/companies/{id} [get]
 func GetById(c *gin.Context) {
@@ -53,15 +53,15 @@ func GetById(c *gin.Context) {
 // @BasePath /api/v1
 
 // HealthCheck godoc
-// @Summary      retrieves current user's company (pagination pending)
+// @Summary      retrieves current user's company
 // @Schemes      https
 // @Description  lol
-// @Tags         /companiess
+// @Tags         /companies/me
 // @Produce      json
-// @Accept json
-// @Success 200 {array} models.companies
+// @Accept       json
+// @Success      200  {array}   models.Company
 // @Failure      400  {object}  models.SimpleError
-// @Router       /private/companiess [get]
+// @Router       /private/companies/me [get]
 func GetFromSession(c *gin.Context) {
 	id, ok := utils.GetUserIdFromSession(c)
 	if !ok {

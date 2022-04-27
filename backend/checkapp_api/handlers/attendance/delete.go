@@ -12,17 +12,14 @@ import (
 // @BasePath /api/v1
 
 // HealthCheck godoc
-// @Summary      clear u
-// @Schemes      https
-// @Description  show api homepage
-// @Tags         /private/attendance/last
-// @securityDefinitions.basic BasicAuth
-// @Produce      json
-// @Success 200 {object} models.Attendance
-// @Failure      400  {object}  models.SimpleError
-// @Failure      404  {object}  models.SimpleError
-// @Failure      500  {object}  models.SimpleError
-// @Router       /reset/attendance/today [get]
+// @Summary                    clear u
+// @Schemes                    https
+// @Description                show api homepage
+// @Tags                       /reset/attendance/last
+// @securityDefinitions.basic  BasicAuth
+// @Produce                    json
+// @Success                    200
+// @Router                     /reset/attendance/today [get]
 func DeleteDaily(c *gin.Context) {
 	err := controllers.ResetTodayAttendance()
 	if err != nil {
@@ -35,17 +32,14 @@ func DeleteDaily(c *gin.Context) {
 // @BasePath /api/v1
 
 // HealthCheck godoc
-// @Summary      returns current user's last attendance event
-// @Schemes      https
-// @Description  show api homepage
-// @Tags         /private/attendance/last
-// @securityDefinitions.basic BasicAuth
-// @Produce      json
-// @Success 200 {object} models.Attendance
-// @Failure      400  {object}  models.SimpleError
-// @Failure      404  {object}  models.SimpleError
-// @Failure      500  {object}  models.SimpleError
-// @Router       /private/attendance/last [get]
+// @Summary                    returns current user's last attendance event
+// @Schemes                    https
+// @Description                show api homepage
+// @Tags                       /reset/attendance/last
+// @securityDefinitions.basic  BasicAuth
+// @Produce                    json
+// @Success                    200
+// @Router                     /reset/attendance/last [get]
 func DeleteAll(c *gin.Context) {
 	err := controllers.ResetAllAttendance()
 	if err != nil {

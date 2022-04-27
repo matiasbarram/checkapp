@@ -10,40 +10,32 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @BasePath /api/v1
-
 // HealthCheck godoc
 // @Summary      retrieves all users (pagination pending)
 // @Schemes      https
 // @Description  lol
 // @Tags         /users
 // @Produce      json
-// @Accept json
-// @Success 200 {array} models.User
+// @Accept       json
+// @Success      200  {array}   models.User
 // @Failure      400  {object}  models.SimpleError
-// @Router       /users [get]
+// @Router       /private/users [get]
 func GetAll(c *gin.Context) {
 	users := controllers.GetUsers()
 
-	if len(users) == 0 {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else {
-		c.IndentedJSON(http.StatusOK, users)
-	}
+	c.IndentedJSON(http.StatusOK, users)
 }
-
-// @BasePath /api/v1
 
 // HealthCheck godoc
 // @Summary      retrieves user by id
 // @Schemes      https
 // @Description  lol
-// @Tags         /users/{id}
+// @Tags        /users/{id}
 // @Produce      json
-// @Param  int path int true "int valid" minimum(1)
-// @Success 200 {array} models.User
+// @Param        int  path      int  true  "int valid"  minimum(1)
+// @Success      200  {array}   models.User
 // @Failure      404  {object}  models.SimpleError
-// @Router       /users/{id} [get]
+// @Router       /private/users/{id} [get]
 func GetById(c *gin.Context) {
 	str_id := c.Param("id")
 	id, err := strconv.ParseInt(str_id, 10, 64)
@@ -60,10 +52,10 @@ func GetById(c *gin.Context) {
 // @Summary      retrieves authenticated user's info
 // @Schemes      https
 // @Description  lol
-// @Tags         /private/me
+// @Tags         /me
 // @Produce      json
-// @Param  int path int true "int valid" minimum(1)
-// @Success 200 {array} models.User
+// @Param        int  path      int  true  "int valid"  minimum(1)
+// @Success      200  {array}   models.User
 // @Failure      404  {object}  models.SimpleError
 // @Router       /private/me [get]
 func GetFromSession(c *gin.Context) {

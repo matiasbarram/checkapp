@@ -16,10 +16,10 @@ import (
 // @Description  lol
 // @Tags         /qrs
 // @Produce      json
-// @Accept json
-// @Success 200 {array} models.Qr
+// @Accept       json
+// @Success      200  {array}   models.Qr
 // @Failure      400  {object}  models.SimpleError
-// @Router       /qrs [get]
+// @Router       /private/qrs [get]
 func GetAll(c *gin.Context) {
 	qrs := controllers.GetQrs()
 
@@ -38,10 +38,10 @@ func GetAll(c *gin.Context) {
 // @Description  lol
 // @Tags         /qrs/{id}
 // @Produce      json
-// @Param  int path int true "int valid" minimum(1)
-// @Success 200 {array} models.Qr
+// @Param        int  path      int  true  "int valid"  minimum(1)
+// @Success      200  {array}   models.Qr
 // @Failure      404  {object}  models.SimpleError
-// @Router       /qrs/{id} [get]
+// @Router       /private/qrs/{id} [get]
 func GetById(c *gin.Context) {
 	str_id := c.Param("id")
 	id, err := strconv.ParseInt(str_id, 10, 64)
@@ -65,10 +65,10 @@ func GetById(c *gin.Context) {
 // @Description  lol
 // @Tags         /qrs/image/{id}
 // @Produce      json
-// @Param  int path int true "int valid" minimum(1)
-// @Success 200 {array} models.Qr
+// @Param        int  path      int  true  "int valid"  minimum(1)
+// @Success      200  {array}   models.Qr
 // @Failure      404  {object}  models.SimpleError
-// @Router       /qrs/image/{id} [get]
+// @Router       /private/qrs/image/{id} [get]
 func GetImageById(c *gin.Context) {
 	str_id := c.Param("id")
 	id, err := strconv.ParseInt(str_id, 10, 64)

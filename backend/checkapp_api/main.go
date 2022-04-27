@@ -20,10 +20,10 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      api.asiendosoftware.xyz
-// @securityDefinitions.basic BasicAuth
-// @BasePath  /api/v1
-// @schemes   http https
+// @host                       api.asiendosoftware.xyz
+// @securityDefinitions.basic  BasicAuth
+// @BasePath                   /api/v1
+// @schemes                    http https
 func main() {
 	ic.ConfigureIncludeContext(true)
 	run("")

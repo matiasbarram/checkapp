@@ -34,9 +34,10 @@ func addAttendanceGroupEndpoints(baseGroup *gin.RouterGroup) {
 	// user related endpoints
 	attendanceGroup := baseGroup.Group("/attendance")
 	{
-		attendanceGroup.GET("", attendance.GetFromSession)
-		attendanceGroup.GET("/:id", attendance.GetById)
 		attendanceGroup.POST("", attendance.Post)
+		attendanceGroup.GET("", attendance.GetAll)
+		attendanceGroup.GET("/:id", attendance.GetById)
+		attendanceGroup.GET("/me", attendance.GetFromSession)
 		attendanceGroup.GET("/last", attendance.GetLastFromSession) // borrable
 		attendanceGroup.GET("/today", attendance.GetDailyFromSession)
 	}

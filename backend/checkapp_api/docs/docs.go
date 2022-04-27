@@ -101,7 +101,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "/private/attendance"
+                    "/attendance"
                 ],
                 "summary": "registers attendance for current user",
                 "parameters": [
@@ -150,7 +150,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "/private/attendance/last"
+                    "/attendance/last"
                 ],
                 "summary": "returns current user's last attendance event",
                 "responses": {
@@ -187,7 +187,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "/private/attendance/today"
+                    "/attendance/today"
                 ],
                 "summary": "returns current user's today's attendance",
                 "responses": {
@@ -218,7 +218,235 @@ const docTemplate = `{
                 }
             }
         },
-        "/qrs": {
+        "/private/attendances": {
+            "get": {
+                "description": "lol",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/attendances"
+                ],
+                "summary": "retrieves all attendances (pagination pending)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Attendance"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/attendances/me": {
+            "get": {
+                "description": "lol",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/attendances"
+                ],
+                "summary": "retrieves current user's attendances (pagination pending)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Attendance"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/attendances/{id}": {
+            "get": {
+                "description": "lol",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/attendances/{id}"
+                ],
+                "summary": "retrieves single attendance by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Attendance"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/companies": {
+            "get": {
+                "description": "lol",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/companies"
+                ],
+                "summary": "retrieves all companies (vagination pending)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Company"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/companies/me": {
+            "get": {
+                "description": "lol",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/companies/me"
+                ],
+                "summary": "retrieves current user's company",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Company"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/companies/{id}": {
+            "get": {
+                "description": "lol",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/companies/{id}"
+                ],
+                "summary": "retrieves single company by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Company"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/me": {
+            "get": {
+                "description": "lol",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/me"
+                ],
+                "summary": "retrieves authenticated user's info",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "int valid",
+                        "name": "int",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.User"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/qrs": {
             "get": {
                 "description": "lol",
                 "consumes": [
@@ -250,7 +478,46 @@ const docTemplate = `{
                 }
             }
         },
-        "/qrs/{id}": {
+        "/private/qrs/image/{id}": {
+            "get": {
+                "description": "lol",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/qrs/image/{id}"
+                ],
+                "summary": "retrieves qr image by id",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "int valid",
+                        "name": "int",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Qr"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.SimpleError"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/qrs/{id}": {
             "get": {
                 "description": "lol",
                 "produces": [
@@ -289,7 +556,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/private/users": {
             "get": {
                 "description": "lol",
                 "consumes": [
@@ -359,7 +626,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/private/users/{id}": {
             "get": {
                 "description": "lol",
                 "produces": [
@@ -394,6 +661,40 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.SimpleError"
                         }
+                    }
+                }
+            }
+        },
+        "/reset/attendance/last": {
+            "get": {
+                "description": "show api homepage",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/reset/attendance/last"
+                ],
+                "summary": "returns current user's last attendance event",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/reset/attendance/today": {
+            "get": {
+                "description": "show api homepage",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "/reset/attendance/last"
+                ],
+                "summary": "clear u",
+                "responses": {
+                    "200": {
+                        "description": ""
                     }
                 }
             }
@@ -473,6 +774,20 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "time_diff": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Company": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

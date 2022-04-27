@@ -15,7 +15,7 @@ import (
 // @Description  show api homepage
 // @Tags         home
 // @Produce      html
-// @Success      200 {string} tomando leche
+// @Success      200  {string}  tomando  leche
 // @Router       / [get]
 func GetHome(c *gin.Context) {
 	fmt.Println("sweet home")

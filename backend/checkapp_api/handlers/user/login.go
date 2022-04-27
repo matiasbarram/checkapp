@@ -14,18 +14,18 @@ import (
 // @BasePath /api/v1
 
 // HealthCheck godoc
-// @Summary      basic login
-// @Schemes      https
-// @Description  lol
-// @Tags         /login
-// @securityDefinitions.basic BasicAuth
-// @Produce      json
-// @Param  data body models.UserCredentials true "user credentials (email and password)"
-// @Accept json
-// @Success 200 {object} models.UserLoginResponse
-// @Failure      400  {object}  models.SimpleError
-// @Failure      401  {object}  models.SimpleError
-// @Router       /login [post]
+// @Summary                    basic login
+// @Schemes                    https
+// @Description                lol
+// @Tags                       /login
+// @securityDefinitions.basic  BasicAuth
+// @Produce                    json
+// @Param                      data  body  models.UserCredentials  true  "user credentials (email and password)"
+// @Accept                     json
+// @Success                    200  {object}  models.UserLoginResponse
+// @Failure                    400  {object}  models.SimpleError
+// @Failure                    401  {object}  models.SimpleError
+// @Router                     /login [post]
 func Login(c *gin.Context) {
 	u, err := utils.ValidateLoginArgs(c)
 	if err != nil {

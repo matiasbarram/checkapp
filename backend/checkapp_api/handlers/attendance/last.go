@@ -11,17 +11,17 @@ import (
 // @BasePath /api/v1
 
 // HealthCheck godoc
-// @Summary      returns current user's last attendance event
-// @Schemes      https
-// @Description  show api homepage
-// @Tags         /private/attendance/last
-// @securityDefinitions.basic BasicAuth
-// @Produce      json
-// @Success 200 {object} models.Attendance
-// @Failure      400  {object}  models.SimpleError
-// @Failure      404  {object}  models.SimpleError
-// @Failure      500  {object}  models.SimpleError
-// @Router       /private/attendance/last [get]
+// @Summary                    returns current user's last attendance event
+// @Schemes                    https
+// @Description                show api homepage
+// @Tags                       /attendance/last
+// @securityDefinitions.basic  BasicAuth
+// @Produce                    json
+// @Success                    200  {object}  models.Attendance
+// @Failure                    400  {object}  models.SimpleError
+// @Failure                    404  {object}  models.SimpleError
+// @Failure                    500  {object}  models.SimpleError
+// @Router                     /private/attendance/last [get]
 func GetLastFromSession(c *gin.Context) {
 	id, ok := utils.GetUserIdFromSession(c)
 	if !ok {
