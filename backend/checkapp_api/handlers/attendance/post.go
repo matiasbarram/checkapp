@@ -1,4 +1,4 @@
-package handlers
+package attendance
 
 import (
 	"checkapp_api/controllers"
@@ -8,27 +8,26 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/WAY29/icecream-go/icecream"
 	"github.com/gin-gonic/gin"
 )
 
 // @BasePath /api/v1
 
 // HealthCheck godoc
-// @Summary      registers attendance for current user
-// @Schemes      https
-// @Description  lol
-// @Tags         /private/attendance
-// @securityDefinitions.basic BasicAuth
-// @Produce      json
-// @Param  data body models.AttendanceParams true "The input Attendance struct"
-// @Accept json
-// @Success 200 {object} models.AttendanceResponse
-// @Failure      400  {object}  models.SimpleError
-// @Failure      404  {object}  models.SimpleError
-// @Failure      500  {object}  models.SimpleError
-// @Router       /private/attendance [post]
-func PostAttendance(c *gin.Context) {
+// @Summary                    registers attendance for current user
+// @Schemes                    https
+// @Description                lol
+// @Tags                       /attendance
+// @securityDefinitions.basic  BasicAuth
+// @Produce                    json
+// @Param                      data  body  models.AttendanceParams  true  "The input Attendance struct"
+// @Accept                     json
+// @Success                    200  {object}  models.AttendanceResponse
+// @Failure                    400  {object}  models.SimpleError
+// @Failure                    404  {object}  models.SimpleError
+// @Failure                    500  {object}  models.SimpleError
+// @Router                     /private/attendance [post]
+func Post(c *gin.Context) {
 	userId, ok := utils.GetUserIdFromSession(c)
 	if !ok {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "algo malio sal"})
@@ -51,7 +50,6 @@ func PostAttendance(c *gin.Context) {
 		}
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": responseError})
 	} else {
-		icecream.Ic(attendance)
 		c.JSON(http.StatusOK, gin.H{"attendance": attendance})
 	}
 }

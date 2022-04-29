@@ -1,0 +1,58 @@
+package controllers
+
+const attendanceQuery = `
+SELECT
+    u.id,
+    u.company_id,
+    u.name,
+    c.name AS company,
+    c.location as company_location,
+    d.secret_key as device_secret_key,
+    s.check_in_time,
+	s.check_out_time
+FROM
+    user u
+INNER JOIN company c ON
+    u.company_id = c.id
+INNER JOIN device d ON
+    u.device_id = d.id
+INNER JOIN shift s ON
+    u.shift_id = s.id
+WHERE
+    u.id = ?
+`
+
+const lastEventFromUserQuery = `
+SELECT * FROM attendance WHERE id=(SELECT MAX(id) FROM attendance WHERE user_id = ?);
+`
+const insertAttendanceQuery = `
+INSERT INTO attendance (user_id, location, event_type, confirmed, comments, expected_time) VALUES (?, ?, ?, ?, ?, ?)
+`
+
+// const lastTwoEventsFromUserQuery = `
+// SELECT * FROM attendance WHERE user_id = ? ORDER BY id DESC LIMIT 2;
+// `
+const getUserShiftQuery = `
+SELECT * FROM shift WHERE id=(SELECT shift_id FROM user WHERE id = ?); 
+`
+const getTodaysEventsQuery = `
+SELECT
+    event_type,
+	expected_time,
+	event_time
+FROM
+    attendance
+WHERE
+    user_id = ? AND DATE(event_time) = CURRENT_DATE
+ORDER BY
+    id
+DESC
+LIMIT 2;
+`
+
+const deleteTodaysAttendance = `
+DELETE FROM attendance WHERE DATE(event_time) = CURRENT_DATE;
+`
+const deleteAllAttendance = `
+DELETE FROM attendance;
+`

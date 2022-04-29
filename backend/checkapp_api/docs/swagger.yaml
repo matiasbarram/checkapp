@@ -51,6 +51,15 @@ definitions:
       time_diff:
         type: string
     type: object
+  models.Company:
+    properties:
+      id:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+    type: object
   models.Qr:
     properties:
       company_id:
@@ -201,7 +210,7 @@ paths:
             $ref: '#/definitions/models.SimpleError'
       summary: registers attendance for current user
       tags:
-      - /private/attendance
+      - /attendance
   /private/attendance/last:
     get:
       description: show api homepage
@@ -226,7 +235,7 @@ paths:
             $ref: '#/definitions/models.SimpleError'
       summary: returns current user's last attendance event
       tags:
-      - /private/attendance/last
+      - /attendance/last
   /private/attendance/today:
     get:
       produces:
@@ -250,8 +259,158 @@ paths:
             $ref: '#/definitions/models.SimpleError'
       summary: returns current user's today's attendance
       tags:
-      - /private/attendance/today
-  /qrs:
+      - /attendance/today
+  /private/attendances:
+    get:
+      consumes:
+      - application/json
+      description: lol
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Attendance'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+      summary: retrieves all attendances (pagination pending)
+      tags:
+      - /attendances
+  /private/attendances/{id}:
+    get:
+      consumes:
+      - application/json
+      description: lol
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Attendance'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+      summary: retrieves single attendance by id
+      tags:
+      - /attendances/{id}
+  /private/attendances/me:
+    get:
+      consumes:
+      - application/json
+      description: lol
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Attendance'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+      summary: retrieves current user's attendances (pagination pending)
+      tags:
+      - /attendances
+  /private/companies:
+    get:
+      consumes:
+      - application/json
+      description: lol
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Company'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+      summary: retrieves all companies (vagination pending)
+      tags:
+      - /companies
+  /private/companies/{id}:
+    get:
+      consumes:
+      - application/json
+      description: lol
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Company'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+      summary: retrieves single company by id
+      tags:
+      - /companies/{id}
+  /private/companies/me:
+    get:
+      consumes:
+      - application/json
+      description: lol
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Company'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+      summary: retrieves current user's company
+      tags:
+      - /companies/me
+  /private/me:
+    get:
+      description: lol
+      parameters:
+      - description: int valid
+        in: path
+        minimum: 1
+        name: int
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+      summary: retrieves authenticated user's info
+      tags:
+      - /me
+  /private/qrs:
     get:
       consumes:
       - application/json
@@ -272,7 +431,7 @@ paths:
       summary: retrieves all qrs (pagination pending)
       tags:
       - /qrs
-  /qrs/{id}:
+  /private/qrs/{id}:
     get:
       description: lol
       parameters:
@@ -298,7 +457,33 @@ paths:
       summary: retrieves qr by id
       tags:
       - /qrs/{id}
-  /users:
+  /private/qrs/image/{id}:
+    get:
+      description: lol
+      parameters:
+      - description: int valid
+        in: path
+        minimum: 1
+        name: int
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Qr'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.SimpleError'
+      summary: retrieves qr image by id
+      tags:
+      - /qrs/image/{id}
+  /private/users:
     get:
       consumes:
       - application/json
@@ -344,7 +529,7 @@ paths:
       summary: creates a new user
       tags:
       - /users
-  /users/{id}:
+  /private/users/{id}:
     get:
       description: lol
       parameters:
@@ -370,6 +555,28 @@ paths:
       summary: retrieves user by id
       tags:
       - /users/{id}
+  /reset/attendance/last:
+    get:
+      description: show api homepage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: returns current user's last attendance event
+      tags:
+      - /reset/attendance/last
+  /reset/attendance/today:
+    get:
+      description: show api homepage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: clear u
+      tags:
+      - /reset/attendance/last
 schemes:
 - http
 - https

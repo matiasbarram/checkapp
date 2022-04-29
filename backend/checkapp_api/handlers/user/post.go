@@ -1,4 +1,4 @@
-package handlers
+package user
 
 import (
 	"checkapp_api/controllers"
@@ -12,18 +12,18 @@ import (
 // @BasePath /api/v1
 
 // HealthCheck godoc
-// @Summary      creates a new user
-// @Schemes      https
-// @Description  lol
-// @Tags         /users
-// @securityDefinitions.basic BasicAuth
-// @Produce      json
-// @Param  data body models.User true "The input User struct"
-// @Accept json
-// @Success 200 {object} models.User
-// @Failure      400  {object}  models.SimpleError
-// @Router       /users [post]
-func PostUser(c *gin.Context) {
+// @Summary                    creates a new user
+// @Schemes                    https
+// @Description                lol
+// @Tags                       /users
+// @securityDefinitions.basic  BasicAuth
+// @Produce                    json
+// @Param                      data  body  models.User  true  "The input User struct"
+// @Accept                     json
+// @Success                    200  {object}  models.User
+// @Failure                    400  {object}  models.SimpleError
+// @Router                     /private/users [post]
+func Post(c *gin.Context) {
 	u, err := utils.ValidateUserInfo(c)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})

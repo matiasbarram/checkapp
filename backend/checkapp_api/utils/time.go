@@ -23,21 +23,14 @@ func GetTimeDiffSeconds(eventTime string, targetTime string, isArrival bool) (fl
 		ic.Ic(targetTime)
 		return 0, err
 	}
-	// var diff time.Duration
-	// if isArrival {
-	// diff = t1.Sub(t2)
-
-	// } else {
 	diff := t2.Sub(t1)
-	// }
-	ic.Ic(diff)
 	return diff.Seconds(), nil
 }
 
 func FormatSecondsToHHMMSS(seconds float64) string {
-	if seconds < 0 {
-		ic.Ic(seconds, " NEGATIVE")
-	}
+	// if seconds < 0 {
+	// 	ic.Ic(seconds, " NEGATIVE")
+	// }
 	seconds = math.Abs(seconds)
 	hours := math.Floor(seconds / 60 / 60)
 	minutes := int(seconds) % 3600 / 60

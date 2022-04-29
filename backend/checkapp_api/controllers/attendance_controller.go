@@ -1,5 +1,8 @@
 package controllers
 
+// TODO
+// cambiar los scans malditos por una funcion
+
 import (
 	"checkapp_api/data"
 	"checkapp_api/models"
@@ -13,62 +16,6 @@ import (
 	ic "github.com/WAY29/icecream-go/icecream"
 	_ "github.com/go-sql-driver/mysql"
 )
-
-const attendance_query = `
-SELECT
-    u.id,
-    u.company_id,
-    u.name,
-    c.name AS company,
-    c.location as company_location,
-    d.secret_key as device_secret_key,
-    s.check_in_time,
-	s.check_out_time
-FROM
-    user u
-INNER JOIN company c ON
-    u.company_id = c.id
-INNER JOIN device d ON
-    u.device_id = d.id
-INNER JOIN shift s ON
-    u.shift_id = s.id
-WHERE
-    u.id = ?
-`
-
-const lastEventFromUserQuery = `
-SELECT * FROM attendance WHERE id=(SELECT MAX(id) FROM attendance WHERE user_id = ?);
-`
-const insertAttendanceQuery = `
-INSERT INTO attendance (user_id, location, event_type, confirmed, comments, expected_time) VALUES (?, ?, ?, ?, ?, ?)
-`
-const lastTwoEventsFromUserQuery = `
-SELECT * FROM attendance WHERE user_id = ? ORDER BY id DESC LIMIT 2; 
-`
-const getUserShiftQuery = `
-SELECT * FROM shift WHERE id=(SELECT shift_id FROM user WHERE id = ?); 
-`
-const getTodaysEventsQuery = `
-SELECT
-    event_type,
-	expected_time,
-	event_time
-FROM
-    attendance
-WHERE
-    user_id = ? AND DATE(event_time) = CURRENT_DATE
-ORDER BY
-    id
-DESC
-LIMIT 2;
-`
-
-const deleteTodaysAttendance = `
-DELETE FROM attendance WHERE DATE(event_time) = CURRENT_DATE;
-`
-const deleteAllAttendance = `
-DELETE FROM attendance;
-`
 
 func RegisterAttendance(user_info models.AttendanceParams, userId int64) (models.AttendanceResponse, error) {
 
@@ -90,7 +37,7 @@ func RegisterAttendance(user_info models.AttendanceParams, userId int64) (models
 
 	defer db.Close()
 	// consultar por la info del usuario a registrar
-	row := db.QueryRow(attendance_query, userId)
+	row := db.QueryRow(attendanceQuery, userId)
 	var real_user_info models.UserAttendanceInfo
 	var shift models.Shift
 	err = row.Scan(
@@ -146,15 +93,17 @@ func canRegisterAttendance(userId int64, user_info models.AttendanceParams) erro
 	return nil
 }
 
-func getMonthlyAttendance() {
+// func getMonthlyAttendance() {
 
-}
+// }
 
 func checkEventType(userId int64, eventType string) (string, bool) {
 	lastAttendance, err := GetLastEventFromUser(userId)
 	// no presenta registros?
 	if err != nil {
-		fmt.Println("Error! " + err.Error())
+		if err != sql.ErrNoRows {
+			ic.Ic("Error! " + err.Error())
+		}
 		return "CHECK_IN", false
 	}
 	nextEvent := data.NextAttendanceEvent[lastAttendance.EventType]
@@ -199,6 +148,9 @@ func postAttendance(attendance_params models.AttendanceParams, userId int64, shi
 		return attendanceResponse, err
 	}
 	id, err := res.LastInsertId()
+	if err != nil {
+		ic.Ic(err)
+	}
 	return getAttendanceResponseById(id)
 }
 
@@ -211,6 +163,10 @@ func getAttendanceResponseById(id int64) (models.AttendanceResponse, error) {
 	timeDiff, comments, err := utils.GetFormattedTimeDiff(attendance.EventTime,
 		attendance.ExpectedTime,
 		data.EventIsArrival[attendance.EventType])
+	if err != nil {
+		ic.Ic(err)
+		return attendanceResponse, err
+	}
 	attendanceResponse.Comments = comments
 	attendanceResponse.TimeDiff = timeDiff
 	attendanceResponse.EventTime = attendance.EventTime
@@ -230,8 +186,8 @@ func ResetTodayAttendance() error {
 		// returns nil on error
 		return nil
 	}
-	res, err := db.Exec(deleteTodaysAttendance)
-	fmt.Println(res)
+	_, err = db.Exec(deleteTodaysAttendance)
+	// ic.Ic(res.RowsAffected())
 	return err
 }
 
@@ -328,7 +284,7 @@ func GetLastEventFromUser(id int64) (models.Attendance, error) {
 		&attendance.Confirmed,
 		&attendance.Comments,
 		&attendance.ExpectedTime)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("Err", err.Error())
 	}
 	return attendance, err
@@ -379,7 +335,6 @@ func calcTimeDiff(attendance models.AttendanceResponse) (models.AttendanceRespon
 	// attendance.TimeDiff = utils.FormatSecondsToHHMMSS(seconds)
 	attendance.TimeDiff = timeDiff
 	attendance.Comments = comments
-	ic.Ic(attendance)
 	return attendance, nil
 }
 
@@ -501,8 +456,11 @@ func GetAttendanceFromUser(id int64) ([]models.Attendance, error) {
 
 	defer db.Close()
 
-	results, err := db.Query("SELECT * FROM attendance WHERE user_id = ?", id)
 	attendances := []models.Attendance{}
+	results, err := db.Query("SELECT * FROM attendance WHERE user_id = ?", id)
+	if err != nil && err != sql.ErrNoRows {
+		return attendances, err
+	}
 	for results.Next() {
 		var attendance models.Attendance
 		// for each row, scan into the models.attendances struct
@@ -523,4 +481,48 @@ func GetAttendanceFromUser(id int64) ([]models.Attendance, error) {
 	}
 
 	return attendances, nil
+}
+
+func GetAttendances() ([]models.Attendance, error) {
+
+	db, err := GetDB()
+
+	// if there is an error opening the connection, handle it
+	if err != nil {
+		// simply print the error to the console
+		fmt.Println("Err", err.Error())
+		// returns nil on error
+		return nil, err
+	}
+
+	defer db.Close()
+	results, err := db.Query("SELECT * FROM attendance;")
+
+	if err != nil {
+		fmt.Println("Err", err.Error())
+		return nil, err
+	}
+
+	attendances := []models.Attendance{}
+	for results.Next() {
+		var attendance models.Attendance
+		// for each row, scan into the models.Users struct
+		err = results.Scan(
+			&attendance.Id,
+			&attendance.UserId,
+			&attendance.EventType,
+			&attendance.EventTime,
+			&attendance.Location,
+			&attendance.Confirmed,
+			&attendance.Comments,
+			&attendance.ExpectedTime)
+		if err != nil {
+			panic(err.Error()) // proper error handling instead of panic in your app
+		}
+		// append the usersg into user array
+		attendances = append(attendances, attendance)
+	}
+
+	return attendances, nil
+
 }

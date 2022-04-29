@@ -1,4 +1,4 @@
-package handlers
+package qr
 
 import (
 	"checkapp_api/controllers"
@@ -10,11 +10,11 @@ import (
 
 func GenerateQr(c *gin.Context) {
 	str_id := c.Param("id")
-	id, err := strconv.ParseInt(str_id, 10, 64)
+	companyId, err := strconv.ParseInt(str_id, 10, 64)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
-	qr, err := controllers.GenerateQr(id)
+	qr, err := controllers.GenerateQr(companyId)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
