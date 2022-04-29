@@ -49,17 +49,17 @@ class AttendanceService extends ChangeNotifier {
     final lastAttendance = await getTodayAttendance();
     for (var attendance in lastAttendance) {
       if (attendance['event_type'] == _eventTypeCheckIn) {
+        entradaEsperada = formatTimetoTime(attendance['expected_time']);
         if (attendance['pending'] == false) {
           checkInColor = _calculateColor(attendance['comments']);
           entrada = formatDateTimetoTime(attendance['event_time']);
-          entradaEsperada = formatTimetoTime(attendance['expected_time']);
           notifyListeners();
         }
       }
       if (attendance['event_type'] == _eventTypeCheckOut) {
+        salidaEsperada = formatTimetoTime(attendance['expected_time']);
         if (attendance['pending'] == false) {
           salida = formatDateTimetoTime(attendance['event_time']);
-          salidaEsperada = formatTimetoTime(attendance['expected_time']);
           checkOutColor = _calculateColor(attendance['comments']);
           notifyListeners();
         }
@@ -98,12 +98,14 @@ class AttendanceService extends ChangeNotifier {
       //Checkin
       if (answer['attendance']['event_type'] == _eventTypeCheckIn) {
         entrada = formatDateTimetoTime(answer['attendance']['event_time']);
+        checkInColor = _calculateColor(answer['attendance']['comments']);
         notifyListeners();
         return 'OK';
       }
       //Checkout
       else if (answer['attendance']['event_type'] == _eventTypeCheckOut) {
         salida = formatDateTimetoTime(answer['attendance']['event_time']);
+        checkOutColor = _calculateColor(answer['attendance']['comments']);
         notifyListeners();
         return 'OK';
       }

@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 
 import '../../services/services.dart';
 import '../../widgets/widgets.dart';
-import '../worker/screens.dart';
 
 class HomeScreenAdmin extends StatelessWidget {
   const HomeScreenAdmin({Key? key}) : super(key: key);
@@ -17,31 +16,15 @@ class HomeScreenAdmin extends StatelessWidget {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final uiProvider = Provider.of<UIprovider>(context);
 
     return Scaffold(
         appBar: mainAppBar(context, userProvider, authService),
         bottomNavigationBar: const BottomNavBarAdmin(),
-        body: const _HomePageBody());
-  }
-}
-
-class _HomePageBody extends StatelessWidget {
-  const _HomePageBody({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final uiProvider = Provider.of<UIprovider>(context);
-
-    final currentIndex = uiProvider.selectedMenuOpt;
-    switch (currentIndex) {
-      case 0:
-        return const ResumenAdminScreen();
-      case 1:
-        return const ExtraScreen();
-      case 2:
-        return const EmployeesScreen();
-      default:
-        return const ResumenAdminScreen();
-    }
+        body: PageView(controller: uiProvider.pageControler, children: const [
+          ResumenAdminScreen(),
+          ExtraScreen(),
+          EmployeesScreen()
+        ]));
   }
 }
