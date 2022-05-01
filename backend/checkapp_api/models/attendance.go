@@ -1,12 +1,14 @@
 package models
 
+// TODO: quitar lineas comentadas
+
 type Attendance struct {
 	Id           int    `json:"id"`
 	UserId       int    `json:"user_id"`
 	EventType    string `json:"event_type"`
 	EventTime    string `json:"event_time"`
 	Location     string `json:"location"`
-	Confirmed    bool   `json:"confirmed"`
+	Pending      bool   `json:"pending"`
 	Comments     string `json:"comments,omitempty"`
 	ExpectedTime string `json:"expected_time"`
 }
@@ -21,11 +23,12 @@ type AttendanceParams struct {
 }
 
 type AttendanceResponse struct {
+	AttendaceId  int    `json:"attendance_id"`
 	EventType    string `json:"event_type"`
 	ExpectedTime string `json:"expected_time"`
 	Pending      bool   `json:"pending"`
 	EventTime    string `json:"event_time,omitempty"`
-	// Confirmed    bool   `json:"confirmed"`
+	// pending    bool   `json:"pending"`
 	Comments string `json:"comments,omitempty"`
 	TimeDiff string `json:"time_diff,omitempty"`
 	// Punctual     bool   `json:"Punctual,omitempty"`

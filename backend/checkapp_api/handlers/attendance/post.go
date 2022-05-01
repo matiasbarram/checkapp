@@ -2,11 +2,8 @@ package attendance
 
 import (
 	"checkapp_api/controllers"
-	"checkapp_api/data"
-	"checkapp_api/models"
 	"checkapp_api/utils"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,17 +34,9 @@ func Post(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	attendance, err := controllers.RegisterAttendance(att, int64(userId))
+	attendance, err := controllers.NewRegisterAttendance(att, int64(userId))
 	if err != nil {
-		var responseError models.SimpleError
-		i, err2 := strconv.ParseInt(err.Error(), 10, 64)
-		if err2 != nil {
-			responseError.Code = 0
-			responseError.Message = err.Error()
-		} else {
-			responseError.Code = int(i)
-			responseError.Message = data.ErrorCodeMap[int(i)]
-		}
+		responseError := utils.GenerateResponseError(err)
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": responseError})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"attendance": attendance})

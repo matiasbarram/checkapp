@@ -23,7 +23,7 @@ type User struct {
 	Rut        string `form:"rut" binding:"required"`
 	Role       string `form:"role" binding:"required"`
 	Email      string `form:"email" binding:"required"`
-	Password   string `form:"password,omitempty" binding:"required,len>4"`
+	Password   string `form:"password,omitempty" binding:"required,min=4"`
 	Device_id  int    `form:"device_id,omitempty"`
 }
 

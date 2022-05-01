@@ -84,3 +84,28 @@ func getByUserId(c *gin.Context, id int64) {
 		c.IndentedJSON(http.StatusOK, attendances)
 	}
 }
+
+// HealthCheck godoc
+// @Summary      retrieves current user's attendances (pagination pending)
+// @Schemes      https
+// @Description  lol
+// @Tags         /attendances
+// @Produce      json
+// @Accept       json
+// @Success      200  {array}   models.Attendance
+// @Failure      400  {object}  models.SimpleError
+// @Router       /private/attendances/me [get]
+func GetCompanyMonthlyFromSession(c *gin.Context) {
+	id, ok := utils.GetUserIdFromSession(c)
+	if !ok {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "algo malio sal"})
+	}
+	attendances, err := controllers.GetMonthlyCompanyAttendance(int64(id))
+	if err != nil {
+		responseError, code := utils.GenerateResponseErrorWithCode(err)
+		c.IndentedJSON(code, gin.H{"error": responseError})
+	} else {
+		c.JSON(http.StatusOK, attendances)
+	}
+
+}

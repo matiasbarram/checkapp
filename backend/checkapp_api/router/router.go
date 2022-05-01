@@ -40,6 +40,8 @@ func addAttendanceGroupEndpoints(baseGroup *gin.RouterGroup) {
 		attendanceGroup.GET("/me", attendance.GetFromSession)
 		attendanceGroup.GET("/last", attendance.GetLastFromSession) // borrable
 		attendanceGroup.GET("/today", attendance.GetDailyFromSession)
+		attendanceGroup.GET("/company/monthly", attendance.GetCompanyMonthlyFromSession)
+		// attendanceGroup.GET("/today/generate", attendance.GenerateDaily)
 	}
 
 }

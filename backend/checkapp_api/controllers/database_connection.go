@@ -20,6 +20,20 @@ var (
 		os.Getenv("db_name"))
 )
 
+var db *sql.DB
+
+// InitDB sets up setting up the connection pool global variable.
+func InitDB() error {
+	var err error
+
+	db, err = sql.Open("mysql", ConnectionString)
+	if err != nil {
+		return err
+	}
+
+	return db.Ping()
+}
+
 func GetDB() (*sql.DB, error) {
 	return sql.Open("mysql", ConnectionString)
 }

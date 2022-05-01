@@ -707,7 +707,7 @@ const docTemplate = `{
                 "comments": {
                     "type": "string"
                 },
-                "confirmed": {
+                "pending": {
                     "type": "boolean"
                 },
                 "event_time": {
@@ -758,7 +758,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "comments": {
-                    "description": "Confirmed    bool   ` + "`" + `json:\"confirmed\"` + "`" + `",
+                    "description": "pending    bool   ` + "`" + `json:\"pending\"` + "`" + `",
                     "type": "string"
                 },
                 "event_time": {

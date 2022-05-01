@@ -26,7 +26,7 @@ const lastEventFromUserQuery = `
 SELECT * FROM attendance WHERE id=(SELECT MAX(id) FROM attendance WHERE user_id = ?);
 `
 const insertAttendanceQuery = `
-INSERT INTO attendance (user_id, location, event_type, confirmed, comments, expected_time) VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO attendance (user_id, location, event_type, pending, comments, expected_time) VALUES (?, ?, ?, ?, ?, ?)
 `
 
 // const lastTwoEventsFromUserQuery = `
@@ -39,7 +39,8 @@ const getTodaysEventsQuery = `
 SELECT
     event_type,
 	expected_time,
-	event_time
+	event_time,
+    pending
 FROM
     attendance
 WHERE
@@ -47,12 +48,29 @@ WHERE
 ORDER BY
     id
 DESC
-LIMIT 2;
+LIMIT 2
 `
 
+const getLastTwoEventsQuery = `
+SELECT
+    event_type,
+	expected_time,
+	event_time,
+    pending,
+    id
+FROM
+    attendance
+WHERE (user_id = ?)
+ORDER BY id DESC LIMIT 2 ;
+`
 const deleteTodaysAttendance = `
 DELETE FROM attendance WHERE DATE(event_time) = CURRENT_DATE;
 `
 const deleteAllAttendance = `
 DELETE FROM attendance;
 `
+
+const monthlyCompanyAttendanceQuery = `
+SELECT a.* FROM attendance a
+INNER JOIN user u ON u.id = a.user_id
+WHERE u.company_id = (SELECT u.company_id FROM user u WHERE u.id = ?) AND a.event_time > CURRENT_DATE() - INTERVAL 1 MONTH;;`

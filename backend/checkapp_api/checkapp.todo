@@ -1,0 +1,10 @@
+Checkapp:
+    Si no marca asistencia dejarlo como inasistencia o pendiente
+    Inasistencias:
+        ☐ Incluir los dias en el shift @started(22-04-30 16:52)
+        ☐ Crear attendance para los dias que el trabajador falte
+    La lista de todos los usuarios con su info y asistencias
+    Resumen:
+        ☐ Obtener la data del usuario (query con join)
+        ☐ Crear el endpoint y ver que args puede aceptar
+        ☐ Pensar en estadisticas u operaciones interesantes con los datos

@@ -5,4 +5,5 @@ type Shift struct {
 	CheckInTime      string `json:"check_in_time"`
 	CheckOutTime     string `json:"check_out_time"`
 	LunchBreakLength int    `json:"lunch_break_time"`
+	Workdays         string `json:"workdays"`
 }

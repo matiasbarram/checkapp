@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"checkapp_api/data"
 	"fmt"
 	"math"
 	"strings"
@@ -9,6 +10,11 @@ import (
 	ic "github.com/WAY29/icecream-go/icecream"
 )
 
+func ParseDBTime(eventTime string) (time.Time, error) {
+	t1, err := time.Parse(time.RFC3339, strings.Replace(eventTime, " ", "T", 1)+"-04:00")
+	return t1, err
+}
+
 func GetTimeDiffSeconds(eventTime string, targetTime string, isArrival bool) (float64, error) {
 	t1, err := time.Parse(time.RFC3339, strings.Replace(eventTime, " ", "T", 1)+"-04:00")
 	if err != nil {
@@ -16,9 +22,9 @@ func GetTimeDiffSeconds(eventTime string, targetTime string, isArrival bool) (fl
 		return 0, err
 	}
 
-	year, month, day := time.Now().Date()
-	todayString := fmt.Sprintf("%d-%02d-%02dT", year, month, day)
-	t2, _ := time.Parse(time.RFC3339, todayString+targetTime+"-04:00")
+	year, month, day := t1.Date()
+	eventDayString := fmt.Sprintf("%d-%02d-%02dT", year, month, day)
+	t2, _ := time.Parse(time.RFC3339, eventDayString+targetTime+"-04:00")
 	if err != nil {
 		ic.Ic(targetTime)
 		return 0, err
@@ -45,9 +51,9 @@ func GetFormattedTimeDiff(eventTime string, expectedTime string, isArrival bool)
 		return "", "", err
 	}
 	var comments string
-	if isArrival && diff < 0 {
+	if isArrival && diff/60 < data.AttendanceTimeOffsetLimit {
 		comments = "LATE ARRIVAL"
-	} else if !isArrival && diff > 0 {
+	} else if !isArrival && diff/60 > data.AttendanceTimeOffsetLimit {
 		comments = "EARLY LEAVE"
 	} else {
 		comments = "ON TIME"

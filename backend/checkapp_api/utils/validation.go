@@ -3,6 +3,7 @@ package utils
 import (
 	"checkapp_api/data"
 	"checkapp_api/models"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/mail"
@@ -49,14 +50,28 @@ func StringInSlice(a string, list []string) bool {
 	}
 	return false
 }
+func StringInSliceLowercase(a string, list []string) bool {
+	for _, b := range list {
+		if strings.Compare(strings.ToLower(a), strings.ToLower(b)) == 0 {
+			return true
+		}
+	}
+	return false
+}
 
-func ValidateUserInfo(c *gin.Context) (models.User, error) {
+func dump(data interface{}) string {
+	b, _ := json.MarshalIndent(data, "", "  ")
+	return fmt.Sprint(string(b))
+}
+
+func ValidateUserInfo(c *gin.Context) (models.User, error, interface{}) {
 	var u models.User
 	err := c.ShouldBind(&u)
 	if err != nil {
 		var verr validator.ValidationErrors
 		if errors.As(err, &verr) {
-			return u, errors.New(fmt.Sprint(SimpleValidationErrors(verr)))
+			valErr := SimpleValidationErrors(verr)
+			return u, errors.New("Args"), valErr
 		}
 	}
 	// validar de mejor forma...
@@ -65,9 +80,9 @@ func ValidateUserInfo(c *gin.Context) (models.User, error) {
 	// }
 	_, err = mail.ParseAddress(u.Email)
 	if err != nil {
-		return u, err
+		return u, err, nil
 	}
-	return u, nil
+	return u, nil, nil
 }
 
 func ValidateAttendanceParams(c *gin.Context) (models.AttendanceParams, error) {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"checkapp_api/controllers"
 	"checkapp_api/data"
 	"checkapp_api/router"
 	"fmt"
@@ -38,6 +39,10 @@ func run(configPath string) {
 	web := router.Setup()
 	fmt.Println("Go API REST Running on port " + data.Port)
 	fmt.Println("==================>")
+	err := controllers.InitDB()
+	if err != nil {
+		log.Fatal(err)
+	}
 	if err := web.Run(data.Port); err != nil {
 		log.Fatal("Unable to start:", err)
 	}

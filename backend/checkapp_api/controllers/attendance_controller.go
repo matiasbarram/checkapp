@@ -1,7 +1,6 @@
 package controllers
 
-// TODO
-// cambiar los scans malditos por una funcion
+// TODO: cambiar los scans malditos por una funcion
 
 import (
 	"checkapp_api/data"
@@ -24,19 +23,6 @@ func RegisterAttendance(user_info models.AttendanceParams, userId int64) (models
 	if err != nil {
 		return attendanceResponse, err
 	}
-
-	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return attendanceResponse, err
-	}
-
-	defer db.Close()
-	// consultar por la info del usuario a registrar
 	row := db.QueryRow(attendanceQuery, userId)
 	var real_user_info models.UserAttendanceInfo
 	var shift models.Shift
@@ -64,9 +50,63 @@ func RegisterAttendance(user_info models.AttendanceParams, userId int64) (models
 	if err != nil {
 		return attendanceResponse, err
 	}
-	return postAttendance(user_info, userId, shift)
+	return postAttendance(user_info, userId, 0, shift)
 }
+func NewRegisterAttendance(userAttendanceParams models.AttendanceParams, userId int64) (models.AttendanceResponse, error) {
 
+	var attendanceResponse models.AttendanceResponse
+	todayAttendances, err := GetTodaysAttendance(userId)
+	if err != nil {
+		return attendanceResponse, err
+	}
+
+	if userAttendanceParams.Event_type == data.CHECK_IN && !todayAttendances[0].Pending {
+		return attendanceResponse, errors.New(fmt.Sprint(11))
+	}
+	if userAttendanceParams.Event_type == data.CHECK_OUT && todayAttendances[0].Pending {
+		return attendanceResponse, errors.New(fmt.Sprint(3))
+	}
+	if userAttendanceParams.Event_type == data.CHECK_OUT && !todayAttendances[1].Pending {
+		return attendanceResponse, errors.New(fmt.Sprint(12))
+	}
+
+	var targetId int
+	ic.Ic(todayAttendances)
+	if userAttendanceParams.Event_type == data.CHECK_IN {
+		targetId = todayAttendances[0].AttendaceId
+	} else {
+		targetId = todayAttendances[1].AttendaceId
+	}
+	ic.Ic(targetId)
+	row := db.QueryRow(attendanceQuery, userId)
+	var registeredUserInfo models.UserAttendanceInfo
+	var shift models.Shift
+	err = row.Scan(
+		&registeredUserInfo.Id,
+		&registeredUserInfo.Company_id,
+		&registeredUserInfo.Name,
+		&registeredUserInfo.Company,
+		&registeredUserInfo.Company_location,
+		&registeredUserInfo.Device_secret_key,
+		&shift.CheckInTime,
+		&shift.CheckOutTime)
+	if err != nil {
+		ic.Ic(err.Error())
+		return attendanceResponse, err
+	}
+	// verificar que la info proporcionada por el usuario coincida con la
+	// de la base de datos (company_id, device_secret_key)
+	err = checkAttendanceParams(userAttendanceParams, registeredUserInfo)
+	if err != nil {
+		return attendanceResponse, err
+	}
+
+	err = utils.ValidateUserLocation(userAttendanceParams.Location, registeredUserInfo.Company_location)
+	if err != nil {
+		return attendanceResponse, err
+	}
+	return postAttendance(userAttendanceParams, userId, int64(targetId), shift)
+}
 func canRegisterAttendance(userId int64, user_info models.AttendanceParams) error {
 	attendance, err := GetLastEventFromUser(userId)
 	if err != nil && err != sql.ErrNoRows {
@@ -78,12 +118,15 @@ func canRegisterAttendance(userId int64, user_info models.AttendanceParams) erro
 	t, _ := time.Parse(time.RFC3339, strings.Replace(attendance.EventTime, " ", "T", 1)+"-04:00")
 	now := time.Now()
 	diff := now.Sub(t)
-	if attendance.EventType == data.AttendanceEventTypes[1] && diff.Hours() < 8 {
+
+	// tiempo minimo desde la salida hasta la siguiente entrada
+	if attendance.EventType == data.CHECK_OUT && diff.Hours() < data.MinHoursTillNextEvent {
 		return errors.New(fmt.Sprint(1))
 	}
+	// Si intenta registrar otra el mismo evento que el ultimo ingresado
 	if user_info.Event_type == attendance.EventType {
 		var nxt int
-		if data.NextAttendanceEvent[attendance.EventType] == data.AttendanceEventTypes[0] {
+		if data.NextAttendanceEvent[attendance.EventType] == data.CHECK_IN {
 			nxt = 2
 		} else {
 			nxt = 3
@@ -116,47 +159,41 @@ func checkEventType(userId int64, eventType string) (string, bool) {
 	return eventType, false
 }
 
-func postAttendance(attendance_params models.AttendanceParams, userId int64, shift models.Shift) (models.AttendanceResponse, error) {
-	// var attendance models.Attendance
-	var attendanceResponse models.AttendanceResponse
-	db, err := GetDB()
+var updateQuery = `
+UPDATE attendance
+SET event_time = ?, location = ?, pending = ?, comments = ?
+WHERE id = ?; `
 
-	// if there is an error opening the connection, handle it
+func postAttendance(attendanceParams models.AttendanceParams, userId int64, targetId int64, shift models.Shift) (models.AttendanceResponse, error) {
+	var attendanceResponse models.AttendanceResponse
+	var eventTime string
+	err := db.QueryRow("SELECT now();").Scan(&eventTime)
 	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return attendanceResponse, nil
+		ic.Ic(err)
+		return attendanceResponse, err
 	}
-	defer db.Close()
-	eventType, _ := checkEventType(userId, attendance_params.Event_type)
-	expectedTime := getEventExpectedTime(eventType, shift)
-	// timeDiff, result, err := utils.GetFormattedTimeDiff(attendance.EventTime,
-	// 	attendance.ExpectedTime,
-	// 	data.EventIsArrival[attendance.EventType])
-	// comments := fmt.Sprintf("%s,%s", timeDiff, result)
-	// ic.Ic(comments)
-	res, err := db.Exec(insertAttendanceQuery,
-		userId,
-		attendance_params.Location,
-		eventType,
-		true,
-		"",
-		expectedTime)
+	// eventType, _ := checkEventType(userId, attendance_params.Event_type)
+	expectedTime := getEventExpectedTime(attendanceParams.Event_type, shift)
+	_, comments, _ := utils.GetFormattedTimeDiff(eventTime,
+		expectedTime,
+		data.EventIsArrival[attendanceParams.Event_type])
+	_, err = db.Exec(updateQuery,
+		eventTime,
+		attendanceParams.Location,
+		false,
+		comments,
+		targetId)
 	if err != nil {
 		fmt.Println("Err", err.Error())
 		return attendanceResponse, err
 	}
-	id, err := res.LastInsertId()
-	if err != nil {
-		ic.Ic(err)
-	}
-	return getAttendanceResponseById(id)
+	return getAttendanceResponseById(targetId)
 }
 
 func getAttendanceResponseById(id int64) (models.AttendanceResponse, error) {
 	var attendanceResponse models.AttendanceResponse
 	attendance, err := GetAttendanceById(id)
+	ic.Ic(id, attendance)
 	if err != nil {
 		return attendanceResponse, err
 	}
@@ -177,30 +214,12 @@ func getAttendanceResponseById(id int64) (models.AttendanceResponse, error) {
 }
 
 func ResetTodayAttendance() error {
-	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return nil
-	}
-	_, err = db.Exec(deleteTodaysAttendance)
+	_, err := db.Exec(deleteTodaysAttendance)
 	// ic.Ic(res.RowsAffected())
 	return err
 }
 
 func ResetAllAttendance() error {
-	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return nil
-	}
 	res, err := db.Exec(deleteAllAttendance)
 	fmt.Println(res)
 	return err
@@ -208,40 +227,11 @@ func ResetAllAttendance() error {
 
 func getEventExpectedTime(eventType string, shift models.Shift) string {
 	var expectedTime string
-	// var comments string
-	// now := time.Now()
-	// year, month, day := now.Date()
-	// todayString := fmt.Sprintf("%d-%02d-%02dT", year, month, day)
 	if eventType == data.AttendanceEventTypes[0] { //check_in
 		expectedTime = shift.CheckInTime
-		// comments = "oe sangano kl estas son oras de llegar? atraso de "
 	} else {
 		expectedTime = shift.CheckOutTime
-		// comments = "muy temprano pa irse mi rey, teni k esperar "
 	}
-	// expectedTimeObject, _ := time.Parse("14:23:10", expectedTime)
-	// expectedTimeObject2, _ := time.Parse("14:23:10", "09:00:00")
-	// fmt.Println(expectedTimeObject)
-	// fmt.Println(expectedTimeObject2)
-	// t, _ := time.Parse(time.RFC3339, "2006-01-02T15:04:05Z")
-	// fmt.Println(t)
-	// expectedTimeObject, _ := time.Parse(time.RFC3339, todayString+expectedTime+"-04:00")
-	// fmt.Println(expectedTimeObject)
-	// var diff time.Duration
-	// if eventType == data.AttendanceEventTypes[0] {
-	// 	diff = now.Sub(expectedTimeObject)
-	// } else {
-	// 	diff = expectedTimeObject.Sub(now)
-	// }
-	// fmt.Println(diff)
-	// var needsConfirmation bool
-	// if diff.Minutes() > data.AttendanceTimeOffsetLimit {
-	// 	needsConfirmation = true
-	// 	comments = comments + fmt.Sprintf("%f", diff.Minutes()) + " minutos"
-	// } else {
-	// 	comments = ""
-	// 	needsConfirmation = false
-	// }
 	return expectedTime
 }
 
@@ -260,66 +250,126 @@ func checkAttendanceParams(attendance_params models.AttendanceParams,
 	return nil
 }
 
-func GetLastEventFromUser(id int64) (models.Attendance, error) {
-
+func scanAttendanceRow(row *sql.Row) (models.Attendance, error) {
 	var attendance models.Attendance
-	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return attendance, nil
-	}
-
-	defer db.Close()
-	row := db.QueryRow(lastEventFromUserQuery, id)
-	err = row.Scan(
+	err := row.Scan(
 		&attendance.Id,
 		&attendance.UserId,
 		&attendance.EventType,
 		&attendance.EventTime,
 		&attendance.Location,
-		&attendance.Confirmed,
+		&attendance.Pending,
 		&attendance.Comments,
 		&attendance.ExpectedTime)
+	return attendance, err
+}
+
+func GetLastEventFromUser(id int64) (models.Attendance, error) {
+
+	row := db.QueryRow(lastEventFromUserQuery, id)
+	attendance, err := scanAttendanceRow(row)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("Err", err.Error())
 	}
 	return attendance, err
 }
 
-func queryDailyAttendance(id int64) ([]models.AttendanceResponse, error) {
-	attendances := []models.AttendanceResponse{}
-	db, err := GetDB()
-	if err != nil {
-		return attendances, err
-	}
-	defer db.Close()
-
-	results, err := db.Query(getTodaysEventsQuery, id)
-	if err != nil {
-		return attendances, err
-	}
+func scanAttendanceRowList(results *sql.Rows) ([]models.Attendance, error) {
+	attendances := []models.Attendance{}
 	for results.Next() {
-		var attendance models.AttendanceResponse
-		attendance.Pending = false
-		// for each row, scan into the models.attendances struct
-		err = results.Scan(
+		var attendance models.Attendance
+		// for each row, scan into the models.Users struct
+		err := results.Scan(
+			&attendance.Id,
+			&attendance.UserId,
 			&attendance.EventType,
-			&attendance.ExpectedTime,
-			&attendance.EventTime)
+			&attendance.EventTime,
+			&attendance.Location,
+			&attendance.Pending,
+			&attendance.Comments,
+			&attendance.ExpectedTime)
 		if err != nil {
 			panic(err.Error()) // proper error handling instead of panic in your app
 		}
-		attendance, err = calcTimeDiff(attendance)
-		if err != nil {
-			return nil, err
-		}
+		// append the usersg into user array
 		attendances = append(attendances, attendance)
 	}
 	return attendances, nil
+}
+func scanAttendanceRowListMinimal(results *sql.Rows, attendances []models.Attendance) ([]models.Attendance, error) {
+	for results.Next() {
+		var attendance models.Attendance
+		// for each row, scan into the models.Users struct
+		err := results.Scan(
+			&attendance.EventType,
+			&attendance.ExpectedTime,
+			&attendance.EventTime,
+			&attendance.Pending,
+			&attendance.Id)
+		if err != nil {
+			panic(err.Error()) // proper error handling instead of panic in your app
+		}
+		// append the usersg into user array
+		attendances = append(attendances, attendance)
+		// ic.Ic("appending ", attendance)
+	}
+	return attendances, nil
+}
+
+func GetLastTwoEventsFromUser(id int64) ([]models.AttendanceResponse, error) {
+
+	attendances := []models.Attendance{}
+	attendanceResponses := []models.AttendanceResponse{}
+	results, err := db.Query(getLastTwoEventsQuery, id)
+	if err != nil {
+		ic.Ic(err)
+		return attendanceResponses, err
+	}
+	attendances, err = scanAttendanceRowListMinimal(results, attendances)
+	if err != nil {
+		return attendanceResponses, err
+	}
+	attendanceResponses, err = attendancesToAttendanceResponses(attendances, attendanceResponses)
+	return attendanceResponses, err
+}
+
+func attendancesToAttendanceResponses(attendances []models.Attendance,
+	responses []models.AttendanceResponse) ([]models.AttendanceResponse, error) {
+	for _, att := range attendances {
+		var attendanceResponse models.AttendanceResponse
+		attendanceResponse.EventTime = att.EventTime
+		attendanceResponse.EventType = att.EventType
+		attendanceResponse.ExpectedTime = att.ExpectedTime
+		attendanceResponse.Pending = att.Pending
+		attendanceResponse, err := calcTimeDiff(attendanceResponse)
+		attendanceResponse.AttendaceId = att.Id
+		if err != nil {
+			return responses, err
+		}
+		responses = append(responses, attendanceResponse)
+	}
+	return responses, nil
+}
+
+func queryUserDailyAttendance(id int64) ([]models.AttendanceResponse, error) {
+
+	attendanceResponses := []models.AttendanceResponse{}
+	attendances := []models.Attendance{}
+	results, err := db.Query(getTodaysEventsQuery, id)
+	if err != nil {
+		return attendanceResponses, err
+	}
+	attendances, err = scanAttendanceRowListMinimal(results, attendances)
+	if err != nil {
+		return attendanceResponses, err
+	}
+	attendanceResponses, err = attendancesToAttendanceResponses(attendances, attendanceResponses)
+
+	if err != nil {
+		return attendanceResponses, err
+	}
+
+	return attendanceResponses, nil
 }
 
 func calcTimeDiff(attendance models.AttendanceResponse) (models.AttendanceResponse, error) {
@@ -338,50 +388,167 @@ func calcTimeDiff(attendance models.AttendanceResponse) (models.AttendanceRespon
 	return attendance, nil
 }
 
-func GetTodaysAttendance(id int64) ([]models.AttendanceResponse, error) {
+func GetTodaysAttendanceOld(id int64) ([]models.AttendanceResponse, error) {
 
-	attendances, err := queryDailyAttendance(id)
+	attendances, err := queryUserDailyAttendance(id)
 	if err != nil {
 		return nil, err
 	}
 	if len(attendances) == 2 {
 		return attendances, nil
 	}
-	return generateMissingAttendances(id, attendances)
+	return generateTodaysAttendances(id, attendances)
 }
 
-func generateMissingAttendances(id int64, attendances []models.AttendanceResponse) ([]models.AttendanceResponse, error) {
+func GetTodaysAttendance(id int64) ([]models.AttendanceResponse, error) {
+
+	attendances, err := GetLastTwoEventsFromUser(id)
+	if err != nil {
+		return nil, err
+	}
+	today := time.Now()
+	if len(attendances) == 2 {
+		last := attendances[0]
+		attendances[0] = attendances[1]
+		attendances[1] = last
+		t, err := utils.ParseDBTime(last.EventTime)
+		if err != nil {
+			return nil, err
+		}
+		if t.Format(data.DATE_FORMAT) == today.Format(data.DATE_FORMAT) {
+			return attendances, nil
+		}
+	}
+	attendances, err = GenerateMissingAttendances(id, attendances, today)
+	if err != nil || len(attendances) < 2 {
+		if err != nil {
+			return nil, err
+		}
+		return nil, errors.New(fmt.Sprint(10))
+	}
+	var todayAttendances []models.AttendanceResponse = attendances[len(attendances)-2:]
+	lastEventDay, err := utils.ParseDBTime(todayAttendances[0].EventTime)
+	if err != nil || today.Format(data.DATE_FORMAT) != lastEventDay.Format(data.DATE_FORMAT) {
+		if err != nil {
+			return nil, err
+		}
+		return nil, errors.New(fmt.Sprint(10))
+	}
+
+	return todayAttendances, nil
+}
+func GenerateMissingAttendances(userId int64,
+	attendances []models.AttendanceResponse, today time.Time) ([]models.AttendanceResponse, error) {
+
+	var lastEventDay time.Time
+	var err error
+	lastEventDay = time.Now().AddDate(0, 0, -1)
+	// if attendances == nil {
+	// 	attendances = []models.AttendanceResponse{}
+	// }
+	if len(attendances) != 0 {
+		att := attendances[len(attendances)-1]
+		ic.Ic(att)
+		lastEventDay, err = utils.ParseDBTime(att.EventTime)
+		if err != nil {
+			return attendances, err
+		}
+		attendances = attendances[:0]
+	}
+
+	// partir desde el dia siguiente al del ultimo evento registrado
+	lastEventDay = lastEventDay.AddDate(0, 0, 1)
+	ic.Ic(lastEventDay.String())
+	shift, err := queryUsersCurrentShift(userId)
+	if err != nil {
+		return attendances, err
+	}
+
+	// ver si el ultimo evento no es del futuro
+	if today.Format(data.DATE_FORMAT) < lastEventDay.Format(data.DATE_FORMAT) {
+		panic(err.Error())
+	}
+	attendances = getMissingAttendances(shift, today, lastEventDay, attendances)
+	err = BulkInsert(attendances, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return GetTodaysAttendance(userId)
+}
+
+func getMissingAttendances(shift models.Shift, today time.Time,
+	lastDayWithAttendance time.Time, attendances []models.AttendanceResponse) []models.AttendanceResponse {
+	if today.Format(data.DATE_FORMAT) == lastDayWithAttendance.Format(data.DATE_FORMAT) {
+		return attendances
+	}
+	if attendances == nil {
+		attendances = []models.AttendanceResponse{}
+	}
+	var shiftTime string
+	var timeDiff, comments string
+	for today.Format(data.DATE_FORMAT) >= lastDayWithAttendance.Format(data.DATE_FORMAT) {
+		weekday := lastDayWithAttendance.Weekday().String()
+		// ic.Ic(lastDayWithAttendance.String())
+		isWorkday := isWorkday(shift, weekday)
+		if isWorkday {
+			for i := 0; i < 2; i++ {
+				var attendance models.AttendanceResponse
+				if i == 0 {
+					shiftTime = shift.CheckInTime
+				} else {
+					shiftTime = shift.CheckOutTime
+				}
+				attendance.EventType = data.AttendanceEventTypes[i]
+				attendance.EventTime = lastDayWithAttendance.Format(data.DATE_FORMAT) + " " + data.NO_TIME_DIFF
+				attendance.ExpectedTime = shiftTime
+				attendance.Pending = true
+				if today.Format(data.DATE_FORMAT) == lastDayWithAttendance.Format(data.DATE_FORMAT) {
+					eventTimeNow := utils.GetTimeStringNow()
+					timeDiff, comments, _ = utils.GetFormattedTimeDiff(eventTimeNow,
+						attendance.ExpectedTime, i == 0)
+				} else {
+					timeDiff = data.NO_TIME_DIFF
+					comments = data.PENDING
+
+				}
+				attendance.TimeDiff = timeDiff
+				attendance.Comments = comments
+				attendances = append(attendances, attendance)
+			}
+		}
+		lastDayWithAttendance = lastDayWithAttendance.AddDate(0, 0, 1)
+	}
+	return attendances
+}
+
+func isWorkday(shift models.Shift, weekday string) bool {
+	workdays := strings.Split(shift.Workdays, ",")
+	return utils.StringInSliceLowercase(weekday, workdays)
+}
+
+func generateTodaysAttendances(id int64, attendances []models.AttendanceResponse) ([]models.AttendanceResponse, error) {
 
 	shift, err := queryUsersCurrentShift(id)
 	if err != nil {
 		return attendances, err
 	}
-
-	if len(attendances) == 0 {
-
-		var attendance models.AttendanceResponse
-		attendance.EventType = data.AttendanceEventTypes[0]
-		attendance.ExpectedTime = shift.CheckInTime
+	var shiftTime string
+	var attendance models.AttendanceResponse
+	for i := 0; i < 2; i++ {
+		if i == 0 {
+			shiftTime = shift.CheckInTime
+		} else {
+			shiftTime = shift.CheckOutTime
+		}
+		attendance.EventType = data.AttendanceEventTypes[i]
+		attendance.EventTime = time.Now().Format(data.DATE_FORMAT) + " " + data.NO_TIME_DIFF
+		attendance.ExpectedTime = shiftTime
 		attendance.Pending = true
 
 		eventTimeNow := utils.GetTimeStringNow()
 		timeDiff, comments, _ := utils.GetFormattedTimeDiff(eventTimeNow,
-			attendance.ExpectedTime,
-			data.EventIsArrival[attendance.EventType])
-		attendance.TimeDiff = timeDiff
-		attendance.Comments = comments
-		attendances = append(attendances, attendance)
-	}
-	if len(attendances) == 1 {
-		var attendance models.AttendanceResponse
-		attendance.EventType = data.AttendanceEventTypes[1]
-		attendance.ExpectedTime = shift.CheckOutTime
-		attendance.Pending = true
-
-		eventTimeNow := utils.GetTimeStringNow()
-		timeDiff, comments, _ := utils.GetFormattedTimeDiff(eventTimeNow,
-			attendance.ExpectedTime,
-			data.EventIsArrival[attendance.EventType])
+			attendance.ExpectedTime, i == 0)
 		attendance.TimeDiff = timeDiff
 		attendance.Comments = comments
 		attendances = append(attendances, attendance)
@@ -390,22 +557,16 @@ func generateMissingAttendances(id int64, attendances []models.AttendanceRespons
 }
 
 func queryUsersCurrentShift(id int64) (models.Shift, error) {
+
 	var shift models.Shift
-	db, err := GetDB()
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return shift, nil
-	}
-	defer db.Close()
 	row := db.QueryRow(getUserShiftQuery, id)
-	err = row.Scan(
+	err := row.Scan(
 		&shift.Id,
 		&shift.CheckInTime,
 		&shift.CheckOutTime,
-		&shift.LunchBreakLength)
+		&shift.LunchBreakLength,
+		&shift.Workdays,
+	)
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
@@ -414,88 +575,41 @@ func queryUsersCurrentShift(id int64) (models.Shift, error) {
 
 func GetAttendanceById(id int64) (models.Attendance, error) {
 
-	var attendance models.Attendance
-	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return attendance, nil
-	}
-
-	defer db.Close()
 	row := db.QueryRow("SELECT * FROM attendance WHERE id = ?", id)
-	err = row.Scan(
-		&attendance.Id,
-		&attendance.UserId,
-		&attendance.EventType,
-		&attendance.EventTime,
-		&attendance.Location,
-		&attendance.Confirmed,
-		&attendance.Comments,
-		&attendance.ExpectedTime)
-	if err != nil {
-		fmt.Println("Err", err.Error())
-	}
+	attendance, err := scanAttendanceRow(row)
 	return attendance, err
 }
 
 func GetAttendanceFromUser(id int64) ([]models.Attendance, error) {
-
-	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return nil, nil
-	}
-
-	defer db.Close()
 
 	attendances := []models.Attendance{}
 	results, err := db.Query("SELECT * FROM attendance WHERE user_id = ?", id)
 	if err != nil && err != sql.ErrNoRows {
 		return attendances, err
 	}
-	for results.Next() {
-		var attendance models.Attendance
-		// for each row, scan into the models.attendances struct
-		err = results.Scan(
-			&attendance.Id,
-			&attendance.UserId,
-			&attendance.EventType,
-			&attendance.EventTime,
-			&attendance.Location,
-			&attendance.Confirmed,
-			&attendance.Comments,
-			&attendance.ExpectedTime)
-		if err != nil {
-			panic(err.Error()) // proper error handling instead of panic in your app
-		}
-		// append the usersg into user array
-		attendances = append(attendances, attendance)
-	}
-
-	return attendances, nil
+	attendances, err = scanAttendanceRowList(results)
+	return attendances, err
 }
 
-func GetAttendances() ([]models.Attendance, error) {
+func GetMonthlyCompanyAttendance(userId int64) ([]models.Attendance, error) {
 
-	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
+	user, err := GetUserById(userId)
 	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
 		return nil, err
 	}
+	if user.Role != data.ADMIN_ROLE {
+		return nil, errors.New(fmt.Sprint(13))
+	}
+	attendances := []models.Attendance{}
+	results, err := db.Query(monthlyCompanyAttendanceQuery, userId)
+	if err != nil && err != sql.ErrNoRows {
+		return attendances, err
+	}
+	attendances, err = scanAttendanceRowList(results)
+	return attendances, err
+}
+func GetAttendances() ([]models.Attendance, error) {
 
-	defer db.Close()
 	results, err := db.Query("SELECT * FROM attendance;")
 
 	if err != nil {
@@ -503,26 +617,35 @@ func GetAttendances() ([]models.Attendance, error) {
 		return nil, err
 	}
 
-	attendances := []models.Attendance{}
-	for results.Next() {
-		var attendance models.Attendance
-		// for each row, scan into the models.Users struct
-		err = results.Scan(
-			&attendance.Id,
-			&attendance.UserId,
-			&attendance.EventType,
-			&attendance.EventTime,
-			&attendance.Location,
-			&attendance.Confirmed,
-			&attendance.Comments,
-			&attendance.ExpectedTime)
-		if err != nil {
-			panic(err.Error()) // proper error handling instead of panic in your app
-		}
-		// append the usersg into user array
-		attendances = append(attendances, attendance)
+	attendances, err := scanAttendanceRowList(results)
+	return attendances, err
+
+}
+
+func BulkInsert(unsavedRows []models.AttendanceResponse, userId int64) error {
+	if len(unsavedRows) == 0 {
+		return errors.New(fmt.Sprint(10))
 	}
-
-	return attendances, nil
-
+	valueStrings := make([]string, 0, len(unsavedRows))
+	valueArgs := make([]interface{}, 0, len(unsavedRows)*7)
+	var comments string
+	for _, post := range unsavedRows {
+		if post.Pending {
+			comments = data.PENDING
+		} else {
+			comments = post.Comments
+		}
+		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?, ?, ?)")
+		valueArgs = append(valueArgs, userId)
+		valueArgs = append(valueArgs, "0,0") //location
+		valueArgs = append(valueArgs, post.EventType)
+		valueArgs = append(valueArgs, post.EventTime)
+		valueArgs = append(valueArgs, post.ExpectedTime)
+		valueArgs = append(valueArgs, post.Pending)
+		valueArgs = append(valueArgs, comments)
+	}
+	stmt := fmt.Sprintf("INSERT INTO attendance (user_id, location, event_type, event_time, expected_time, pending, comments) VALUES %s",
+		strings.Join(valueStrings, ","))
+	_, err := db.Exec(stmt, valueArgs...)
+	return err
 }

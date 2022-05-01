@@ -24,9 +24,9 @@ import (
 // @Failure                    400  {object}  models.SimpleError
 // @Router                     /private/users [post]
 func Post(c *gin.Context) {
-	u, err := utils.ValidateUserInfo(c)
+	u, err, resp := utils.ValidateUserInfo(c)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.IndentedJSON(http.StatusBadRequest, resp)
 		return
 	}
 	user, err := controllers.PostUser(u)
