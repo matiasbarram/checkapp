@@ -2,17 +2,18 @@ package utils
 
 import (
 	"checkapp_api/data"
+	"io/ioutil"
 	"strings"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
-func GetUserIdFromSession(c *gin.Context) (int, bool) {
+func GetUserIdFromSession(c *gin.Context) (int64, bool) {
 	session := sessions.Default(c)
 	sessionId := session.Get(data.UserKey)
 	userId, ok := sessionId.(int)
-	return userId, ok
+	return int64(userId), ok
 }
 
 func SplitComments(comments string) (string, string) {
@@ -30,4 +31,12 @@ func Reverse(s []interface{}) []interface{} {
 	}
 
 	return a
+}
+
+func GetImageBytes(filepath string) ([]byte, error) {
+	img, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return nil, err
+	}
+	return img, err
 }

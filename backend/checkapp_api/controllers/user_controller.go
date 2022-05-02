@@ -12,28 +12,32 @@ import (
 
 const userQuery = "SELECT id, company_id, name, rut, role, email, password, IFNULL(device_id, -1) FROM user"
 
+const userPictureQuery = "SELECT picture FROM user WHERE id = ?"
+
+var putUserImageQuery = `
+UPDATE user
+SET picture = ?
+WHERE id = ?; 
+`
+
 func GetUserById(id int64) (models.User, error) {
 
 	var user models.User
-	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return user, nil
-	}
-
-	defer db.Close()
 	row := db.QueryRow(userQuery+" WHERE id = ?", id)
-	err = row.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Email, &user.Password, &user.Device_id)
+	err := row.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Email, &user.Password, &user.Device_id)
 	if err != nil {
 		fmt.Println("Err", err.Error())
 		return user, err
 	}
 	return user, err
 
+}
+
+func GetUserPicture(id int64) ([]byte, error) {
+
+	var imgBytes = []byte{}
+	err := db.QueryRow(userPictureQuery, id).Scan(&imgBytes)
+	return imgBytes, err
 }
 
 func GetMD5Hash(text string) string {
@@ -44,19 +48,9 @@ func GetMD5Hash(text string) string {
 func ValidateCredentials(u models.UserCredentials) (models.User, error) {
 
 	var user models.User
-	db, err := GetDB()
 
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return user, nil
-	}
-
-	defer db.Close()
 	row := db.QueryRow(userQuery+" WHERE email = ?", u.Email)
-	err = row.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Email, &user.Password, &user.Device_id)
+	err := row.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Email, &user.Password, &user.Device_id)
 
 	if err != nil {
 		fmt.Println("Err", err.Error())
@@ -72,17 +66,6 @@ func ValidateCredentials(u models.UserCredentials) (models.User, error) {
 
 func GetUsers() []models.User {
 
-	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return nil
-	}
-
-	defer db.Close()
 	results, err := db.Query(userQuery)
 
 	if err != nil {
@@ -108,17 +91,6 @@ func GetUsers() []models.User {
 
 func PostUser(user models.User) (models.User, error) {
 
-	db, err := GetDB()
-
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		// simply print the error to the console
-		fmt.Println("Err", err.Error())
-		// returns nil on error
-		return user, nil
-	}
-
-	defer db.Close()
 	res, err := db.Exec("INSERT INTO user (company_id, name, rut, role, email, password) VALUES (?, ?, ?, ?, ?, MD5(?))",
 		user.Company_id, user.Name, user.Rut, user.Role, user.Email, user.Password)
 	if err != nil {
@@ -129,4 +101,13 @@ func PostUser(user models.User) (models.User, error) {
 	user.Id = int(id)
 	return user, err
 
+}
+
+func PutUserPicture(id int64, picture []byte) (models.User, error) {
+	var user models.User
+	_, err := db.Exec(putUserImageQuery, picture, id)
+	if err != nil {
+		return user, err
+	}
+	return GetUserById(id)
 }

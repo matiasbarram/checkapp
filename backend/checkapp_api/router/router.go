@@ -26,6 +26,8 @@ func addUserGroupEndpoints(baseGroup *gin.RouterGroup) {
 		userGroup.POST("", user.Post)
 		userGroup.GET("/:id", user.GetById)
 		userGroup.GET("/me", user.GetFromSession)
+		userGroup.PUT("/image", user.PutImageFromUrl)
+		userGroup.GET("/image/:id", user.GetPictureById)
 	}
 
 }
@@ -103,6 +105,7 @@ func Setup() *gin.Engine {
 	v1 := r.Group("/api/v1")
 	{
 		v1.StaticFile("/im1.jpg", "./assets/im1.jpg")
+		v1.StaticFile("/im2.png", "./assets/noimage_person.png")
 		v1.GET("/", handlers.GetHome)
 		v1.GET("/index", handlers.GetHome)
 		v1.GET("/home", handlers.GetHome)

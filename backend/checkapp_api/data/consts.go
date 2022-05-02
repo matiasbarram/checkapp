@@ -8,4 +8,6 @@ const MinHoursTillNextEvent = 4        // hours
 
 const Port = ":8083"
 
+const PRODUCTION_URL = "https://api.asiendosoftware.xyz/api/v1/"
+
 // const AllowedCORSDomain = "http://localhost"

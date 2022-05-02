@@ -25,6 +25,7 @@ type User struct {
 	Email      string `form:"email" binding:"required"`
 	Password   string `form:"password,omitempty" binding:"required,min=4"`
 	Device_id  int    `form:"device_id,omitempty"`
+	Picture    []byte `form:"picture,omitempty"`
 }
 
 type UserCredentials struct {
@@ -32,7 +33,9 @@ type UserCredentials struct {
 	Password string `form:"password" binding:"required"`
 	// Device_id int    `json:"device_id,omitempty" `
 }
-
+type UserImage struct {
+	Url string `form:"url" binding:"required"`
+}
 type UserAttendanceInfo struct {
 	Id                int    `json:"id"`
 	Company_id        int    `json:"company_id"`
@@ -47,4 +50,12 @@ type UserAttendanceInfo struct {
 type UserLoginResponse struct {
 	Message string `json:"message"`
 	User    User   `json:"id"`
+}
+
+type UserMonthlyAttendance struct {
+	UserId         int                  `json:"user_id"`
+	UserRut        string               `json:"rut"`
+	UserRole       string               `json:"role"`
+	UserPictureUrl string               `json:"picture,omitempty"`
+	Attendances    []AttendanceResponse `json:"attendances"`
 }

@@ -336,19 +336,24 @@ func GetLastTwoEventsFromUser(id int64) ([]models.AttendanceResponse, error) {
 func attendancesToAttendanceResponses(attendances []models.Attendance,
 	responses []models.AttendanceResponse) ([]models.AttendanceResponse, error) {
 	for _, att := range attendances {
-		var attendanceResponse models.AttendanceResponse
-		attendanceResponse.EventTime = att.EventTime
-		attendanceResponse.EventType = att.EventType
-		attendanceResponse.ExpectedTime = att.ExpectedTime
-		attendanceResponse.Pending = att.Pending
-		attendanceResponse, err := calcTimeDiff(attendanceResponse)
-		attendanceResponse.AttendaceId = att.Id
+		attendanceResponse, err := attendanceToAttendanceResponse(att)
 		if err != nil {
 			return responses, err
 		}
 		responses = append(responses, attendanceResponse)
 	}
 	return responses, nil
+}
+
+func attendanceToAttendanceResponse(att models.Attendance) (models.AttendanceResponse, error) {
+	var attendanceResponse models.AttendanceResponse
+	attendanceResponse.EventTime = att.EventTime
+	attendanceResponse.EventType = att.EventType
+	attendanceResponse.ExpectedTime = att.ExpectedTime
+	attendanceResponse.Pending = att.Pending
+	attendanceResponse, err := calcTimeDiff(attendanceResponse)
+	attendanceResponse.AttendaceId = att.Id
+	return attendanceResponse, err
 }
 
 func queryUserDailyAttendance(id int64) ([]models.AttendanceResponse, error) {
@@ -591,7 +596,7 @@ func GetAttendanceFromUser(id int64) ([]models.Attendance, error) {
 	return attendances, err
 }
 
-func GetMonthlyCompanyAttendance(userId int64) ([]models.Attendance, error) {
+func GetMonthlyCompanyAttendance(userId int64) (map[int]models.UserMonthlyAttendance, error) {
 
 	user, err := GetUserById(userId)
 	if err != nil {
@@ -600,13 +605,44 @@ func GetMonthlyCompanyAttendance(userId int64) ([]models.Attendance, error) {
 	if user.Role != data.ADMIN_ROLE {
 		return nil, errors.New(fmt.Sprint(13))
 	}
-	attendances := []models.Attendance{}
+	// attendances := []models.Attendance{}
 	results, err := db.Query(monthlyCompanyAttendanceQuery, userId)
 	if err != nil && err != sql.ErrNoRows {
-		return attendances, err
+		return nil, err
 	}
-	attendances, err = scanAttendanceRowList(results)
-	return attendances, err
+	attendances, err := scanAttendanceRowList(results)
+	if err != nil {
+		return nil, err
+	}
+	var xd = map[int]models.UserMonthlyAttendance{}
+	for _, att := range attendances {
+		v, exist := xd[att.UserId]
+		if !exist {
+			var userMonthlyAtt models.UserMonthlyAttendance
+			user, err := GetUserById(int64(att.UserId))
+			if err != nil {
+				return nil, err
+			}
+			userMonthlyAtt.UserId = att.UserId
+			userMonthlyAtt.UserRole = user.Role
+			userMonthlyAtt.UserRut = user.Rut
+			userMonthlyAtt.UserPictureUrl = data.PRODUCTION_URL + "private/users/image/" + fmt.Sprint(user.Id)
+			// userMonthlyAtt.Attendances = []models.AttendanceResponse{}
+			xd[att.UserId] = userMonthlyAtt
+			v = xd[att.UserId]
+		}
+		attResp, err := attendanceToAttendanceResponse(att)
+		if err != nil {
+			return nil, err
+		}
+		v.Attendances = append(v.Attendances, attResp)
+		xd[att.UserId] = v
+	}
+
+	// var attendanceResponses = []models.AttendanceResponse{}
+	// attendanceResponses, err = attendancesToAttendanceResponses(attendances, attendanceResponses)
+
+	return xd, err
 }
 func GetAttendances() ([]models.Attendance, error) {
 

@@ -69,6 +69,17 @@ content-type: application/json
 }
 ###
 
+
+PUT {{host}}private/users/image
+content-type: application/json
+
+{
+    "url": "https://mir-s3-cdn-cf.behance.net/user/276/634cd9468463231.5e065f4d06fe8.png"
+}
+###
+
+GET {{host}}private/users/image/2
+###
 GET {{host}}logout
 ######
 GET {{host}}private/attendance/today
