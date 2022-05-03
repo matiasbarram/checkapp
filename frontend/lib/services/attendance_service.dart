@@ -20,6 +20,7 @@ class AttendanceService extends ChangeNotifier {
   Color checkInColor = AppTheme.textPending;
   Color checkOutColor = AppTheme.textPending;
   final storage = const FlutterSecureStorage();
+  bool freeDay = false;
 
   final String _baseUrl = 'api.asiendosoftware.xyz';
   final String _baseAPI = '/api/v1/';
@@ -41,30 +42,40 @@ class AttendanceService extends ChangeNotifier {
     print(url);
     final respuesta = await http.get(url, headers: headers);
     print('Respuesta today attendance:  ${respuesta.body}');
-    final List<dynamic> decodeResp = json.decode(respuesta.body);
+    final decodeResp = json.decode(respuesta.body);
+    if (decodeResp.containsKey('error')) {
+      return [];
+    }
     return decodeResp;
   }
 
   Future<void> updateCurrentStatus() async {
     final lastAttendance = await getTodayAttendance();
-    for (var attendance in lastAttendance) {
-      if (attendance['event_type'] == _eventTypeCheckIn) {
-        entradaEsperada = formatTimetoTime(attendance['expected_time']);
-        if (attendance['pending'] == false) {
-          checkInColor = _calculateColor(attendance['comments']);
-          entrada = formatDateTimetoTime(attendance['event_time']);
-          notifyListeners();
+    if (lastAttendance.isEmpty) {
+      entradaEsperada = '';
+      salidaEsperada = '';
+      entrada = 'LIBRE';
+      salida = 'LIBRE';
+      freeDay = true;
+    } else {
+      for (var attendance in lastAttendance) {
+        if (attendance['event_type'] == _eventTypeCheckIn) {
+          entradaEsperada = formatTimetoTime(attendance['expected_time']);
+          if (attendance['pending'] == false) {
+            checkInColor = _calculateColor(attendance['comments']);
+            entrada = formatDateTimetoTime(attendance['event_time']);
+          }
         }
-      }
-      if (attendance['event_type'] == _eventTypeCheckOut) {
-        salidaEsperada = formatTimetoTime(attendance['expected_time']);
-        if (attendance['pending'] == false) {
-          salida = formatDateTimetoTime(attendance['event_time']);
-          checkOutColor = _calculateColor(attendance['comments']);
-          notifyListeners();
+        if (attendance['event_type'] == _eventTypeCheckOut) {
+          salidaEsperada = formatTimetoTime(attendance['expected_time']);
+          if (attendance['pending'] == false) {
+            salida = formatDateTimetoTime(attendance['event_time']);
+            checkOutColor = _calculateColor(attendance['comments']);
+          }
         }
       }
     }
+    notifyListeners();
   }
 
   Future<String> postNewAttendance(

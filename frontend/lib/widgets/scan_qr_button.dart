@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:checkapp/themes/app_theme.dart';
+import 'package:provider/provider.dart';
 
 import '../helpers/scan_qr.dart';
+import '../services/services.dart';
 
 class ScanQRButton extends StatelessWidget {
   const ScanQRButton({
@@ -10,13 +12,15 @@ class ScanQRButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final attendace = Provider.of<AttendanceService>(context, listen: false);
+
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
             primary: AppTheme.checkAppBlue),
-        onPressed: () async => await scanQr(context),
+        onPressed: attendace.freeDay ? null : () async => await scanQr(context),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceAround,

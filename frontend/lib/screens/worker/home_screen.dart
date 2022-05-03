@@ -29,6 +29,7 @@ class HomeScreen extends StatelessWidget {
           color: AppTheme.checkAppOrange,
           onRefresh: () => attendanceService.getTodayAttendance(),
           child: PageView(
+              onPageChanged: (value) => uiProvider.selectedMenuOpt = value,
               controller: uiProvider.pageControler,
               children: const [ResumenScreen(), HistorialScreen()])),
     );
