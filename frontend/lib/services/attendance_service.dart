@@ -43,10 +43,29 @@ class AttendanceService extends ChangeNotifier {
     final respuesta = await http.get(url, headers: headers);
     print('Respuesta today attendance:  ${respuesta.body}');
     final decodeResp = json.decode(respuesta.body);
+    /*
     if (decodeResp.containsKey('error')) {
       return [];
     }
+    */
     return decodeResp;
+  }
+
+  Future<String> getProfileById() async {
+    final _cookie = await storage.read(key: 'mysession');
+    final String? userInfo = await storage.read(key: 'userInfo');
+    if (userInfo != null) {
+      Map<String, dynamic> userInfoDecode = json.decode(userInfo);
+      final int userId = userInfoDecode['id'];
+      Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
+      final url = Uri.https(_baseUrl, '${_baseAPI}private/users/image/$userId');
+      print(url);
+      final respuesta = await http.get(url, headers: headers);
+      final decodeResp = json.decode(respuesta.body);
+      print(decodeResp);
+    }
+    return 'a';
+    //return decodeResp;
   }
 
   Future<void> updateCurrentStatus() async {

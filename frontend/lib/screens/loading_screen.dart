@@ -38,7 +38,7 @@ class LoadingScreen extends StatelessWidget {
                     Provider.of<AuthService>(context, listen: false);
                 final userProvider =
                     Provider.of<UserProvider>(context, listen: false);
-                userProvider.loadUserInfo();
+                userProvider.loadUserInfo(context);
 
                 String userRol = await authService.logedUserRol();
                 if (userRol == 'cringe') {

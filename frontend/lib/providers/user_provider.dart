@@ -9,12 +9,14 @@ class UserProvider extends ChangeNotifier {
 
   String name = 'User';
 
-  Future<void> loadUserInfo() async {
+  Future<void> loadUserInfo(context) async {
     final String? userInfokey = await storage.read(key: 'userInfo');
     if (userInfokey != null) {
+      //final attendanceService =Provider.of<AttendanceService>(context, listen: false);
       print('La info de la key es $userInfokey');
       Map<String, dynamic> userInfo = json.decode(userInfokey);
       name = userInfo['name'];
+      //String profilePictureUrl = await attendanceService.getProfileById();
       notifyListeners();
     }
   }
