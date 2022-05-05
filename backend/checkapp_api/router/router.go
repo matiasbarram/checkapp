@@ -27,7 +27,6 @@ func addUserGroupEndpoints(baseGroup *gin.RouterGroup) {
 		userGroup.GET("/:id", user.GetById)
 		userGroup.GET("/me", user.GetFromSession)
 		userGroup.PUT("/image", user.PutImageFromUrl)
-		userGroup.GET("/image/:id", user.GetPictureById)
 	}
 
 }
@@ -112,6 +111,7 @@ func Setup() *gin.Engine {
 		// Login and logout routes
 		v1.POST("/login", user.Login)
 		v1.GET("/logout", user.Logout)
+		v1.GET("/image/:id", user.GetPictureById)
 
 		v1.GET("/reset/attendance/today", attendance.DeleteDaily)
 		v1.GET("/reset/attendance/all", attendance.DeleteAll)

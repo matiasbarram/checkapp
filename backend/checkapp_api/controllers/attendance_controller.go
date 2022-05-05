@@ -409,6 +409,7 @@ func GetTodaysAttendance(id int64) ([]models.AttendanceResponse, error) {
 
 	attendances, err := GetLastTwoEventsFromUser(id)
 	if err != nil {
+		ic.Ic(err.Error())
 		return nil, err
 	}
 	today := time.Now()
@@ -485,7 +486,9 @@ func GenerateMissingAttendances(userId int64,
 func getMissingAttendances(shift models.Shift, today time.Time,
 	lastDayWithAttendance time.Time, attendances []models.AttendanceResponse) []models.AttendanceResponse {
 	if today.Format(data.DATE_FORMAT) == lastDayWithAttendance.Format(data.DATE_FORMAT) {
-		return attendances
+		if len(attendances) > 0 {
+			return attendances
+		}
 	}
 	if attendances == nil {
 		attendances = []models.AttendanceResponse{}
