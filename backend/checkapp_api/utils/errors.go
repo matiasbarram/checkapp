@@ -30,7 +30,9 @@ func GenerateResponseErrorWithCode(err error) (models.SimpleError, int) {
 		responseError.Code = int(i)
 		responseError.Message = data.ErrorCodeMap[int(i)]
 	}
-	if responseError.Code == 13 {
+	if responseError.Code == 0 {
+		httpErrorCode = 500
+	} else if responseError.Code == 13 {
 		httpErrorCode = 401
 	} else {
 		httpErrorCode = 400

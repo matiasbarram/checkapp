@@ -41,6 +41,7 @@ func addAttendanceGroupEndpoints(baseGroup *gin.RouterGroup) {
 		attendanceGroup.GET("/me", attendance.GetFromSession)
 		attendanceGroup.GET("/last", attendance.GetLastFromSession) // borrable
 		attendanceGroup.GET("/today", attendance.GetDailyFromSession)
+		attendanceGroup.GET("/tomorrow", attendance.GetTomorrowBoolFromSession)
 		attendanceGroup.GET("/company/monthly", attendance.GetCompanyMonthlyFromSession)
 		// attendanceGroup.GET("/today/generate", attendance.GenerateDaily)
 	}
@@ -66,7 +67,7 @@ func addQrGroupEndpoints(baseGroup *gin.RouterGroup) {
 	{
 		qrGroup.GET("", qr.GetAll)
 		qrGroup.GET("/:id", qr.GetById)
-		qrGroup.GET("/image/:id", qr.GetImageById)
+		// qrGroup.GET("/image/:id", qr.GetImageById) //temporallyOpen
 	}
 
 }
@@ -80,6 +81,15 @@ func addPrivateGroupEndpoints(baseGroup *gin.RouterGroup) {
 		addCompanyGroupEndpoints(private)
 		addQrGroupEndpoints(private)
 		addUserGroupEndpoints(private)
+	}
+}
+
+func addTemporallyOpenEndpoints(baseGroup *gin.RouterGroup) {
+	// Private group, require authentication to access
+	open := baseGroup.Group("/open")
+	{
+		open.GET("/qrs/image/:id", qr.GetImageById) //temporallyOpen
+		open.GET("/users/image/:id", user.GetPictureById)
 	}
 }
 
@@ -111,11 +121,12 @@ func Setup() *gin.Engine {
 		// Login and logout routes
 		v1.POST("/login", user.Login)
 		v1.GET("/logout", user.Logout)
-		v1.GET("/image/:id", user.GetPictureById)
+		// v1.GET("/image/:id", user.GetPictureById) //temporallyOpen?
 
 		v1.GET("/reset/attendance/today", attendance.DeleteDaily)
-		v1.GET("/reset/attendance/all", attendance.DeleteAll)
+		// v1.GET("/reset/attendance/all", attendance.DeleteAll)
 
+		addTemporallyOpenEndpoints(v1)
 		addPrivateGroupEndpoints(v1)
 
 	}

@@ -1,26 +1,9 @@
 @local_hostname = http://localhost:8083/api/v1/
 @remote_hostname = https://api.asiendosoftware.xyz/api/v1/
 
-@host = {{local_hostname}}
-# @host = {{remote_hostname}}
-GET {{host}}
+# @host = {{local_hostname}}
+@host = {{remote_hostname}}
 
-###
-GET {{host}}users
-
-###
-GET {{host}}users/2
-###
-
-GET {{host}}companies
-
-###
-GET {{host}}qrs
-
-###
-GET {{host}}qrs/1
-
-###
 POST {{host}}private/users
 content-type: application/json
 
@@ -68,17 +51,24 @@ content-type: application/json
     "password": "bruh"
 }
 ###
+POST {{host}}login
+content-type: application/json
 
+{
+    "email": "kaos@kaos.com",
+    "password": "kaos"
+}
+###
 
 PUT {{host}}private/users/image
 content-type: application/json
 
 {
-    "url": "https://mir-s3-cdn-cf.behance.net/user/276/634cd9468463231.5e065f4d06fe8.png"
+    "url": "https://64.media.tumblr.com/dcb8c0b4b1d8e71e46cd87c51b2a2806/623c62256a38dbac-05/s640x960/91b6ac2904ab60325c9360496072df51107f8cdb.jpg"
 }
 ###
 
-GET {{host}}private/users/image/2
+GET {{host}}private/users/image/15
 ###
 GET {{host}}logout
 ######

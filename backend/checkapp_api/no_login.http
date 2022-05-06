@@ -1,0 +1,9 @@
+@local_hostname = http://localhost:8083/api/v1/
+@remote_hostname = https://api.asiendosoftware.xyz/api/v1/
+
+@host = {{local_hostname}}
+# @host = {{remote_hostname}}
+
+GET {{host}}open/users/image/15
+###
+GET {{host}}private/qrs/image/1
