@@ -17,6 +17,13 @@ PreferredSizeWidget mainAppBar(
             authService.logout();
           },
           child: const CircleAvatar(
+            child: FadeInImage(
+              placeholder: NetworkImage(
+                  'https://www.api.asiendosoftware.xyz/api/v1/im2.png'),
+              image: NetworkImage(
+                'https://www.api.asiendosoftware.xyz/api/v1/image/2',
+              ),
+            ),
             backgroundColor: Colors.white,
           ),
         ),

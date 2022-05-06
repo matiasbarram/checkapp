@@ -11,8 +11,6 @@ class AuthService extends ChangeNotifier {
   final String _baseAPI = '/api/v1/';
   final String _cookieName = 'mysession';
 
-  String name = 'User';
-
   Future<Map<String, dynamic>> loginUser(String email, String password) async {
     final Map<String, dynamic> authData = {
       'email': email,
@@ -32,9 +30,15 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> _userInfoCookie(Map<String, dynamic> respuesta) async {
+    print(respuesta);
+    final int id = respuesta['user']['Id'];
     final String userName = respuesta['user']['Name'];
     final String userRol = respuesta['user']['Role'];
-    final Map<String, dynamic> userInfo = {'name': userName, 'rol': userRol};
+    final Map<String, dynamic> userInfo = {
+      'name': userName,
+      'rol': userRol,
+      'id': id
+    };
     await storage.write(key: 'userInfo', value: json.encode(userInfo));
   }
 
