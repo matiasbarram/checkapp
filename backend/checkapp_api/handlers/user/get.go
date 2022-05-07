@@ -85,11 +85,13 @@ func GetPictureById(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
 	img, err := controllers.GetUserPicture(id)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			icecream.Ic("redirect")
-			c.Redirect(http.StatusTemporaryRedirect, "/api/v1/im2.png")
-		}
+	if err != nil && err != sql.ErrNoRows {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	} else if err == sql.ErrNoRows {
+		icecream.Ic(err.Error())
+		c.AbortWithStatus(http.StatusNotFound)
+	} else if len(img) == 0 {
+		c.Redirect(http.StatusTemporaryRedirect, "/api/v1/im2.png")
 	}
 	c.Data(http.StatusOK, "image/jpeg", img)
 }

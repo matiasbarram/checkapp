@@ -52,11 +52,11 @@ func GetFormattedTimeDiff(eventTime string, expectedTime string, isArrival bool)
 	}
 	var comments string
 	if isArrival && diff/60 < data.AttendanceTimeOffsetLimit {
-		comments = "LATE ARRIVAL"
+		comments = data.LATE_ARRIVAL
 	} else if !isArrival && diff/60 > data.AttendanceTimeOffsetLimit {
-		comments = "EARLY LEAVE"
+		comments = data.EARLY_LEAVE
 	} else {
-		comments = "ON TIME"
+		comments = data.ON_TIME
 	}
 	timeDiff := FormatSecondsToHHMMSS(diff)
 	return timeDiff, comments, nil

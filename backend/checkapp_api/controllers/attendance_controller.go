@@ -9,6 +9,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -576,7 +577,7 @@ func GetAttendanceFromUser(id int64) ([]models.Attendance, error) {
 	return attendances, err
 }
 
-func GetMonthlyCompanyAttendance(userId int64) (map[int]models.UserMonthlyAttendance, error) {
+func GetMonthlyCompanyAttendance(userId int64) ([]models.UserMonthlyAttendance, error) {
 
 	user, err := GetUserById(userId)
 	if err != nil {
@@ -604,6 +605,7 @@ func GetMonthlyCompanyAttendance(userId int64) (map[int]models.UserMonthlyAttend
 				return nil, err
 			}
 			userMonthlyAtt.UserId = att.UserId
+			userMonthlyAtt.UserName = user.Name
 			userMonthlyAtt.UserRole = user.Role
 			userMonthlyAtt.UserRut = user.Rut
 			userMonthlyAtt.UserPictureUrl = data.PRODUCTION_URL + data.USER_PIC_LOCATION + fmt.Sprint(user.Id)
@@ -619,10 +621,17 @@ func GetMonthlyCompanyAttendance(userId int64) (map[int]models.UserMonthlyAttend
 		idToMonthlyAttendancesMap[att.UserId] = v
 	}
 
+	monthlyData := []models.UserMonthlyAttendance{}
+	for _, v := range idToMonthlyAttendancesMap {
+		monthlyData = append(monthlyData, v)
+	}
+	sort.Slice(monthlyData, func(i, j int) bool {
+		return monthlyData[i].UserName < monthlyData[j].UserName
+	})
 	// var attendanceResponses = []models.AttendanceResponse{}
 	// attendanceResponses, err = attendancesToAttendanceResponses(attendances, attendanceResponses)
 
-	return idToMonthlyAttendancesMap, err
+	return monthlyData, err
 }
 func GetAttendances() ([]models.Attendance, error) {
 

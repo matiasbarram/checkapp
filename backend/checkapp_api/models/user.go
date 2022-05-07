@@ -54,6 +54,7 @@ type UserLoginResponse struct {
 
 type UserMonthlyAttendance struct {
 	UserId         int                  `json:"user_id"`
+	UserName       string               `json:"user_name"`
 	UserRut        string               `json:"rut"`
 	UserRole       string               `json:"role"`
 	UserPictureUrl string               `json:"picture,omitempty"`
