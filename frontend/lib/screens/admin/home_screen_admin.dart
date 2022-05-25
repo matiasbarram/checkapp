@@ -15,16 +15,20 @@ class HomeScreenAdmin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
     final uiProvider = Provider.of<UIprovider>(context);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return Scaffold(
         appBar: mainAppBar(context, userProvider, authService),
         bottomNavigationBar: const BottomNavBarAdmin(),
-        body: PageView(controller: uiProvider.pageControler, children: const [
-          ResumenAdminScreen(),
-          ExtraScreen(),
-          EmployeesScreen()
-        ]));
+        body: PageView(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: uiProvider.pageControler,
+            onPageChanged: (value) => uiProvider.selectedMenuOpt = value,
+            children: const [
+              ResumenAdminScreen(),
+              ExtraScreen(),
+              EmployeesScreen()
+            ]));
   }
 }

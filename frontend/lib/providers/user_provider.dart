@@ -20,4 +20,15 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<String> getUserId() async {
+    const storage = FlutterSecureStorage();
+    final String? userInfo = await storage.read(key: 'userInfo');
+    if (userInfo != null) {
+      Map<String, dynamic> userInfoDecoded = json.decode(userInfo);
+      final int id = userInfoDecoded['id'];
+      return id.toString();
+    }
+    return (-1).toString();
+  }
 }

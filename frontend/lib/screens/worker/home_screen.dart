@@ -31,6 +31,7 @@ class HomeScreen extends StatelessWidget {
           child: PageView(
               onPageChanged: (value) => uiProvider.selectedMenuOpt = value,
               controller: uiProvider.pageControler,
+              physics: const NeverScrollableScrollPhysics(),
               children: const [ResumenScreen(), HistorialScreen()])),
     );
   }

@@ -41,7 +41,7 @@ class LoadingScreen extends StatelessWidget {
                 userProvider.loadUserInfo(context);
 
                 String userRol = await authService.logedUserRol();
-                if (userRol == 'cringe') {
+                if (userRol == 'based') {
                   Navigator.pushReplacement(context,
                       PageRouteBuilder(pageBuilder: (_, __, ___) {
                     return const HomeScreenAdmin();

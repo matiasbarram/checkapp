@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:checkapp/models/wokers_model.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -196,5 +197,22 @@ class AttendanceService extends ChangeNotifier {
       newColor = AppTheme.textPrimColor;
     }
     return newColor;
+  }
+
+  Future<List<dynamic>> getCompanyWorkers() async {
+    final _cookie = await storage.read(key: 'mysession');
+    List<dynamic> workers = [];
+    Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
+    final url =
+        Uri.https(_baseUrl, '${_baseAPI}private/attendance/company/monthly');
+    final respuesta = await http.get(url, headers: headers);
+    final List<dynamic> decodeResp = json.decode(respuesta.body);
+    //String test ='[  {    "user_id": 15,    "rut": "37",    "role": "cringe",    "picture": "https://www.api.asiendosoftware.xyz/api/v1/open/users/image/15",    "attendances": [      {        "attendance_id": 227,        "event_type": "CHECK_IN",        "expected_time": "09:00:00",        "pending": false,        "event_time": "2022-04-20 09:01:06",        "comments": "LATE ARRIVAL",        "time_diff": "00:01:06"      },      {        "attendance_id": 228,        "event_type": "CHECK_OUT",        "expected_time": "17:30:00",        "pending": false,        "event_time": "2022-04-20 17:41:06",        "comments": "ON TIME",        "time_diff": "00:11:06"      }    ]  },  {    "user_id": 2,    "rut": "",    "role": "based",    "picture": "https://www.api.asiendosoftware.xyz/api/v1/open/users/image/2",    "attendances": [      {        "attendance_id": 233,        "event_type": "CHECK_IN",        "expected_time": "09:00:00",        "pending": false,        "event_time": "2022-05-05 18:28:46",        "comments": "LATE ARRIVAL",        "time_diff": "09:28:46"      },      {        "attendance_id": 234,        "event_type": "CHECK_OUT",        "expected_time": "17:30:00",        "pending": false,        "event_time": "2022-05-05 18:29:49",        "comments": "ON TIME",        "time_diff": "00:59:49"      },      {        "attendance_id": 235,        "event_type": "CHECK_IN",        "expected_time": "09:00:00",        "pending": true,        "event_time": "2022-05-06 00:00:00",        "comments": "ON TIME",        "time_diff": "09:00:00"      },      {        "attendance_id": 236,        "event_type": "CHECK_OUT",        "expected_time": "17:30:00",        "pending": true,        "event_time": "2022-05-06 00:00:00",        "comments": "EARLY LEAVE",        "time_diff": "17:30:00"      }    ]  },  {    "user_id": 6,    "rut": "59",    "role": "cringe",    "picture": "https://www.api.asiendosoftware.xyz/api/v1/open/users/image/6",    "attendances": [      {        "attendance_id": 183,        "event_type": "CHECK_IN",        "expected_time": "06:00:00",        "pending": false,        "event_time": "2022-04-10 06:34:12",        "comments": "LATE ARRIVAL",        "time_diff": "00:34:12"      },      {        "attendance_id": 184,        "event_type": "CHECK_OUT",        "expected_time": "19:00:00",        "pending": false,        "event_time": "2022-04-10 18:58:39",        "comments": "ON TIME",        "time_diff": "00:01:21"      }    ]  }]';
+    for (var workerInfo in decodeResp) {
+      workers.add(workerInfo);
+    }
+    //print(workers);
+    return workers;
+    //return 'a';
   }
 }
