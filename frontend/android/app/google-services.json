@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "185541542489",
+    "project_id": "checkapp-asiendosoftware",
+    "storage_bucket": "checkapp-asiendosoftware.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185541542489:android:975f52127db85ec89f6748",
+        "android_client_info": {
+          "package_name": "com.example.checkapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "185541542489-eu471tkk30ma40tlilv766q0lmkh2m8t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6efcWeVOqlW7_2rAA7zOGFxn_4LFm160"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "185541542489-eu471tkk30ma40tlilv766q0lmkh2m8t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

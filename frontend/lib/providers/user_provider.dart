@@ -13,7 +13,7 @@ class UserProvider extends ChangeNotifier {
     final String? userInfokey = await storage.read(key: 'userInfo');
     if (userInfokey != null) {
       //final attendanceService =Provider.of<AttendanceService>(context, listen: false);
-      print('La info de la key es $userInfokey');
+      //print('La info de la key es $userInfokey');
       Map<String, dynamic> userInfo = json.decode(userInfokey);
       name = userInfo['name'];
       //String profilePictureUrl = await attendanceService.getProfileById();

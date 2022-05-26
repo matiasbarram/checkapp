@@ -1,13 +1,55 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:checkapp/screens/admin/home_screen_admin.dart';
+import 'package:checkapp/services/notification_service.dart';
 import 'package:checkapp/services/services.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/providers.dart';
 import 'screens/screens.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/screens/worker/screens.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() => runApp(const AppState());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  AwesomeNotifications().initialize('resource://drawable/ic_no_logo_orange', [
+    NotificationChannel(
+        importance: NotificationImportance.High,
+        channelShowBadge: true,
+        channelKey: 'basic_channel',
+        channelName: 'Basic notification',
+        channelDescription: 'Channel description'),
+  ]);
+  AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+    if (!isAllowed) {
+      //@TODO HACER MODAL DE PERMITIR NOTIFICACIONES
+    }
+  });
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  final fcmToken = await messaging.getToken();
+  print('el token de firebase es: $fcmToken');
+  messaging.onTokenRefresh.listen((fcmToken) {}).onError((err) {});
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Got a message whilst in the foreground!');
+    print('Message data: ${message.data}');
+    if (message.notification != null) {
+      final String title = message.notification?.title ?? '';
+      final String body = message.notification?.body ?? '';
+      NotificationService.createNotifications(title, body);
+    }
+  });
+
+  runApp(const AppState());
+}
 
 class AppState extends StatelessWidget {
   const AppState({Key? key}) : super(key: key);
