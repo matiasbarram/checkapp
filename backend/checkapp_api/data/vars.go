@@ -14,6 +14,10 @@ var ConnectionString string
 // firebase
 var FIREBASE_JSON string
 
+//mailgun
+var MAILGUN_API_KEY string
+var MailDomain = "mail.asiendosoftware.xyz"
+
 //// cookies - session
 var Secret = []byte("secret")
 
@@ -64,4 +68,5 @@ func LoadEnv() {
 		os.Getenv("db_name"))
 
 	FIREBASE_JSON = os.Getenv("firebase_json")
+	MAILGUN_API_KEY = os.Getenv("mailgun_api_key")
 }

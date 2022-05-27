@@ -11,10 +11,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const testEmail = "josevasquez95p@gmail.com"
+const testPassword = "based"
+
 func TestLoginHandler(t *testing.T) {
 	param := make(map[string]interface{})
-	param["email"] = "smj@sml.com"
-	param["password"] = "tomandoleche123"
+	param["email"] = testEmail
+	param["password"] = testPassword
 	jsonValue, _ := json.Marshal(param)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", ApiV1+"login", bytes.NewBuffer(jsonValue))

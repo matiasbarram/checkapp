@@ -1,4 +1,7 @@
 Checkapp:
+    Notificaciones:
+        ☐ Incorporar notificaciones push con firebase
+        ☐ Pensar en la forma de comprobante
     Backend:
         ☐ Refactor 2
         ☐ Actualizar la validacion de datos (location / device_id)
@@ -10,9 +13,6 @@ Checkapp:
         ☐ Agregar args de filtrado __monthly__ (por usuario, por periodo)
         ☐ Generar un xlsx con los datos del mes actual
         ☐ Pensar en estadisticas u operaciones interesantes con los datos
-    Notificaciones:
-        ☐ Enviar un email al registrar una entrada / salida
-        ☐ Pensar en la forma de comprobante
     Web Panel:
         ☐ Agregar endpoints para el registro de empresas / usuarios
         ☐ Crear pagina de login
@@ -23,3 +23,4 @@ Archive:
   ✔ Incluir los dias en el shift @started(22-04-30 16:52) @done(22-05-06 17:26) @lasted(6d34m46s) @project(Checkapp)
   ✔ Crear attendance para los dias que el trabajador falte @done(22-05-06 17:26) @project(Checkapp)
   ✔ Obtener la data del usuario (query con join) @done(22-05-06 17:27) @project(Checkapp.Resumen)
+  ✔ Enviar un email al registrar una entrada / salida

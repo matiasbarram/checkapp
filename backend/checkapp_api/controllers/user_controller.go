@@ -12,7 +12,26 @@ import (
 
 const userQuery = "SELECT id, company_id, name, rut, role, email, password, IFNULL(device_id, -1) FROM user"
 
+const userQueryId = userQuery + "WHERE id = ?"
+const userQueryEmail = userQuery + "WHERE email = ?"
+
 const userPictureQuery = "SELECT picture FROM user WHERE id = ?"
+
+const notificationRecipientsQuery = `
+SELECT
+	users.id,
+    users.name,
+    users.email,
+    c.name AS company
+FROM
+    user users
+JOIN user u ON
+    u.id = ?
+INNER JOIN company c ON
+    c.id = u.company_id
+WHERE
+    users.company_id = c.id AND users.role = 'based' OR users.id = u.id
+`
 
 var putUserImageQuery = `
 UPDATE user
@@ -23,7 +42,7 @@ WHERE id = ?;
 func GetUserById(id int64) (models.User, error) {
 
 	var user models.User
-	row := db.QueryRow(userQuery+" WHERE id = ?", id)
+	row := db.QueryRow(userQueryId, id)
 	err := row.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Email, &user.Password, &user.Device_id)
 	if err != nil {
 		fmt.Println("Err", err.Error())
@@ -49,7 +68,7 @@ func ValidateCredentials(u models.UserCredentials) (models.User, error) {
 
 	var user models.User
 
-	row := db.QueryRow(userQuery+" WHERE email = ?", u.Email)
+	row := db.QueryRow(userQueryEmail, u.Email)
 	err := row.Scan(&user.Id, &user.Company_id, &user.Name, &user.Rut, &user.Role, &user.Email, &user.Password, &user.Device_id)
 
 	if err != nil {
@@ -110,4 +129,30 @@ func PutUserPicture(id int64, picture []byte) (models.User, error) {
 		return user, err
 	}
 	return GetUserById(id)
+}
+
+func GetNotificationRecipients(userId int64) (models.NotificationRecipient, []models.NotificationRecipient, error) {
+	results, err := db.Query(notificationRecipientsQuery, userId)
+	var user models.NotificationRecipient
+	var recipients []models.NotificationRecipient
+	if err != nil {
+		fmt.Println("Err", err.Error())
+		return user, recipients, err
+	}
+	for results.Next() {
+		var recipient models.NotificationRecipient
+		err = results.Scan(
+			&recipient.Id,
+			&recipient.Name,
+			&recipient.Email,
+			&recipient.Company,
+		)
+		if err != nil {
+			panic(err.Error())
+		}
+		recipients = append(recipients, recipient)
+	}
+	user = recipients[0]
+	recipients = recipients[1:]
+	return user, recipients, nil
 }
