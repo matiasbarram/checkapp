@@ -3,67 +3,24 @@ package main
 import (
 	"bytes"
 	"checkapp_api/models"
-	"checkapp_api/router"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/WAY29/icecream-go/icecream"
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
-var r *gin.Engine
-var myCookie string
-var baseUrlOpen = "/api/v1/"
-var baseUrl = baseUrlOpen + "private/"
-
-// var w *httptest.ResponseRecorder
-
-func init() {
-	r = router.Setup()
-	icecream.ConfigureIncludeContext(true)
-}
-
-func TestHomeEndpoint(t *testing.T) {
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrlOpen, nil)
-	r.ServeHTTP(w, req)
-
-	assert.Equal(t, 200, w.Code)
-	// assert.Equal(t, "pong", w.Body.String())
-}
-
-func TestBadLogin(t *testing.T) {
-	param := make(map[string]interface{})
-	param["email"] = "smj@sml.com"
-	param["password"] = "fakepass"
-	jsonValue, _ := json.Marshal(param)
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", baseUrlOpen+"login", bytes.NewBuffer(jsonValue))
-	req.Header.Add("Content-Type", "application/json")
-	r.ServeHTTP(w, req)
-	var response map[string]interface{}
-	// err := json.Unmarshal([]byte(w.Body.String()), &response)
-	err := json.Unmarshal(w.Body.Bytes(), &response)
-	assert.Nil(t, err)
-	assert.Equal(t, 401, w.Code)
-	assert.Nil(t, err)
-	assert.Equal(t, "Authentication failed LAPASS", response["error"])
-}
 func TestLoginHandler(t *testing.T) {
 	param := make(map[string]interface{})
 	param["email"] = "smj@sml.com"
 	param["password"] = "tomandoleche123"
 	jsonValue, _ := json.Marshal(param)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", baseUrlOpen+"login", bytes.NewBuffer(jsonValue))
+	req, _ := http.NewRequest("POST", ApiV1+"login", bytes.NewBuffer(jsonValue))
 	req.Header.Add("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-
 	myCookie = w.Result().Cookies()[0].Value
 	var response map[string]interface{}
 	// err := json.Unmarshal([]byte(w.Body.String()), &response)
@@ -76,14 +33,13 @@ func TestLoginHandler(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, user.Email == param["email"])
 }
-func TestGetUsers(t *testing.T) {
 
+func TestGetUsers(t *testing.T) {
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrl+"users", nil)
+	req, _ := http.NewRequest("GET", PrivateUrl+"users", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-
 	var response []models.User
 	// err := json.Unmarshal([]byte(w.Body.String()), &response)
 	err := json.Unmarshal(w.Body.Bytes(), &response)
@@ -92,14 +48,13 @@ func TestGetUsers(t *testing.T) {
 	value := response[0]
 	assert.True(t, value.Id > 0)
 }
-func TestGetUserById(t *testing.T) {
 
+func TestGetUserById(t *testing.T) {
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrl+"users/2", nil)
+	req, _ := http.NewRequest("GET", PrivateUrl+"users/2", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-
 	var response models.User
 	// err := json.Unmarshal([]byte(w.Body.String()), &response)
 	err := json.Unmarshal(w.Body.Bytes(), &response)
@@ -108,13 +63,11 @@ func TestGetUserById(t *testing.T) {
 }
 
 func TestGetCompanies(t *testing.T) {
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrl+"companies", nil)
+	req, _ := http.NewRequest("GET", PrivateUrl+"companies", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-
 	var response []models.Company
 	// err := json.Unmarshal([]byte(w.Body.String()), &response)
 	err := json.Unmarshal(w.Body.Bytes(), &response)
@@ -125,12 +78,10 @@ func TestGetCompanies(t *testing.T) {
 }
 
 func TestGetCompanyById(t *testing.T) {
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrl+"companies/1", nil)
+	req, _ := http.NewRequest("GET", PrivateUrl+"companies/1", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
-
 	assert.Equal(t, 200, w.Code)
 	var response models.Company
 	err := json.Unmarshal(w.Body.Bytes(), &response)
@@ -140,12 +91,10 @@ func TestGetCompanyById(t *testing.T) {
 }
 
 func TestGetMyCompany(t *testing.T) {
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrl+"companies/me", nil)
+	req, _ := http.NewRequest("GET", PrivateUrl+"companies/me", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
-
 	assert.Equal(t, 200, w.Code)
 	var response models.Company
 	err := json.Unmarshal(w.Body.Bytes(), &response)
@@ -153,14 +102,13 @@ func TestGetMyCompany(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, response.Id == 1)
 }
-func TestGetQrs(t *testing.T) {
 
+func TestGetQrs(t *testing.T) {
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrl+"qrs", nil)
+	req, _ := http.NewRequest("GET", PrivateUrl+"qrs", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-
 	var response []models.Qr
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	// err := json.Unmarshal([]byte(w.Body.String()), &response)
@@ -171,13 +119,11 @@ func TestGetQrs(t *testing.T) {
 }
 
 func TestGetQrById(t *testing.T) {
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrl+"qrs/1", nil)
+	req, _ := http.NewRequest("GET", PrivateUrl+"qrs/1", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-
 	var response models.Qr
 	// err := json.Unmarshal([]byte(w.Body.String()), &response)
 	err := json.Unmarshal(w.Body.Bytes(), &response)
@@ -185,26 +131,14 @@ func TestGetQrById(t *testing.T) {
 	assert.True(t, response.Id == 1)
 }
 
-func TestGetQrImage(t *testing.T) {
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrl+"qrs/image/1", nil)
-	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
-	r.ServeHTTP(w, req)
-	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, w.Result().Header.Get("Content-Type"), "image/jpeg")
-}
-
 func TestGetMe(t *testing.T) {
-
 	w := httptest.NewRecorder()
 	// http.SetCookie(w, )
-	req, _ := http.NewRequest("GET", baseUrl+"users/me", nil)
+	req, _ := http.NewRequest("GET", PrivateUrl+"users/me", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	// fmt.Println(w.coo)
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-
 	// var response models.Qr
 	// err := json.Unmarshal([]byte(w.Body.String()), &response)
 	// assert.Nil(t, err)
@@ -219,26 +153,34 @@ func TestPostAttendance(t *testing.T) {
 	param["event_type"] = "CHECK_IN"
 	jsonValue, _ := json.Marshal(param)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", baseUrl+"attendance", bytes.NewBuffer(jsonValue))
+	req, _ := http.NewRequest("POST", PrivateUrl+"attendance", bytes.NewBuffer(jsonValue))
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	req.Header.Add("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
-	assert.Equal(t, 200, w.Code)
+	assert.True(t, (w.Code == 200 || w.Code == 400))
 	var resp map[string]interface{}
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.Nil(t, err)
-	var response models.Attendance
-	jsonValue, err = json.Marshal(resp["attendance"])
-	assert.Nil(t, err)
-	err = json.Unmarshal(jsonValue, &response)
-	assert.Nil(t, err)
-	assert.True(t, response.EventType == "CHECK_IN")
+	if w.Code == 200 {
+		var response models.Attendance
+		jsonValue, err = json.Marshal(resp["attendance"])
+		assert.Nil(t, err)
+		err = json.Unmarshal(jsonValue, &response)
+		assert.Nil(t, err)
+		assert.True(t, response.EventType == "CHECK_IN")
+	} else {
+		var response models.SimpleError
+		jsonValue, err = json.Marshal(resp["error"])
+		assert.Nil(t, err)
+		err = json.Unmarshal(jsonValue, &response)
+		assert.Nil(t, err)
+		assert.True(t, response.Code < 13)
+	}
 }
 
 func TestGetTodayAttendance(t *testing.T) {
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrl+"attendance/today", nil)
+	req, _ := http.NewRequest("GET", PrivateUrl+"attendance/today", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
@@ -248,19 +190,17 @@ func TestGetTodayAttendance(t *testing.T) {
 	assert.Len(t, response, 2)
 }
 
-func TestResetDailyAttendance(t *testing.T) {
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrlOpen+"reset/attendance/today", nil)
-	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
-	r.ServeHTTP(w, req)
-	assert.Equal(t, 200, w.Code)
-}
+//func TestResetDailyAttendance(t *testing.T) {
+//w := httptest.NewRecorder()
+//req, _ := http.NewRequest("GET", ApiV1+"reset/attendance/today", nil)
+//req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
+//r.ServeHTTP(w, req)
+//assert.Equal(t, 200, w.Code)
+//}
 
 func TestLogout(t *testing.T) {
-
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", baseUrlOpen+"logout", nil)
+	req, _ := http.NewRequest("GET", ApiV1+"logout", nil)
 	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)

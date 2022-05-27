@@ -95,11 +95,22 @@ func addTemporallyOpenEndpoints(baseGroup *gin.RouterGroup) {
 
 func Setup() *gin.Engine {
 	r := gin.New()
-
 	// Setup the cookie store for session management
 	r.Use(sessions.Sessions("mysession", sessions.NewCookieStore(data.Secret)))
 	//logger
 	r.Use(gin.Logger())
+
+	//middleware, err := NewFB(nil)
+	//if err != nil {
+	//panic(err)
+	//}
+	//noti := r.Group("/notification")
+	//noti.Use(middleware.MiddlewareFunc())
+
+	//noti.GET("/", func(c *gin.Context) {
+	//c.Redirect(http.StatusFound, "/api/v1/")
+	//})
+
 	// home
 	r.Use(favicon.New("./assets/favicon.ico"))
 	r.LoadHTMLGlob("templates/*.tmpl")
@@ -107,6 +118,9 @@ func Setup() *gin.Engine {
 		c.Redirect(http.StatusFound, "/api/v1/")
 	})
 
+	r.GET("/notify", func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/api/v1/")
+	})
 	// swagger
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

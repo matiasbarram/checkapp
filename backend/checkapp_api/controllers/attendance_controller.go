@@ -409,7 +409,7 @@ func updateTimediffIfPending(attendances []models.AttendanceResponse) []models.A
 		attendances[idx].Comments = comments
 		attendances[idx].TimeDiff = timeDiff
 	}
-	ic.Ic(attendances)
+	//ic.Ic(attendances)
 	return attendances
 }
 func GenerateMissingAttendances(userId int64,

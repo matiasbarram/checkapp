@@ -39,6 +39,11 @@ func Post(c *gin.Context) {
 		responseError := utils.GenerateResponseError(err)
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": responseError})
 	} else {
+		// get admins(userId)
+		// for admin in admins
+		utils.NotifyAdmin(userId, attendance)
+		//utils.SendEmailConfirmation()
+		// utils.EmailAdmin
 		c.JSON(http.StatusOK, gin.H{"attendance": attendance})
 	}
 }

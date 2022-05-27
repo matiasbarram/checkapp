@@ -4,6 +4,6 @@
 @host = {{local_hostname}}
 # @host = {{remote_hostname}}
 
-GET {{host}}open/users/image/15
+GET {{host}}open/users/image/14
 ###
 GET {{host}}private/qrs/image/1
