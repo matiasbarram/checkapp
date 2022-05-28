@@ -22,7 +22,6 @@ class LoadingScreen extends StatelessWidget {
               return const CircularProgressIndicator.adaptive();
             }
             if (snapshot.data == 'no-key') {
-              print('No tengo key');
               Future.microtask(() {
                 Navigator.pushReplacement(
                     context,
@@ -41,7 +40,7 @@ class LoadingScreen extends StatelessWidget {
                 userProvider.loadUserInfo(context);
 
                 String userRol = await authService.logedUserRol();
-                if (userRol == 'cringe') {
+                if (userRol == 'based') {
                   Navigator.pushReplacement(context,
                       PageRouteBuilder(pageBuilder: (_, __, ___) {
                     return const HomeScreenAdmin();

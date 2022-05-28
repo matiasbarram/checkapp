@@ -1,4 +1,5 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:checkapp/screens/admin/employee_info_screen.dart';
 import 'package:checkapp/screens/admin/home_screen_admin.dart';
 import 'package:checkapp/services/notification_service.dart';
 import 'package:checkapp/services/services.dart';
@@ -83,6 +84,7 @@ class MyApp extends StatelessWidget {
           'login': ((context) => const LoginScreen()),
           'loading': ((context) => const LoadingScreen()),
           'confirm': ((context) => const ConfirmAttendanceScreen()),
+          'employee_info': ((context) => const EmployeeInfoScreen()),
         },
       ),
     );

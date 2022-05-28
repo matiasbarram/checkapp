@@ -108,7 +108,9 @@ class ResumenAdminScreen extends StatelessWidget {
                                 color: AppTheme.checkAppOrange,
                                 elevation: 0,
                                 shape: const CircleBorder(),
-                                onPressed: () => null,
+                                onPressed: () => Navigator.pushNamed(
+                                    context, 'employee_info',
+                                    arguments: snapshot.data?[index]),
                                 child: const Icon(
                                   Icons.add,
                                   size: 20,
@@ -121,7 +123,7 @@ class ResumenAdminScreen extends StatelessWidget {
               },
             );
           } else {
-            return Center(child: const CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         });
   }

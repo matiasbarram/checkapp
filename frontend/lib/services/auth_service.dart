@@ -20,14 +20,19 @@ class AuthService extends ChangeNotifier {
     final url = Uri.https(_baseUrl, '${_baseAPI}login');
     print(url);
     final respuesta = await http.post(url, body: authData);
-    print('Respuesta:  $respuesta');
-    final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
+    if (respuesta.statusCode == 200) {
+      print('Respuesta:  $respuesta');
+      final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
 
-    if (!decodeResp.containsKey('error')) {
-      await _userInfoCookie(decodeResp);
-      await _updateCookie(respuesta);
+      if (!decodeResp.containsKey('error')) {
+        await _userInfoCookie(decodeResp);
+        await _updateCookie(respuesta);
+      }
+      return decodeResp;
+    } else {
+      //@TODO
+      return {};
     }
-    return decodeResp;
   }
 
   Future<void> _userInfoCookie(Map<String, dynamic> respuesta) async {

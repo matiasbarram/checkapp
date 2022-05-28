@@ -47,34 +47,14 @@ class AttendanceService extends ChangeNotifier {
       final decodeResp = json.decode(respuesta.body);
       return decodeResp;
     } else {
+      print('Error number: ${respuesta.statusCode}');
       return [];
     }
-  }
-
-  Future<String> getProfileById() async {
-    final _cookie = await storage.read(key: 'mysession');
-    final String? userInfo = await storage.read(key: 'userInfo');
-    if (userInfo != null) {
-      Map<String, dynamic> userInfoDecode = json.decode(userInfo);
-      final int userId = userInfoDecode['id'];
-      Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
-      final url = Uri.https(_baseUrl, '${_baseAPI}private/users/image/$userId');
-      print(url);
-      final respuesta = await http.get(url, headers: headers);
-      final decodeResp = json.decode(respuesta.body);
-      print(decodeResp);
-    }
-    return 'a';
-    //return decodeResp;
   }
 
   Future<void> updateCurrentStatus() async {
     final lastAttendance = await getTodayAttendance();
     if (lastAttendance.isEmpty) {
-      entradaEsperada = '';
-      salidaEsperada = '';
-      entrada = 'LIBRE';
-      salida = 'LIBRE';
       freeDay = true;
     } else {
       for (var attendance in lastAttendance) {
@@ -95,6 +75,23 @@ class AttendanceService extends ChangeNotifier {
       }
     }
     notifyListeners();
+  }
+
+  Future<String> getProfileById() async {
+    final _cookie = await storage.read(key: 'mysession');
+    final String? userInfo = await storage.read(key: 'userInfo');
+    if (userInfo != null) {
+      Map<String, dynamic> userInfoDecode = json.decode(userInfo);
+      final int userId = userInfoDecode['id'];
+      Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
+      final url = Uri.https(_baseUrl, '${_baseAPI}private/users/image/$userId');
+      print(url);
+      final respuesta = await http.get(url, headers: headers);
+      final decodeResp = json.decode(respuesta.body);
+      print(decodeResp);
+    }
+    return 'a';
+    //return decodeResp;
   }
 
   Future<String> postNewAttendance(
@@ -205,13 +202,17 @@ class AttendanceService extends ChangeNotifier {
     final url =
         Uri.https(_baseUrl, '${_baseAPI}private/attendance/company/monthly');
     final respuesta = await http.get(url, headers: headers);
-    final List<dynamic> decodeResp = json.decode(respuesta.body);
-    //String test ='[  {    "user_id": 15,    "rut": "37",    "role": "cringe",    "picture": "https://www.api.asiendosoftware.xyz/api/v1/open/users/image/15",    "attendances": [      {        "attendance_id": 227,        "event_type": "CHECK_IN",        "expected_time": "09:00:00",        "pending": false,        "event_time": "2022-04-20 09:01:06",        "comments": "LATE ARRIVAL",        "time_diff": "00:01:06"      },      {        "attendance_id": 228,        "event_type": "CHECK_OUT",        "expected_time": "17:30:00",        "pending": false,        "event_time": "2022-04-20 17:41:06",        "comments": "ON TIME",        "time_diff": "00:11:06"      }    ]  },  {    "user_id": 2,    "rut": "",    "role": "based",    "picture": "https://www.api.asiendosoftware.xyz/api/v1/open/users/image/2",    "attendances": [      {        "attendance_id": 233,        "event_type": "CHECK_IN",        "expected_time": "09:00:00",        "pending": false,        "event_time": "2022-05-05 18:28:46",        "comments": "LATE ARRIVAL",        "time_diff": "09:28:46"      },      {        "attendance_id": 234,        "event_type": "CHECK_OUT",        "expected_time": "17:30:00",        "pending": false,        "event_time": "2022-05-05 18:29:49",        "comments": "ON TIME",        "time_diff": "00:59:49"      },      {        "attendance_id": 235,        "event_type": "CHECK_IN",        "expected_time": "09:00:00",        "pending": true,        "event_time": "2022-05-06 00:00:00",        "comments": "ON TIME",        "time_diff": "09:00:00"      },      {        "attendance_id": 236,        "event_type": "CHECK_OUT",        "expected_time": "17:30:00",        "pending": true,        "event_time": "2022-05-06 00:00:00",        "comments": "EARLY LEAVE",        "time_diff": "17:30:00"      }    ]  },  {    "user_id": 6,    "rut": "59",    "role": "cringe",    "picture": "https://www.api.asiendosoftware.xyz/api/v1/open/users/image/6",    "attendances": [      {        "attendance_id": 183,        "event_type": "CHECK_IN",        "expected_time": "06:00:00",        "pending": false,        "event_time": "2022-04-10 06:34:12",        "comments": "LATE ARRIVAL",        "time_diff": "00:34:12"      },      {        "attendance_id": 184,        "event_type": "CHECK_OUT",        "expected_time": "19:00:00",        "pending": false,        "event_time": "2022-04-10 18:58:39",        "comments": "ON TIME",        "time_diff": "00:01:21"      }    ]  }]';
-    for (var workerInfo in decodeResp) {
-      workers.add(workerInfo);
+    if (respuesta.statusCode == 200) {
+      final List<dynamic> decodeResp = json.decode(respuesta.body);
+      for (var workerInfo in decodeResp) {
+        if (workerInfo['role'] != 'based') {
+          workers.add(workerInfo);
+        }
+      }
+      return workers;
+    } else {
+      //@todo
+      return [];
     }
-    //print(workers);
-    return workers;
-    //return 'a';
   }
 }
