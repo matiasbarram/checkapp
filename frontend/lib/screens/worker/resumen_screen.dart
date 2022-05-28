@@ -49,12 +49,15 @@ class _AttendanceCards extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: Column(
         children: [
-          if (attendence.freeDay) const FreeDayCard(),
-          if (!attendence.freeDay) const AttendanceCard(title: 'Entrada'),
-          const SizedBox(
-            height: 40,
-          ),
-          const AttendanceCard(title: 'Salida'),
+          if (attendence.freeDay) ...[
+            const FreeDayCard()
+          ] else ...[
+            const AttendanceCard(title: 'Entrada'),
+            const SizedBox(
+              height: 40,
+            ),
+            const AttendanceCard(title: 'Salida'),
+          ],
           const SizedBox(
             height: 10,
           ),

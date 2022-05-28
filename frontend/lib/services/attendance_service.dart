@@ -42,14 +42,13 @@ class AttendanceService extends ChangeNotifier {
     final url = Uri.https(_baseUrl, '${_baseAPI}private/attendance/today');
     print(url);
     final respuesta = await http.get(url, headers: headers);
-    print('Respuesta today attendance:  ${respuesta.body}');
-    final decodeResp = json.decode(respuesta.body);
-    /*
-    if (decodeResp.containsKey('error')) {
+    if (respuesta.statusCode == 200) {
+      print('Respuesta today attendance:  ${respuesta.body}');
+      final decodeResp = json.decode(respuesta.body);
+      return decodeResp;
+    } else {
       return [];
     }
-    */
-    return decodeResp;
   }
 
   Future<String> getProfileById() async {
