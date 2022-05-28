@@ -8,11 +8,16 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/WAY29/icecream-go/icecream"
 	"github.com/stretchr/testify/assert"
 )
 
-const testEmail = "josevasquez95p@gmail.com"
-const testPassword = "based"
+//const testEmail = "josevasquez95p@gmail.com"
+const testEmail = "mjm@sml.com"
+
+//const testPassword = "joselo"
+const testPassword = "bruh"
+const testUserId = 2
 
 func TestLoginHandler(t *testing.T) {
 	param := make(map[string]interface{})
@@ -62,6 +67,7 @@ func TestGetUserById(t *testing.T) {
 	// err := json.Unmarshal([]byte(w.Body.String()), &response)
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.Nil(t, err)
+	icecream.Ic(response)
 	assert.True(t, response.Id == 2)
 }
 
@@ -148,38 +154,38 @@ func TestGetMe(t *testing.T) {
 	// assert.True(t, response.Id == 1)
 }
 
-func TestPostAttendance(t *testing.T) {
-	param := make(map[string]interface{})
-	param["user_id"] = 2
-	param["company_id"] = 1
-	param["location"] = "-30, -70"
-	param["event_type"] = "CHECK_IN"
-	jsonValue, _ := json.Marshal(param)
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", PrivateUrl+"attendance", bytes.NewBuffer(jsonValue))
-	req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
-	req.Header.Add("Content-Type", "application/json")
-	r.ServeHTTP(w, req)
-	assert.True(t, (w.Code == 200 || w.Code == 400))
-	var resp map[string]interface{}
-	err := json.Unmarshal(w.Body.Bytes(), &resp)
-	assert.Nil(t, err)
-	if w.Code == 200 {
-		var response models.Attendance
-		jsonValue, err = json.Marshal(resp["attendance"])
-		assert.Nil(t, err)
-		err = json.Unmarshal(jsonValue, &response)
-		assert.Nil(t, err)
-		assert.True(t, response.EventType == "CHECK_IN")
-	} else {
-		var response models.SimpleError
-		jsonValue, err = json.Marshal(resp["error"])
-		assert.Nil(t, err)
-		err = json.Unmarshal(jsonValue, &response)
-		assert.Nil(t, err)
-		assert.True(t, response.Code < 13)
-	}
-}
+//func TestPostAttendance(t *testing.T) {
+//param := make(map[string]interface{})
+//param["user_id"] = 2
+//param["company_id"] = 1
+//param["location"] = "-30, -70"
+//param["event_type"] = "CHECK_IN"
+//jsonValue, _ := json.Marshal(param)
+//w := httptest.NewRecorder()
+//req, _ := http.NewRequest("POST", PrivateUrl+"attendance", bytes.NewBuffer(jsonValue))
+//req.AddCookie(&http.Cookie{Name: "mysession", Value: myCookie})
+//req.Header.Add("Content-Type", "application/json")
+//r.ServeHTTP(w, req)
+//assert.True(t, (w.Code == 200 || w.Code == 400))
+//var resp map[string]interface{}
+//err := json.Unmarshal(w.Body.Bytes(), &resp)
+//assert.Nil(t, err)
+//if w.Code == 200 {
+//var response models.Attendance
+//jsonValue, err = json.Marshal(resp["attendance"])
+//assert.Nil(t, err)
+//err = json.Unmarshal(jsonValue, &response)
+//assert.Nil(t, err)
+//assert.True(t, response.EventType == "CHECK_IN")
+//} else {
+//var response models.SimpleError
+//jsonValue, err = json.Marshal(resp["error"])
+//assert.Nil(t, err)
+//err = json.Unmarshal(jsonValue, &response)
+//assert.Nil(t, err)
+//assert.True(t, response.Code < 13)
+//}
+//}
 
 func TestGetTodayAttendance(t *testing.T) {
 	w := httptest.NewRecorder()

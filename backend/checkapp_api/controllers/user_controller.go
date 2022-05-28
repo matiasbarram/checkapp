@@ -12,8 +12,8 @@ import (
 
 const userQuery = "SELECT id, company_id, name, rut, role, email, password, IFNULL(device_id, -1) FROM user"
 
-const userQueryId = userQuery + "WHERE id = ?"
-const userQueryEmail = userQuery + "WHERE email = ?"
+const userQueryId = userQuery + " WHERE id = ?"
+const userQueryEmail = userQuery + " WHERE email = ?"
 
 const userPictureQuery = "SELECT picture FROM user WHERE id = ?"
 

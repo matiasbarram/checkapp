@@ -2,14 +2,12 @@ package user
 
 import (
 	"checkapp_api/controllers"
-	"checkapp_api/data"
 	"checkapp_api/utils"
 	"database/sql"
 	"net/http"
 	"strconv"
 
 	"github.com/WAY29/icecream-go/icecream"
-	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -42,9 +40,10 @@ func GetAll(c *gin.Context) {
 // @Failure      404  {object}  models.SimpleError
 // @Router       /private/users/{id} [get]
 func GetById(c *gin.Context) {
-	id, ok := utils.GetUserIdFromSession(c)
-	if !ok {
-		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "xd"})
+	str_id := c.Param("id")
+	id, err := strconv.ParseInt(str_id, 10, 64)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
 	}
 	getUserById(c, id)
 }
@@ -62,9 +61,10 @@ func GetById(c *gin.Context) {
 // @Failure      404  {object}  models.SimpleError
 // @Router       /private/me [get]
 func GetFromSession(c *gin.Context) {
-	session := sessions.Default(c)
-	user := session.Get(data.UserKey)
-	id := user.(int)
+	id, ok := utils.GetUserIdFromSession(c)
+	if !ok {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "algo malio sal"})
+	}
 	getUserById(c, int64(id))
 }
 
