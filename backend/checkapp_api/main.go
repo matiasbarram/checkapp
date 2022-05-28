@@ -4,8 +4,10 @@ import (
 	"checkapp_api/controllers"
 	"checkapp_api/data"
 	"checkapp_api/router"
-	"fmt"
+	"checkapp_api/utils"
 	"log"
+
+	"fmt"
 
 	ic "github.com/WAY29/icecream-go/icecream"
 )
@@ -36,10 +38,15 @@ func run(configPath string) {
 	// }
 	// setConfiguration(configPath)
 	// conf := config.GetConfig()
+	data.LoadEnv()
 	web := router.Setup()
 	fmt.Println("Go API REST Running on port " + data.Port)
 	fmt.Println("==================>")
 	err := controllers.InitDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = utils.InitFirebaseApp()
 	if err != nil {
 		log.Fatal(err)
 	}

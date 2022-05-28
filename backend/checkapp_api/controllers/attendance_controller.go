@@ -32,7 +32,7 @@ func registerAttendanceScan(row *sql.Row) (models.UserAttendanceInfo, models.Shi
 	return real_user_info, shift, err
 }
 
-func NewRegisterAttendance(userAttendanceParams models.AttendanceParams, userId int64) (models.AttendanceResponse, error) {
+func RegisterAttendance(userAttendanceParams models.AttendanceParams, userId int64) (models.AttendanceResponse, error) {
 
 	var attendanceResponse models.AttendanceResponse
 	todayAttendances, err := GetTodaysAttendance(userId)
@@ -78,58 +78,8 @@ func NewRegisterAttendance(userAttendanceParams models.AttendanceParams, userId 
 	return postAttendance(userAttendanceParams, userId, int64(targetId), shift)
 }
 
-// func canRegisterAttendance(userId int64, user_info models.AttendanceParams) error {
-// 	attendance, err := GetLastEventFromUser(userId)
-// 	if err != nil && err != sql.ErrNoRows {
-// 		return err
-// 	}
-// 	if err != nil && err == sql.ErrNoRows {
-// 		return nil
-// 	}
-// 	t, _ := time.Parse(time.RFC3339, strings.Replace(attendance.EventTime, " ", "T", 1)+"-04:00")
-// 	now := time.Now()
-// 	diff := now.Sub(t)
-
-// 	// tiempo minimo desde la salida hasta la siguiente entrada
-// 	if attendance.EventType == data.CHECK_OUT && diff.Hours() < data.MinHoursTillNextEvent {
-// 		return errors.New(fmt.Sprint(1))
-// 	}
-// 	// Si intenta registrar otra el mismo evento que el ultimo ingresado
-// 	if user_info.Event_type == attendance.EventType {
-// 		var nxt int
-// 		if data.NextAttendanceEvent[attendance.EventType] == data.CHECK_IN {
-// 			nxt = 2
-// 		} else {
-// 			nxt = 3
-// 		}
-// 		return errors.New(fmt.Sprint(nxt))
-// 	}
-// 	return nil
-// }
-
-// func getMonthlyAttendance() {
-
-// }
-
-// func checkEventType(userId int64, eventType string) (string, bool) {
-// 	lastAttendance, err := GetLastEventFromUser(userId)
-// 	// no presenta registros?
-// 	if err != nil {
-// 		if err != sql.ErrNoRows {
-// 			ic.Ic("Error! " + err.Error())
-// 		}
-// 		return "CHECK_IN", false
-// 	}
-// 	nextEvent := data.NextAttendanceEvent[lastAttendance.EventType]
-// 	if eventType == "NEXT" || eventType == "AUTO" {
-// 		return nextEvent, false
-// 	}
-// 	if nextEvent != eventType {
-// 		return eventType, true
-// 	}
-// 	return eventType, false
-// }
-
+// TODO:
+// ADD DOCUMENTATION
 func postAttendance(attendanceParams models.AttendanceParams, userId int64, targetId int64, shift models.Shift) (models.AttendanceResponse, error) {
 	var attendanceResponse models.AttendanceResponse
 	var eventTime string
@@ -155,6 +105,8 @@ func postAttendance(attendanceParams models.AttendanceParams, userId int64, targ
 	return getAttendanceResponseById(targetId)
 }
 
+// TODO:
+// ADD DOCUMENTATION
 func getAttendanceResponseById(id int64) (models.AttendanceResponse, error) {
 	var attendanceResponse models.AttendanceResponse
 	attendance, err := GetAttendanceById(id)
@@ -184,6 +136,8 @@ func ResetTodayAttendance() error {
 	return err
 }
 
+// TODO:
+// quitar
 func ResetAllAttendance() error {
 	res, err := db.Exec(deleteAllAttendance)
 	fmt.Println(res)
@@ -409,7 +363,7 @@ func updateTimediffIfPending(attendances []models.AttendanceResponse) []models.A
 		attendances[idx].Comments = comments
 		attendances[idx].TimeDiff = timeDiff
 	}
-	ic.Ic(attendances)
+	//ic.Ic(attendances)
 	return attendances
 }
 func GenerateMissingAttendances(userId int64,

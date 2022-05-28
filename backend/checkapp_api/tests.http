@@ -1,20 +1,20 @@
 @local_hostname = http://localhost:8083/api/v1/
 @remote_hostname = https://api.asiendosoftware.xyz/api/v1/
 
-# @host = {{local_hostname}}
-@host = {{remote_hostname}}
+@host = {{local_hostname}}
+# @host = {{remote_hostname}}
 
-POST {{host}}private/users
-content-type: application/json
+# POST {{host}}private/users
+# content-type: application/json
 
-{
-    "name": "kaos",
-    "company_id": 1,
-    "rut": "37",
-    "role": "cringe",
-    "email": "kaos@kaos.com",
-    "password": "kaos"
-}
+# {
+#     "name": "kaos",
+#     "company_id": 1,
+#     "rut": "37",
+#     "role": "cringe",
+#     "email": "kaos@kaos.com",
+#     "password": "kaos"
+# }
 
 # {
 #     "name": "cr7",
@@ -47,7 +47,7 @@ POST {{host}}login
 content-type: application/json
 
 {
-    "email": "mjm@sml.com",
+    "email": "josevasquez95p@gmail.com",
     "password": "bruh"
 }
 ###
@@ -59,7 +59,14 @@ content-type: application/json
     "password": "kaos"
 }
 ###
+POST {{host}}login
+content-type: application/json
 
+{
+    "email": "cristo@heaven.com",
+    "password": "cristo"
+}
+###
 PUT {{host}}private/users/image
 content-type: application/json
 
@@ -68,17 +75,17 @@ content-type: application/json
 }
 ###
 
-GET {{host}}private/users/image/15
-###
 GET {{host}}logout
 ######
 GET {{host}}private/attendance/today
 ###
 
+GET {{host}}private/attendance/tomorrow
+###
 GET {{host}}private/attendance/company/monthly
 ###
 
-GET {{host}}private/attendance
+GET {{host}}private/attendance/me
 ###
 GET {{host}}private/me
 
@@ -106,6 +113,16 @@ GET {{host}}logout
 
     # "location": "-40.07086281924284, -72.8730258237025",
 
+POST {{host}}private/attendance/
+content-type: application/json
+
+{
+    "company_id": 1,
+    "location": "-39.833392642198596, -73.24520728771456",
+    "device_secret_key": "asdfb",
+    "event_type": "CHECK_IN"
+}
+###
 POST {{host}}private/attendance/
 content-type: application/json
 

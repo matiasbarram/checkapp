@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "checkapp-asiendosoftware",
+  "private_key_id": "a1ce298071b96b9dbef7098dd1cd02113748044e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCyDMoyFpNXbVoK\nl6aOEMUHFRF09rDHtOWSvsmup+2KW7K0UQe4SmnvVHOgPYJa61EkyAauEp/uXZRQ\nRYtiZVXLfWs3DFFGfp4t+U7NL3JcKQJ9TvVMO/7aBOszURMnohHO2SVIZGBZchbH\nhBkVIwmb+7m3qtWwKKI8Mrs8dKIF3fcqq16DcS1H0HnQctSMhv6C5R6AhOfJScpR\nyRvQykN4kmPd691XAUUnk9p3NFEcMapL4XvAHDOazPRudbkIfdj8QEjrpphWiOHB\nqNjfJ2kKN2rcIPNOm80sSTpw5BHjQRp2duXHN6OZbEtN+a3A6Tggj22JeYOpB9Z6\nySKwjxlXAgMBAAECggEAKNBzvR2dsunXPRxcSq6fa6sxsD0ocu8NvSDM/KNz+UZh\n5aG5gk5UkE8snivbaNoOZL8RgO+2B58d83StqeWO0DG01Q6WxvEZc3J11OUuct/X\nuT/TTSFnnzSHceEA4hHtwRvXxwtzZq2XeS7XzReWCVKf1PFtQI9f+Sqr7wTRa0R/\neioBlTnI/mOj6DnNYnCejwKuK8rf/hAtbIE7ksT/UVL76JyK/8efc/sW+eciY9LO\nf/iWZ3hKKAoLt5d4EIALtGtw7UPD64Dax7YYoQ5QVVOW01bFIuluD9y0K+84EfgF\nKzZMYsTQcMuuLePZAcPVaavqHqZFgGIFSdpMq+O1wQKBgQDfuyJ5c5u3EcUM81t4\nSrRO/h+RE8P6QZz82+zamlkrrfGSh/LINd4dWhh/V02yyH/PWlKdyIaDegkT3jp9\nvHflLrQrCzVt3ZkBBFkitfKnMNpzoBvAUX9cySK6peBFEQjdIZSVkeCHUkqSMk3f\ndTaihh56jMgde2HtVgWyMozntwKBgQDLuvcINmhHgAG9vYUkZORxH1wAEMScvemC\nfMjg2S+sPkKYu+s32kFQMgu9vQNCNN1024XuccDov4Ln4UXjSHoY4A0FwJk5nes4\nkuZLAelc/gTHRD2hHC7yCzVKMI2BLM4+vfKyNRTNWkzewgmU6OY21Q4ZvqRGfSIf\n8rju+x0bYQKBgQCiw4ObE84O6zCN8WV0J/TxGtNgOh7zK1TIaD7x8iQ5MLx0O88W\ndIn4lJkJ2zu9ezvwX+eGvmGNuPRtrdijrL8UzltojSj7mqE7KiymofO8SkBCqhJG\nYYPkvrczToXP+UqXhVyRS6UrDWUO4uXgUWfD6Qq3YUAcoqxle5V9RGVaFQKBgQCK\n7+iEa0ZWbI/DbDoehcfc9bvyN30+P6291YfQ/4ypdJRKQO2621drb5XeQca1IgRd\nK1B9OoqKsACATnsw8z6BNFrtL1nPl0jQ/i2bvaP+TSXJF1rIQsYpP0eKXu5Bx+Kn\nmzamHdkf6pM93ypVqTdG8al6GS9C+xeInilMoWhKQQKBgQCVYpW1Kmyiez993U8g\nWG5wRZ4FANQSzr2KiHjmNTViG6vpoxhFyS36ieJ7jd0BJ5/1vIOvjzQchL1E1OJG\n5Unp+0yIw116u+CY6aV157zrvr3H7J9T52TlkpiKM9v156dX0kUsLxIVfmIaRKFF\nxnllpL02/QvO0SwkyJfwwlWNZg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-mm0ke@checkapp-asiendosoftware.iam.gserviceaccount.com",
+  "client_id": "107882895295806053948",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-mm0ke%40checkapp-asiendosoftware.iam.gserviceaccount.com"
+}

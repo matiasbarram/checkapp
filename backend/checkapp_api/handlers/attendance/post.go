@@ -5,6 +5,7 @@ import (
 	"checkapp_api/utils"
 	"net/http"
 
+	"github.com/WAY29/icecream-go/icecream"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,11 +35,23 @@ func Post(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	attendance, err := controllers.NewRegisterAttendance(att, int64(userId))
+	attendance, err := controllers.RegisterAttendance(att, int64(userId))
 	if err != nil {
 		responseError := utils.GenerateResponseError(err)
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": responseError})
-	} else {
+	} else { // sin errores, asistencia registrada
+		// quizas puedo hacewr query del user mas arriba y utilizar el mismo objeto
+		user, admins, err := controllers.GetNotificationRecipients(int64(userId))
+		// get admins(userId)
+		// for admin in admins
+		//err = utils.NotifyAdmin(admins, attendance)
+		//if err != nil {
+		//icecream.Ic(err)
+		//}
+		err = utils.SendEmailNotifications(user, admins, attendance)
+		if err != nil {
+			icecream.Ic(err)
+		}
 		c.JSON(http.StatusOK, gin.H{"attendance": attendance})
 	}
 }

@@ -9,17 +9,16 @@ import (
 )
 
 //database related
-var _ = godotenv.Load("../.env") // Cargar del archivo llamado ".env"
-var (
-	ConnectionString = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
-		os.Getenv("user"),
-		os.Getenv("pass"),
-		os.Getenv("host"),
-		os.Getenv("port"),
-		os.Getenv("db_name"))
-)
+var ConnectionString string
 
-// cookies - session
+// firebase
+var FIREBASE_JSON string
+
+//mailgun
+var MAILGUN_API_KEY string
+var MailDomain = "mail.asiendosoftware.xyz"
+
+//// cookies - session
 var Secret = []byte("secret")
 
 // attendance
@@ -57,3 +56,17 @@ var DaysOfTheWeek = map[int]string{
 
 // TODO: ver si se usa
 var Validate *validator.Validate
+
+func LoadEnv() {
+	_ = godotenv.Load("../.env") // Cargar del archivo llamado ".env"
+
+	ConnectionString = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+		os.Getenv("user"),
+		os.Getenv("pass"),
+		os.Getenv("host"),
+		os.Getenv("port"),
+		os.Getenv("db_name"))
+
+	FIREBASE_JSON = os.Getenv("firebase_json")
+	MAILGUN_API_KEY = os.Getenv("mailgun_api_key")
+}
