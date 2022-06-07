@@ -73,14 +73,14 @@ func SendEmailNotifications(user models.NotificationRecipient,
 	admins []models.NotificationRecipient,
 	attendance models.AttendanceResponse) error {
 	icecream.Ic(user)
-	err := SendSimpleMessage(user, attendance)
+	err := SendSimpleMessage(user, attendance, user.Name)
 	if err != nil {
 		icecream.Ic(err.Error())
 		return err
 	}
 	for _, v := range admins {
 		icecream.Ic(v)
-		err = SendSimpleMessage(v, attendance)
+		err = SendSimpleMessage(v, attendance, user.Name)
 		if err != nil {
 			icecream.Ic(err.Error())
 			return err
@@ -89,13 +89,13 @@ func SendEmailNotifications(user models.NotificationRecipient,
 	return nil
 }
 
-func SendSimpleMessage(user models.NotificationRecipient, attendance models.AttendanceResponse) error {
+func SendSimpleMessage(user models.NotificationRecipient, attendance models.AttendanceResponse, attendee string) error {
 	icecream.Ic(data.MAILGUN_API_KEY)
 	mg := mailgun.NewMailgun(data.MailDomain, data.MAILGUN_API_KEY)
 	m := mg.NewMessage(
 		fmt.Sprintf("CheckApp Notifications <mailgun@%s>", data.MailDomain),    // from
 		fmt.Sprintf("%s At %s registered", attendance.EventType, user.Company), // subject
-		fmt.Sprintf("%s successfully did a %s at %s at %s", user.Name,
+		fmt.Sprintf("%s successfully did a %s at %s at %s", attendee,
 			attendance.EventType,
 			user.Company,
 			attendance.EventTime),
