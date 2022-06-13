@@ -1,7 +1,14 @@
 package models
 
-// TODO: quitar lineas comentadas
+import "time"
 
+// TODO: quitar lineas comentadas
+type AttendanceQueryFilter struct {
+	Role string    `form:"role"`
+	Name string    `form:"name"`
+	From time.Time `form:"from" time_format:"2006-01-02" time_utc:"1"`
+	To   time.Time `form:"to" time_format:"2006-01-02" time_utc:"1"`
+}
 type Attendance struct {
 	Id           int    `json:"id"`
 	UserId       int    `json:"user_id"`

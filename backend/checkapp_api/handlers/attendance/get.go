@@ -2,7 +2,9 @@ package attendance
 
 import (
 	"checkapp_api/controllers"
+	"checkapp_api/models"
 	"checkapp_api/utils"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -101,6 +103,39 @@ func GetCompanyMonthlyFromSession(c *gin.Context) {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "algo malio sal"})
 	}
 	attendances, err := controllers.GetMonthlyCompanyAttendance(int64(id))
+	if err != nil {
+		responseError, code := utils.GenerateResponseErrorWithCode(err)
+		c.IndentedJSON(code, gin.H{"error": responseError})
+	} else {
+		c.JSON(http.StatusOK, attendances)
+	}
+
+}
+
+// HealthCheck godoc
+// @Summary      retrieves current user's attendances (pagination pending)
+// @Schemes      https
+// @Description  lol
+// @Tags         /attendances
+// @Produce      json
+// @Accept       json
+// @Success      200  {array}   models.Attendance
+// @Failure      400  {object}  models.SimpleError
+// @Router       /private/attendances/me [get]
+func GetFilteredAttendanceFromSession(c *gin.Context) {
+	id, ok := utils.GetUserIdFromSession(c)
+	if !ok {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "algo malio sal"})
+	}
+	var queryFilter models.AttendanceQueryFilter
+	if c.ShouldBind(&queryFilter) == nil {
+		log.Println(queryFilter.Name)
+		log.Println(queryFilter.From.Date())
+		log.Println(queryFilter.To.Format("2006-01-02"))
+		log.Println(queryFilter.Role)
+	}
+	attendances, err := controllers.GetFilteredCompanyAttendance(int64(id),
+		queryFilter)
 	if err != nil {
 		responseError, code := utils.GenerateResponseErrorWithCode(err)
 		c.IndentedJSON(code, gin.H{"error": responseError})

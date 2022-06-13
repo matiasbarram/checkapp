@@ -9,6 +9,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"sort"
 	"strings"
 	"time"
@@ -531,24 +532,7 @@ func GetAttendanceFromUser(id int64) ([]models.Attendance, error) {
 	return attendances, err
 }
 
-func GetMonthlyCompanyAttendance(userId int64) ([]models.UserMonthlyAttendance, error) {
-
-	user, err := GetUserById(userId)
-	if err != nil {
-		return nil, err
-	}
-	if user.Role != data.ADMIN_ROLE {
-		return nil, errors.New(fmt.Sprint(13))
-	}
-	// attendances := []models.Attendance{}
-	results, err := db.Query(monthlyCompanyAttendanceQuery, userId)
-	if err != nil && err != sql.ErrNoRows {
-		return nil, err
-	}
-	attendances, err := scanAttendanceRowList(results)
-	if err != nil {
-		return nil, err
-	}
+func makeMonthlyAttendanceResponse(attendances []models.Attendance) ([]models.UserMonthlyAttendance, error) {
 	var idToMonthlyAttendancesMap = map[int]models.UserMonthlyAttendance{}
 	for _, att := range attendances {
 		v, exist := idToMonthlyAttendancesMap[att.UserId]
@@ -582,10 +566,30 @@ func GetMonthlyCompanyAttendance(userId int64) ([]models.UserMonthlyAttendance, 
 	sort.Slice(monthlyData, func(i, j int) bool {
 		return monthlyData[i].UserName < monthlyData[j].UserName
 	})
-	// var attendanceResponses = []models.AttendanceResponse{}
-	// attendanceResponses, err = attendancesToAttendanceResponses(attendances, attendanceResponses)
+	return monthlyData, nil
 
-	return monthlyData, err
+}
+
+func GetMonthlyCompanyAttendance(userId int64) ([]models.UserMonthlyAttendance, error) {
+
+	user, err := GetUserById(userId)
+	if err != nil {
+		return nil, err
+	}
+	if user.Role != data.ADMIN_ROLE {
+		return nil, errors.New(fmt.Sprint(13))
+	}
+	// attendances := []models.Attendance{}
+	results, err := db.Query(monthlyCompanyAttendanceQuery, userId)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+	attendances, err := scanAttendanceRowList(results)
+	if err != nil {
+		return nil, err
+	}
+	return makeMonthlyAttendanceResponse(attendances)
+
 }
 func GetAttendances() ([]models.Attendance, error) {
 
@@ -627,4 +631,33 @@ func BulkInsert(unsavedRows []models.AttendanceResponse, userId int64) error {
 		strings.Join(valueStrings, ","))
 	_, err := db.Exec(stmt, valueArgs...)
 	return err
+}
+
+func GetFilteredCompanyAttendance(userId int64,
+	filter models.AttendanceQueryFilter) ([]models.UserMonthlyAttendance, error) {
+
+	user, err := GetUserById(userId)
+	if err != nil {
+		return nil, err
+	}
+	if user.Role != data.ADMIN_ROLE {
+		return nil, errors.New(fmt.Sprint(13))
+	}
+	log.Println(filter)
+	results, err := db.Query(filteredCompanyAttendanceQuery,
+		userId,
+		filter.From.Format(data.DATE_FORMAT),
+		filter.To.Format(data.DATE_FORMAT),
+		"%"+filter.Name+"%",
+		"%"+filter.Role+"%",
+	)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+	attendances, err := scanAttendanceRowList(results)
+	if err != nil {
+		return nil, err
+	}
+	log.Println(len(attendances))
+	return makeMonthlyAttendanceResponse(attendances)
 }

@@ -75,6 +75,18 @@ SELECT a.* FROM attendance a
 INNER JOIN user u ON u.id = a.user_id
 WHERE u.company_id = (SELECT u.company_id FROM user u WHERE u.id = ?) AND a.event_time > CURRENT_DATE() - INTERVAL 1 MONTH;;`
 
+const filteredCompanyAttendanceQuery = `
+SELECT a.* FROM attendance a
+INNER JOIN user u ON u.id = a.user_id
+WHERE u.company_id = (SELECT u.company_id FROM user u WHERE u.id = ?)
+AND (a.event_time BETWEEN ? AND ?)
+AND u.name LIKE ?
+AND u.role LIKE ?;
+`
+
+// AND u.name LIKE ?
+// AND u.role LIKE ?;`
+
 const updateQuery = `
 UPDATE attendance
 SET event_time = ?, location = ?, pending = ?, comments = ?

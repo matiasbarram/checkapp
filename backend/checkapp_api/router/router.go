@@ -56,6 +56,11 @@ func addCompanyGroupEndpoints(baseGroup *gin.RouterGroup) {
 		companyGroup.GET("", company.GetAll)
 		companyGroup.GET("/me", company.GetFromSession)
 		companyGroup.GET("/:id", company.GetById)
+		// TODO: permitir filtrar usuarios
+		// companyGroup.GET("/users", company.GetById)
+		// TODO: permitir filtrar por usuarios, fecha y rol
+		companyGroup.GET("/attendance", attendance.GetCompanyMonthlyFromSession)
+		companyGroup.GET("/attendance/search", attendance.GetFilteredAttendanceFromSession)
 	}
 
 }

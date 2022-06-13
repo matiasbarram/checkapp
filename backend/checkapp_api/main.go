@@ -28,6 +28,7 @@ import (
 // @BasePath                   /api/v1
 // @schemes                    http https
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	ic.ConfigureIncludeContext(true)
 	run("")
 }
