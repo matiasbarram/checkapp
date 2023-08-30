@@ -4,7 +4,6 @@ import (
 	"checkapp_api/controllers"
 	"checkapp_api/data"
 	"checkapp_api/router"
-	"checkapp_api/utils"
 	"log"
 
 	"fmt"
@@ -47,10 +46,10 @@ func run(configPath string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = utils.InitFirebaseApp()
-	if err != nil {
-		log.Fatal(err)
-	}
+		// err = utils.InitFirebaseApp()
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
 	if err := web.Run(data.Port); err != nil {
 		log.Fatal("Unable to start:", err)
 	}

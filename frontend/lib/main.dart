@@ -10,14 +10,9 @@ import 'providers/providers.dart';
 import 'screens/screens.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:checkapp/screens/worker/screens.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
   AwesomeNotifications().initialize('resource://drawable/ic_no_logo_orange', [
     NotificationChannel(
@@ -32,12 +27,6 @@ void main() async {
       //@TODO HACER MODAL DE PERMITIR NOTIFICACIONES
     }
   });
-
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  final fcmToken = await messaging.getToken();
-  print('el token de firebase es: $fcmToken');
-  messaging.onTokenRefresh.listen((fcmToken) {}).onError((err) {});
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print('Got a message whilst in the foreground!');

@@ -4,3 +4,5 @@ checkapp_api/checkapp_api
 */tmp/*
 tmp
 **/.ipynb_checkpoints/
+
+docker/
