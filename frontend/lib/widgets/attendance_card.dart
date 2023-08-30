@@ -5,7 +5,7 @@ import '../services/services.dart';
 import '../themes/app_theme.dart';
 
 class AttendanceCard extends StatelessWidget {
-  final title;
+  final String? title;
 
   const AttendanceCard({Key? key, this.title}) : super(key: key);
 

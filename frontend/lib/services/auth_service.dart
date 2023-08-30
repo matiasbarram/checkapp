@@ -1,36 +1,39 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
 import 'dart:convert';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import '../helpers/variables.dart' as variables;
 
 class AuthService extends ChangeNotifier {
   final storage = const FlutterSecureStorage();
-  final String _baseUrl = 'api.asiendosoftware.xyz';
-  final String _baseAPI = '/api/v1/';
-  final String _cookieName = 'mysession';
+  final String _apiURL = variables.apiURL;
+  final String __cookieName = variables.cookieName;
 
   Future<Map<String, dynamic>> loginUser(String email, String password) async {
     final Map<String, dynamic> authData = {
       'email': email,
       'password': password,
     };
-    final url = Uri.https(_baseUrl, '${_baseAPI}login');
+    final url = Uri.parse(_apiURL + '/login');
     print(url);
-    final respuesta = await http.post(url, body: authData);
-    if (respuesta.statusCode == 200) {
-      print('Respuesta:  $respuesta');
+
+    try {
+      final respuesta = await http.post(url, body: authData);
+      print('Respuesta:  ${respuesta.body}');
       final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
 
-      if (!decodeResp.containsKey('error')) {
+      if (!decodeResp.containsKey('error') && decodeResp.isNotEmpty) {
         await _userInfoCookie(decodeResp);
         await _updateCookie(respuesta);
+      } else {
+        throw "Error or empty";
       }
       return decodeResp;
-    } else {
-      //@TODO
+    } catch (error) {
+      print('Error: $error');
       return {};
     }
   }
@@ -64,7 +67,7 @@ class AuthService extends ChangeNotifier {
             print(keyValue);
             var key = keyValue[0];
             var value = keyValue[1];
-            if (key == _cookieName) {
+            if (key == __cookieName) {
               print('Guardando key...  ' + key + '   ' + value);
               await storage.write(key: key, value: value);
               await checkKeys();
@@ -76,8 +79,8 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<String> readToken() async {
-    final val = await storage.read(key: 'mysession') ?? 'no-key';
-    print('Valor de la key actual: ' + val);
+    const String noToken = 'no-key';
+    final val = await storage.read(key: 'mysession') ?? noToken;
     return val;
   }
 
@@ -97,8 +100,9 @@ class AuthService extends ChangeNotifier {
     final String? info = await storage.read(key: 'userInfo');
     if (info != null) {
       Map<String, dynamic> userInfo = json.decode(info);
-      final String rol = userInfo['rol'];
-      return rol;
+      final String role = userInfo['rol'];
+      print("User role: " + role);
+      return role;
     }
     return 'error';
   }

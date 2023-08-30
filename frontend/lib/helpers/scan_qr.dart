@@ -6,7 +6,6 @@ import 'package:checkapp/models/models.dart';
 import 'package:checkapp/helpers/user_location.dart';
 import 'package:checkapp/helpers/helpers.dart';
 import 'dart:convert';
-import 'helpers.dart';
 
 Future<void> scanQr(BuildContext context) async {
   String scannedAns = await FlutterBarcodeScanner.scanBarcode(

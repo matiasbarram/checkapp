@@ -16,7 +16,7 @@ class UserProvider extends ChangeNotifier {
       //print('La info de la key es $userInfokey');
       Map<String, dynamic> userInfo = json.decode(userInfokey);
       name = userInfo['name'];
-      //String profilePictureUrl = await attendanceService.getProfileById();
+      // String profilePictureUrl = await attendanceService.getProfileById();
       notifyListeners();
     }
   }

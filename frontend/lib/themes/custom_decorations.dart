@@ -22,7 +22,7 @@ class ButtonsDecoration {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18.0),
       ),
-      primary: AppTheme.checkAppBlue,
+      backgroundColor: AppTheme.checkAppBlue,
       minimumSize: const Size.fromHeight(50),
     );
   }
@@ -32,7 +32,7 @@ class ButtonsDecoration {
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18.0),
           side: const BorderSide(color: AppTheme.checkAppBlue)),
-      primary: Colors.white,
+      backgroundColor: Colors.white,
       minimumSize: const Size.fromHeight(50),
     );
   }

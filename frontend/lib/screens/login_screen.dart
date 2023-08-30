@@ -6,6 +6,9 @@ import 'package:checkapp/themes/custom_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+const String emailPattern =
+    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -57,7 +60,7 @@ class WelcomeInfo extends StatelessWidget {
           height: 16,
         ),
         const Text(
-          'Por favor ingresa tus datos para ingresar',
+          "Por favor ingresa tus datos para ingresar.",
           style: TextStyle(fontSize: 18, color: AppTheme.textPending),
         ),
       ],
@@ -94,14 +97,13 @@ class _TextFieldsLogin extends StatelessWidget {
             ),
             TextFormField(
                 keyboardType: TextInputType.emailAddress,
+                initialValue: loginForm.email,
                 autocorrect: false,
                 decoration: InputDecorations.authInputDecoration(
                     label: 'Ingresa tu correo'),
                 onChanged: (value) => loginForm.email = value,
                 validator: (value) {
-                  String pattern =
-                      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                  RegExp regExp = RegExp(pattern);
+                  RegExp regExp = RegExp(emailPattern);
                   return regExp.hasMatch(value ?? '')
                       ? null
                       : 'El formato de correo no es valido.';
@@ -122,6 +124,7 @@ class _TextFieldsLogin extends StatelessWidget {
             TextFormField(
               autocorrect: false,
               keyboardType: TextInputType.visiblePassword,
+              initialValue: loginForm.password,
               obscureText: true,
               decoration: InputDecorations.authInputDecoration(
                   label: 'Ingresa tu contraseña'),
@@ -137,52 +140,71 @@ class _TextFieldsLogin extends StatelessWidget {
             const SizedBox(
               height: 40,
             ),
-            MaterialButton(
-              minWidth: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              color: AppTheme.checkAppBlue,
-              elevation: 0,
-              textColor: Colors.white,
-              disabledColor: Colors.grey,
-              onPressed: loginForm.isLoading
-                  ? null
-                  : () async {
-                      FocusScope.of(context).unfocus();
-
-                      final authService =
-                          Provider.of<AuthService>(context, listen: false);
-
-                      loginForm.isLoading = true;
-                      final status = loginForm.isValidForm();
-                      if (status) {
-                        print("Valido pana mio");
-                        final answ = await authService.loginUser(
-                            loginForm.email, loginForm.password);
-                        if (answ.containsKey('error')) {
-                          print('hay error -> $answ');
-                          loginForm.isLoading = false;
-                        } else {
-                          print('no hay error');
-
-                          Navigator.pushReplacementNamed(context, 'loading');
-                        }
-                      } else {
-                        loginForm.isLoading = false;
-                        print('No es valido pero tamo jugando');
-                        loginForm.email = '';
-                        loginForm.password = '';
-                      }
-                    },
-              child: Text(
-                loginForm.isLoading ? 'Cargando...' : 'Ingresar',
-                style: TextStyle(fontSize: 20),
-              ),
-            )
+            _LoginButton(loginForm: loginForm)
           ],
         ),
       ),
+    );
+  }
+}
+
+class _LoginButton extends StatelessWidget {
+  const _LoginButton({
+    Key? key,
+    required this.loginForm,
+  }) : super(key: key);
+
+  final LoginFormProvider loginForm;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialButton(
+      minWidth: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      color: AppTheme.checkAppBlue,
+      elevation: 0,
+      textColor: Colors.white,
+      disabledColor: Colors.grey,
+      onPressed: loginForm.isLoading
+          ? null
+          : () async {
+              FocusScope.of(context).unfocus();
+              final authService =
+                  Provider.of<AuthService>(context, listen: false);
+              loginForm.isLoading = true;
+              final status = loginForm.isValidForm();
+              if (!status) {
+                loginForm.isLoading = false;
+                print("Form not valid");
+                loginForm.email = '';
+                loginForm.password = '';
+              }
+              final response = await authService.loginUser(
+                  loginForm.email, loginForm.password);
+              if (response.containsKey('error') || response.isEmpty) {
+                print('hay error -> $response');
+                loginForm.isLoading = false;
+                loginForm.password = "";
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                        'Error al iniciar sesión. Por favor, verifica tus credenciales.'),
+                  ),
+                );
+              } else {
+                print("Valid API response");
+                Navigator.pushReplacementNamed(context, 'loading');
+              }
+            },
+      child: loginForm.isLoading
+          ? const CircularProgressIndicator(
+              color: Colors.white,
+            )
+          : const Text(
+              'Ingresar',
+              style: TextStyle(fontSize: 18),
+            ),
     );
   }
 }

@@ -35,7 +35,7 @@ class ResumenAdminScreen extends StatelessWidget {
             const SizedBox(
               height: 30,
             ),
-            SearchField(),
+            searchField(),
             const SizedBox(
               height: 30,
             ),
@@ -52,83 +52,93 @@ class ResumenAdminScreen extends StatelessWidget {
     return FutureBuilder<List<dynamic>>(
         future: attendace.getCompanyWorkers(),
         builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-          if (snapshot.hasData) {
-            return GridView.builder(
-              itemCount: snapshot.data?.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, childAspectRatio: 0.55),
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: const [
-                          BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.1),
-                              spreadRadius: 0,
-                              blurRadius: 4,
-                              offset: Offset(0, 1))
-                        ],
-                        borderRadius: BorderRadius.circular(8)),
-                    margin: const EdgeInsets.only(
-                        top: 20, left: 10, right: 10, bottom: 20),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Stack(
-                          alignment: AlignmentDirectional.topCenter,
-                          children: [
-                            Column(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(100),
-                                  child: CachedNetworkImage(
-                                      width: 60,
-                                      height: 60,
-                                      imageUrl:
-                                          "${snapshot.data?[index]['picture']}"),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Text(
-                                  "${snapshot.data?[index]['user_name']}",
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  style: const TextStyle(
-                                      color: AppTheme.textPending,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              ],
-                            ),
-                            Positioned(
-                              bottom: -5,
-                              right: -20,
-                              child: MaterialButton(
-                                height: 25,
-                                color: AppTheme.checkAppOrange,
-                                elevation: 0,
-                                shape: const CircleBorder(),
-                                onPressed: () => Navigator.pushNamed(
-                                    context, 'employee_info',
-                                    arguments: snapshot.data?[index]),
-                                child: const Icon(
-                                  Icons.add,
-                                  size: 20,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ]),
-                    ));
-              },
-            );
+          List<dynamic>? data = snapshot.data;
+          if (data != null) {
+            return _buildWorkersGrid(data, context);
           } else {
             return const Center(child: CircularProgressIndicator());
           }
         });
   }
 
-  TextField SearchField() {
+  Widget _buildWorkersGrid(List<dynamic> data, BuildContext context) {
+    if (data.isEmpty) {
+      return const Center(child: Text("No existen trabajadores"));
+    } else {
+      return GridView.builder(
+        itemCount: data.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3, childAspectRatio: 0.55),
+        itemBuilder: (BuildContext context, int index) {
+          return _gridBox(data, index, context);
+        },
+      );
+    }
+  }
+
+  Container _gridBox(List<dynamic> data, int index, BuildContext context) {
+    return Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: const [
+              BoxShadow(
+                color: Color.fromRGBO(0, 0, 0, 0.1),
+                spreadRadius: 0,
+                blurRadius: 4,
+                offset: Offset(0, 1),
+              )
+            ],
+            borderRadius: BorderRadius.circular(8)),
+        margin: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 20),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Stack(alignment: AlignmentDirectional.topCenter, children: [
+            Column(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: CachedNetworkImage(
+                    width: 60,
+                    height: 60,
+                    imageUrl: "${data[index]['picture']}",
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  "${data[index]['user_name']}",
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  style: const TextStyle(
+                      color: AppTheme.textPending,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: -5,
+              right: -20,
+              child: MaterialButton(
+                height: 25,
+                color: AppTheme.checkAppOrange,
+                elevation: 0,
+                shape: const CircleBorder(),
+                onPressed: () => Navigator.pushNamed(context, 'employee_info',
+                    arguments: data[index]),
+                child: const Icon(
+                  Icons.add,
+                  size: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ]),
+        ));
+  }
+
+  TextField searchField() {
     return TextField(
       decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(

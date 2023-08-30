@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'package:checkapp/models/wokers_model.dart';
 import 'package:checkapp/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import '../helpers/date_time_helper.dart';
+import '../helpers/variables.dart' as variables;
 
 class AttendanceService extends ChangeNotifier {
   final String _eventTypeCheckIn = 'CHECK_IN';
@@ -23,13 +23,12 @@ class AttendanceService extends ChangeNotifier {
   final storage = const FlutterSecureStorage();
   bool freeDay = false;
 
-  final String _baseUrl = 'api.asiendosoftware.xyz';
-  final String _baseAPI = '/api/v1/';
+  final String _apiURL = variables.apiURL;
 
   Future<Map<String, dynamic>> getLastAttendance() async {
     final _cookie = await storage.read(key: 'mysession');
     Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
-    final url = Uri.https(_baseUrl, '${_baseAPI}private/attendance/last');
+    final url = Uri.parse(_apiURL + "/private/attendance/last");
     print(url);
     final respuesta = await http.get(url, headers: headers);
     final Map<String, dynamic> decodeResp = json.decode(respuesta.body);
@@ -39,7 +38,7 @@ class AttendanceService extends ChangeNotifier {
   Future<List<dynamic>> getTodayAttendance() async {
     final _cookie = await storage.read(key: 'mysession');
     Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
-    final url = Uri.https(_baseUrl, '${_baseAPI}private/attendance/today');
+    final url = Uri.parse(_apiURL + "/private/attendance/today");
     print(url);
     final respuesta = await http.get(url, headers: headers);
     if (respuesta.statusCode == 200) {
@@ -84,7 +83,7 @@ class AttendanceService extends ChangeNotifier {
       Map<String, dynamic> userInfoDecode = json.decode(userInfo);
       final int userId = userInfoDecode['id'];
       Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
-      final url = Uri.https(_baseUrl, '${_baseAPI}private/users/image/$userId');
+      final url = Uri.parse(_apiURL + "private/users/image/$userId");
       print(url);
       final respuesta = await http.get(url, headers: headers);
       final decodeResp = json.decode(respuesta.body);
@@ -106,7 +105,7 @@ class AttendanceService extends ChangeNotifier {
       'event_type': eventType,
       'location': userlocation,
     };
-    final url = Uri.https(_baseUrl, '${_baseAPI}private/attendance');
+    final url = Uri.parse(_apiURL + "private/attendance");
     print(url);
     final respuesta =
         await http.post(url, body: attendanceData, headers: headers);
@@ -150,7 +149,7 @@ class AttendanceService extends ChangeNotifier {
       if (attendance['event_type'] == todo && attendance['pending'] == true) {
         horaEsperada = attendance['expected_time'];
         _setStatus(attendance['comments'], attendance['event_type']);
-        ;
+
         notifyListeners();
         return 'DONE';
       }
@@ -199,11 +198,10 @@ class AttendanceService extends ChangeNotifier {
     final _cookie = await storage.read(key: 'mysession');
     List<dynamic> workers = [];
     Map<String, String> headers = {'Cookie': 'mysession=$_cookie'};
-    final url =
-        Uri.https(_baseUrl, '${_baseAPI}private/attendance/company/monthly');
-    final respuesta = await http.get(url, headers: headers);
-    if (respuesta.statusCode == 200) {
-      final List<dynamic> decodeResp = json.decode(respuesta.body);
+    final url = Uri.parse(_apiURL + '/private/attendance/company/monthly');
+    final response = await http.get(url, headers: headers);
+    if (response.statusCode == 200) {
+      final List<dynamic> decodeResp = json.decode(response.body);
       for (var workerInfo in decodeResp) {
         if (workerInfo['role'] != 'based') {
           workers.add(workerInfo);

@@ -33,10 +33,13 @@ class LoadingScreen extends StatelessWidget {
               Future.microtask(() async {
                 final attanceProvider =
                     Provider.of<AttendanceService>(context, listen: false);
+
                 final authService =
                     Provider.of<AuthService>(context, listen: false);
+
                 final userProvider =
                     Provider.of<UserProvider>(context, listen: false);
+
                 userProvider.loadUserInfo(context);
 
                 String userRol = await authService.logedUserRol();

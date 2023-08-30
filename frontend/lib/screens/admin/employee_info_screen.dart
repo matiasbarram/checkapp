@@ -1,4 +1,3 @@
-import 'package:checkapp/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../helpers/date_time_helper.dart';
@@ -11,7 +10,6 @@ class EmployeeInfoScreen extends StatelessWidget {
     final employeeInfo = (ModalRoute.of(context)?.settings.arguments ??
         <String, dynamic>{}) as Map;
     final List<dynamic> attendances = employeeInfo['attendances'];
-    final String pictureUrl = employeeInfo['picture'];
     print(attendances);
 
     return Scaffold(

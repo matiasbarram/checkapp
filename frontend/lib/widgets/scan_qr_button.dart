@@ -19,12 +19,12 @@ class ScanQRButton extends StatelessWidget {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-            primary: AppTheme.checkAppBlue),
+            backgroundColor: AppTheme.checkAppBlue),
         onPressed: attendace.freeDay ? null : () async => await scanQr(context),
-        child: Row(
+        child: const Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
+          children: [
             Icon(
               Icons.qr_code_sharp,
               size: 25,
